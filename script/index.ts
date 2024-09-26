@@ -10,7 +10,6 @@
  * `Script.listen`) or scheduled posts (`Script.post` with delay), will be
  * removed, and init() will be called again on the new script version.
  *
- * @remarks
  * Not required. Can be remove if not used.
  */
 export function init(): void {
@@ -22,7 +21,6 @@ export function init(): void {
  * 'arrive', or 'sleep'. It requires that `Room.listen()` has been called
  * earlier, usually in the init() function.
  *
- * @remarks
  * Not required. Can be remove if not used.
  *
  * @example
@@ -49,7 +47,6 @@ export function onRoomEvent(addr: string, ev: string): void {
  * Script.post(). It requires that `Script.listen()` has been called earlier,
  * usually in the init() function.
  *
- * @remarks
  * Not required. Can be remove if not used.
  *
  * @param addr - Address of this script instance receiving the message.

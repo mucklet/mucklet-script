@@ -3,7 +3,7 @@
  * passes past two set hour constants, `daybreak` and `nightfall`.
  *
  * Once the profile is set, the script posts a delayed message to itself for
- * next time the profile should be changed.
+ * the next time the profile should be changed.
  */
 
 const daybreak = 8 // 08:00 UTC time

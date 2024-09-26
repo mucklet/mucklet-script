@@ -7,6 +7,7 @@
  */
 
 // Post address to the inside room script. Replace this.
+// To get a room script's address, type: roomscript <KEYWORD>
 const inside = "room.cccccccccccccccccccc#dddddddddddddddddddd"
 
 export function init(): void {

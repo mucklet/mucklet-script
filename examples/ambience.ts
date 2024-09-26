@@ -1,5 +1,5 @@
 /**
- * This script shows some ambient room descriptions at a random intervals
+ * This script shows some ambient room descriptions at random time intervals
  * between the `minDelay` and `maxDelay` constants.
  */
 

@@ -126,9 +126,14 @@ declare namespace Script {
 	 * If no `addr` is provided, the script will listen to posts from _any_
 	 * source, including scripts and bots controlled by other players.
 	 *
-	 * @remark
 	 * Posts from the current script does not require listening. A script can
 	 * always post to itself.
+	 *
+	 * To get the address of a room script, use the `roomscript` command. For
+	 * more info, type:
+	 * ```
+	 * help roomscript
+	 * ```
 	 */
 	function listen(addrs?: string[] | null): void;
 	/**
@@ -138,10 +143,22 @@ declare namespace Script {
 	 *
 	 * If no `addr` is provided, the script will listen to posts from _any_
 	 * source.
+	 *
+	 * To get the address of a room script, use the `roomscript` command. For
+	 * more info, type:
+	 * ```
+	 * help roomscript
+	 * ```
 	 */
 	function unlisten(addrs?: string[] | null): void;
 	/**
 	 * Posts a message to another script with the address `addr`.
+	 *
+	 * To get the address of a room script, use the `roomscript` command. For
+	 * more info, type:
+	 * ```
+	 * help roomscript
+	 * ```
 	 * @param addr - Address of target script. If addr is "#", it will be a post to the current script instance.
 	 * @param topic - Message topic. May be any kind of string.
 	 * @param data - Additional data. Must be valid JSON.
@@ -291,6 +308,17 @@ declare namespace Event {
 /**
  * Store API function classes to get, set, and iterate over stored key/value
  * entries.
+ *
+ * @remarks
+ * Each script instance has its own store, and does not share this data with
+ * other scripts. Any stored data is persisted between calls, and is not deleted
+ * unless the script itself is deleted.
+ *
+ * If a script is deactivated, the stored data will persist, and may be accessed
+ * once the script is activated again.
+ *
+ * Variables should not be used to persist data between calls, as the script's
+ * runtime state may be disposed in between calls.
  */
 declare namespace Store {
 	/**

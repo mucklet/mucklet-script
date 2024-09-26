@@ -18,6 +18,7 @@
  */
 
 // Post address to the outside room script. Replace this.
+// To get a room script's address, type: roomscript <KEYWORD>
 const outside = "room.aaaaaaaaaaaaaaaaaaaa#bbbbbbbbbbbbbbbbbbbb"
 
 export function init(): void {
