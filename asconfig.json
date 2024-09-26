@@ -1,0 +1,14 @@
+{
+  "options": {
+    "outFile": "build/script.wasm",
+    "textFile": "build/script.wat",
+    "optimizeLevel": 3,
+    "shrinkLevel": 2,
+    "converge": false,
+    "noAssert": false,
+    "sourceMap": true,
+    "debug": true,
+    "transform": [ "json-as/transform" ],
+    "bindings": "esm"
+  }
+}

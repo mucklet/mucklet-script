@@ -1,0 +1,26 @@
+{
+  "name": "mucklet-script",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "node tests",
+    "build": "asc script/index.ts --runtime minimal --exportRuntime --lib ./lib/host.ts --lib ./lib/env.ts"
+  },
+  "author": "Accipiter Nisus <accipiter@gmail.com>",
+  "license": "Apache-2.0",
+  "description": "A project to build and test room scripts for Mucklet realms.",
+  "devDependencies": {
+    "assemblyscript": "^0.27.29",
+    "json-as": "^0.9.21",
+    "visitor-as": "^0.11.4"
+  },
+  "overrides": {
+    "assemblyscript": "$assemblyscript"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./build/script.js",
+      "types": "./build/script.d.ts"
+    }
+  }
+}
