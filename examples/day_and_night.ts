@@ -9,7 +9,7 @@
 const daybreak = 8 // 08:00 UTC time
 const nightfall = 20 // 20:00 UTC time
 
-export function init(): void {
+export function onActivate(): void {
 	setProfile()
 }
 
