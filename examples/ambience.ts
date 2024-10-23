@@ -12,9 +12,9 @@ const messages = [
 	"The leaves of the trees rustle soothingly.",
 ]
 
-export function init(): void {
-	// Initialize the script by scheduling the first message. On script update
-	// or deactivation, any previous scheduled postsare deleted.
+export function onActivate(): void {
+	// Start the script by scheduling the first message. On script update
+	// or deactivation, any previous scheduled posts are deleted.
 	scheduleNext()
 }
 

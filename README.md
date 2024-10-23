@@ -20,7 +20,7 @@ npm test
 
 Script file | Description
 --- | ---
-[hello_world.ts](./examples/hello_world.ts) | A Hello world script with informative comments on a scripts entry functions.
+[hello_world.ts](./examples/hello_world.ts) | A Hello world script with informative comments on a script's entry functions.
 [ambience.ts](./examples/ambience.ts) | A script showing ambient descriptions with random time intervals.
 [day_and_night.ts](./examples/day_and_night.ts) | A script cycling between a "day" and "night" room profile based on real time.
 [intercom_inside.ts](./examples/intercom_inside.ts) | An intercom script allowing communication with another room running the [intercom_outside.ts](./examples/intercom_outside.ts) script.
@@ -33,7 +33,7 @@ locally before uploading them to the Mucklet realm.
 
 Scripts are written using [AssemblyScript](https://www.assemblyscript.org/), a
 statically typed language similar to TypeScript, sharing many of its features
-and standard library functions (including its _.ts_ prefix).
+and standard library functions (including its _.ts_ suffix).
 
 ## Standard library
 

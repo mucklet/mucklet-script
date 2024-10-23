@@ -42,10 +42,10 @@ afterEach(() => {
 	script.__collect();
 })
 
-describe('Script init', () => {
+describe('Script onActivate', () => {
 	it('calls room describe with greeting', () => {
-		assert(typeof script.init == 'function');
-		assert.doesNotThrow(() => script.init());
+		assert(typeof script.onActivate == 'function');
+		assert.doesNotThrow(() => script.onActivate());
 		assert.strictEqual(global.room.describe.mock.callCount(), 1);
 		assert.deepStrictEqual(global.room.describe.mock.calls[0].arguments, [ "Hello, world!" ]);
 	});
