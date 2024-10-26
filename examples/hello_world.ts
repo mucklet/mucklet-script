@@ -3,24 +3,24 @@
  */
 
 /**
- * init is called each time a script is activated or updated. It is primarily
- * used to call `Room.listen` or `Script.listen`, to have the script listening
- * for events or messages.
+ * onActivate is called each time a script is activated or updated. It is
+ * primarily used to call `Room.listen` or `Script.listen`, to have the script
+ * listening for events or messages.
  *
  * When a script is updated, previous listeners (`Room.listen` or
  * `Script.listen`) or scheduled posts (`Script.post` with delay), will be
- * removed before init() is called on the new script version.
+ * removed before onActivate() is called on the new script version.
  *
  * Not required. Can be remove if not used.
  */
-export function init(): void {
+export function onActivate(): void {
 	Room.describe("Hello, world!");
 }
 
 /**
  * onRoomEvent is called when an event occurs in the room, such as a 'say',
  * 'arrive', or 'sleep'. It requires that `Room.listen()` has been called
- * earlier, usually in the init() function.
+ * earlier, usually in the onActivate() function.
  *
  * Not required. Can be remove if not used.
  *
@@ -46,7 +46,7 @@ export function onRoomEvent(addr: string, ev: string): void {
 /**
  * onMessage is called when another script sends a message to this script, using
  * Script.post(). It requires that `Script.listen()` has been called earlier,
- * usually in the init() function.
+ * usually in the onActivate() function.
  *
  * Not required. Can be remove if not used.
  *

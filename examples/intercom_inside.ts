@@ -21,7 +21,7 @@
 // To get a room script's address, type: roomscript <KEYWORD>
 const outside = "room.aaaaaaaaaaaaaaaaaaaa#bbbbbbbbbbbbbbbbbbbb"
 
-export function init(): void {
+export function onActivate(): void {
 	// Start listening to any room events to catch "on" or "off" commands.
 	Room.listen()
 	// Start listening to messages from the outside room script.

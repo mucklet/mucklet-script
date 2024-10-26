@@ -10,7 +10,7 @@
 // To get a room script's address, type: roomscript <KEYWORD>
 const inside = "room.cccccccccccccccccccc#dddddddddddddddddddd"
 
-export function init(): void {
+export function onActivate(): void {
 	Script.listen([inside])
 	if (Store.getBuffer("active") != null) {
 		Room.listen()
