@@ -9,8 +9,8 @@
   "license": "Apache-2.0",
   "description": "A project to build and test room scripts for Mucklet realms.",
   "devDependencies": {
-    "assemblyscript": "^0.27.29",
-    "json-as": "^0.9.21",
+    "assemblyscript": "^0.27.31",
+    "json-as": "^0.9.26",
     "visitor-as": "^0.11.4"
   },
   "overrides": {
