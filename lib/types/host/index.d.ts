@@ -200,8 +200,8 @@ declare namespace Room {
 	}
 	/**
 	 * Starts listening to room events on the current instance. If `instance` is
-	 * set, it starts listening for that specific instance, or null for the
-	 * non-instance room. Room events will be sent to `onRoomEvent` for the
+	 * set, it starts listening for events in that specific instance, or null
+	 * for any room instance. Room events will be sent to `onRoomEvent` for the
 	 * instance.
 	 */
 	function listen(instance?: string | null): void;
@@ -211,6 +211,19 @@ declare namespace Room {
 	 * non-instance room.
 	 */
 	function unlisten(instance?: string | null): void;
+	/**
+	 * Starts listening to char events in the room. If `instance` is set, it
+	 * starts listening for events in that specific instance, or null for any
+	 * room instance. Char events will be sent to `onCharEvent` for the
+	 * instance.
+	 */
+	function listenCharEvent(instance?: string | null): void;
+	/**
+	 * Stops listening to char events in the room. If `instance` is set, it
+	 * stops listening for events in that specific instance, or null for any
+	 * room instance.
+	 */
+	function unlistenCharEvent(instance?: string | null): void;
 	/**
 	 * Sends a "describe" event to the current room instance.
 	 */

@@ -254,12 +254,12 @@ export namespace Room {
 
 	/**
 	 * Starts listening to room events on the current instance. If `instance` is
-	 * set, it starts listening for that specific instance, or null for the
-	 * non-instance room. Room events will be sent to `onRoomEvent` for the
+	 * set, it starts listening for events in that specific instance, or null
+	 * for any room instance. Room events will be sent to `onRoomEvent` for the
 	 * instance.
 	 */
 	export function listen(instance: string | null = null): void {
-		room_binding.listen(instance);
+		room_binding.listen(0 /** room event **/, instance);
 	}
 
 	/**
@@ -268,7 +268,26 @@ export namespace Room {
 	 * non-instance room.
 	 */
 	export function unlisten(instance: string | null = null): void {
-		room_binding.unlisten(instance);
+		room_binding.unlisten(0 /** room event **/, instance);
+	}
+
+	/**
+	 * Starts listening to char events in the room. If `instance` is set, it
+	 * starts listening for events in that specific instance, or null for any
+	 * room instance. Char events will be sent to `onCharEvent` for the
+	 * instance.
+	 */
+	export function listenCharEvent(instance: string | null = null): void {
+		room_binding.listen(1 /** char event **/, instance);
+	}
+
+	/**
+	 * Stops listening to char events in the room. If `instance` is set, it
+	 * stops listening for events in that specific instance, or null for any
+	 * room instance.
+	 */
+	export function unlistenCharEvent(instance: string | null = null): void {
+		room_binding.unlisten(1 /** char event **/, instance);
 	}
 
 	/**

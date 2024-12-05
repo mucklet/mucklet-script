@@ -1,10 +1,11 @@
 // @ts-nocheck
 export declare namespace Room {
+
 	@external("env", "room.listen")
-	export function listen(instance: string | null): void
+	export function listen(type: i32, instance: string | null): void
 
 	@external("env", "room.unlisten")
-	export function unlisten(instance: string | null): void
+	export function unlisten(type: i32, instance: string | null): void
 
 	@external("env", "room.describe")
 	export function describe(msg: string): void
