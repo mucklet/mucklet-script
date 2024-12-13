@@ -42,6 +42,12 @@ export declare namespace Room {
 
 	@external("env", "room.setExit")
 	export function setExit(exitId: string, json: string): void
+
+	@external("env", "room.listenExit")
+	export function listenExit(exitId: string | null): void
+
+	@external("env", "room.unlistenExit")
+	export function unlistenExit(exitId: string | null): void
 }
 
 export declare namespace Script {
@@ -90,4 +96,12 @@ export declare namespace Iterator {
 
 	@external("env", "iterator.value")
 	export function value(iterator: i32): ArrayBuffer
+}
+
+export declare namespace ExitIntercept {
+	@external("env", "exitIntercept.useExit")
+	export function useExit(interceptId: i32, exitId: string | null): void
+
+	@external("env", "exitIntercept.cancel")
+	export function cancel(interceptId: i32, msg: string | null): void
 }

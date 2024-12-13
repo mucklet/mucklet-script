@@ -3,6 +3,7 @@ import {
 	Script as script_binding,
 	Store as store_binding,
 	Iterator as iterator_binding,
+	ExitIntercept as exitintercept_binding,
 } from "./env";
 import { JSON } from 'json-as'
 export { JSON };
@@ -78,6 +79,38 @@ function keyToBuffer<T>(key: T): ArrayBuffer {
 	return key;
 }
 
+/**
+ * ExitIntercept is an intercepted use of an exit.
+ */
+export class ExitIntercept {
+	/** Intercept ID */
+	interceptId: i32 = 0;
+	/** Character ID */
+	charId: ID = "";
+	/** Exit ID */
+	exitId: ID = "";
+
+	/**
+	 * Makes the character use an exit. If exitId is null, the character is sent
+	 * through the exit that they originally tried to use.
+	 *
+	 * The exit may be hidden or inactive.
+	 * @param exitId Exit ID or null for the originally used exit.
+	 */
+	useExit(exitId: ID | null = null): void {
+		exitintercept_binding.useExit(this.interceptId, exitId);
+	}
+
+	/**
+	 * Cancels a character's attempt to use an exit and shows them an info
+	 * message instead. If msg is null, the default exit timeout message will be
+	 * shown.
+	 * @param msg Info message to show, or default message if null.
+	 */
+	cancel(msg: string | null = null): void {
+		exitintercept_binding.cancel(this.interceptId, msg);
+	}
+}
 
 /**
  * BaseIterator is an iterator over items with an ID.
@@ -288,6 +321,28 @@ export namespace Room {
 	 */
 	export function unlistenCharEvent(instance: string | null = null): void {
 		room_binding.unlisten(1 /** char event **/, instance);
+	}
+
+	/**
+	 * Starts listening to exit usage in the room, including any instance. If
+	 * `exitId` is null, it acts as a wildcard to listen to any exit otherwise
+	 * not being listened to specifically. Exit use events will be sent to
+	 * `onExitUse`.
+	 *
+	 * Only one script may listen to a given exit at any time. Only one script
+	 * may listen to any exit with the null wildcard at any one time
+	 */
+	export function listenExit(exitId: string | null = null): void {
+		room_binding.listenExit(exitId);
+	}
+
+	/**
+	 * Stops listening to exit usage in the room. If `exitId` is set, it stops
+	 * listening for exit use for that specific exit, or null to stop listening
+	 * for the the wildcard listener.
+	 */
+	export function unlistenExit(exitId: string | null = null): void {
+		room_binding.unlistenExit(exitId);
 	}
 
 	/**

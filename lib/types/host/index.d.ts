@@ -57,6 +57,32 @@ declare namespace ExitIcon {
 }
 type ExitIcon = i32;
 /**
+ * ExitIntercept is an intercepted use of an exit.
+ */
+declare class ExitIntercept {
+	/** Intercept ID */
+	interceptId: i32;
+	/** Character ID */
+	charId: ID;
+	/** Exit ID */
+	exitId: ID;
+	/**
+	 * Makes the character use an exit. If exitId is null, the character is sent
+	 * through the exit that they originally tried to use.
+	 *
+	 * The exit may be hidden or inactive.
+	 * @param exitId Exit ID or null for the originally used exit.
+	 */
+	useExit(exitId?: ID | null): void;
+	/**
+	 * Cancels a character's attempt to use an exit and shows them an info
+	 * message instead. If msg is null, the default exit timeout message will be
+	 * shown.
+	 * @param msg Info message to show, or default message if null.
+	 */
+	cancel(msg?: string | null): void;
+}
+/**
  * BaseIterator is an iterator over items with an ID.
  */
 declare class BaseIterator {
@@ -224,6 +250,22 @@ declare namespace Room {
 	 * room instance.
 	 */
 	function unlistenCharEvent(instance?: string | null): void;
+	/**
+	 * Starts listening to exit usage in the room, including any instance. If
+	 * `exitId` is null, it acts as a wildcard to listen to any exit otherwise
+	 * not being listened to specifically. Exit use events will be sent to
+	 * `onExitUse`.
+	 *
+	 * Only one script may listen to a given exit at any time. Only one script
+	 * may listen to any exit with the null wildcard at any one time
+	 */
+	function listenExit(exitId?: string | null): void;
+	/**
+	 * Stops listening to exit usage in the room. If `exitId` is set, it stops
+	 * listening for exit use for that specific exit, or null to stop listening
+	 * for the the wildcard listener.
+	 */
+	function unlistenExit(exitId?: string | null): void;
 	/**
 	 * Sends a "describe" event to the current room instance.
 	 */
