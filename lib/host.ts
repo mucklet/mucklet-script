@@ -582,9 +582,27 @@ export namespace Script {
 	 * @param topic - Message topic. May be any kind of string.
 	 * @param data - Additional data. Must be valid JSON.
 	 * @param delay - Delay in milliseconds.
+	 * @returns Schedule ID or null if the message was posted without delay.
 	 */
-	export function post(addr: string, topic: string, data: string | null = null, delay: i64 = 0): void {
-		script_binding.post(addr, topic, data, delay);
+	export function post(addr: string, topic: string, data: string | null = null, delay: i64 = 0): ID | null {
+		return script_binding.post(addr, topic, data, delay);
+	}
+
+	/**
+	 * Cancel a message previously scheduled with `Script.post` with a delay.
+	 *
+	 * The post can only be canceled from the same room instance that sent it.
+	 * The method returns true if the post was successfully canceled, or false if
+	 * the scheduleId is either null, not sent by the script instance, or if the
+	 * post was already sent.
+	 * @param scheduleId - Schedule ID returned by script.Post.
+	 * @returns True if the post was successfully canceled, otherwise false.
+	 */
+	export function cancelPost(scheduleId: ID | null): boolean {
+		if (scheduleId == null) {
+			return false;
+		}
+		return script_binding.cancelPost(scheduleId);
 	}
 }
 

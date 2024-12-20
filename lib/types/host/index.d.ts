@@ -434,8 +434,20 @@ declare namespace Script {
 	 * @param topic - Message topic. May be any kind of string.
 	 * @param data - Additional data. Must be valid JSON.
 	 * @param delay - Delay in milliseconds.
+	 * @returns Schedule ID or null if the message was posted without delay.
 	 */
-	function post(addr: string, topic: string, data?: string | null, delay?: i64): void;
+	function post(addr: string, topic: string, data?: string | null, delay?: i64): ID | null;
+	/**
+	 * Cancel a message previously scheduled with `Script.post` with a delay.
+	 *
+	 * The post can only be canceled from the same room instance that sent it.
+	 * The method returns true if the post was successfully canceled, or false if
+	 * the scheduleId is either null, not sent by the script instance, or if the
+	 * post was already sent.
+	 * @param scheduleId - Schedule ID returned by script.Post.
+	 * @returns True if the post was successfully canceled, otherwise false.
+	 */
+	function cancelPost(scheduleId: ID | null): boolean;
 }
 /**
  * Event classes used with JSON.parse to decode room events.

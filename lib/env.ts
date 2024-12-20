@@ -51,14 +51,17 @@ export declare namespace Room {
 }
 
 export declare namespace Script {
-	@external("env", "script.post")
-	export function post(addr: string, topic: string, data: string | null, delay: i64): void
-
 	@external("env", "script.listen")
 	export function listen(addrs: string[] | null): void
 
 	@external("env", "script.unlisten")
 	export function unlisten(addrs: string[] | null): void
+
+	@external("env", "script.post")
+	export function post(addr: string, topic: string, data: string | null, delay: i64): string | null
+
+	@external("env", "script.cancelPost")
+	export function cancelPost(scheduleId: string): boolean
 }
 
 export declare namespace Store {
