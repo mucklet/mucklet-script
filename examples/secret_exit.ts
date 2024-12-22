@@ -74,9 +74,9 @@ export function onRoomEvent(addr: string, ev: string): void {
 	// The "#" is a shortcut for the script instance's own address.
 	scheduleId = Script.post("#", postTopic, null, openDuration)
 	// Store the scheduleId to allow rescheduling and to indicate exit is open.
-	// The exclamation mark is a non-null assertion, since Script.post with a
-	// delay > 0 will never return null.
-	Store.setString(storeKey, scheduleId!)
+	if (scheduleId != null) {
+		Store.setString(storeKey, scheduleId!)
+	}
 }
 
 // onMessage is called when it is time to close the post.

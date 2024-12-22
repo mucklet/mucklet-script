@@ -594,7 +594,7 @@ export namespace Script {
 	 * @param topic - Message topic. May be any kind of string.
 	 * @param data - Additional data. Must be valid JSON.
 	 * @param delay - Delay in milliseconds.
-	 * @returns Schedule ID or null if the message was posted without delay.
+	 * @returns Schedule ID or null if the message was posted without delay of if the receiving script was not listening.
 	 */
 	export function post(addr: string, topic: string, data: string | null = null, delay: i64 = 0): ID | null {
 		return script_binding.post(addr, topic, data, delay);
