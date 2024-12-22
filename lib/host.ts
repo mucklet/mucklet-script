@@ -290,18 +290,22 @@ export namespace Room {
 	 * set, it starts listening for events in that specific instance, or null
 	 * for any room instance. Room events will be sent to `onRoomEvent` for the
 	 * instance.
+	 * @param instance - Instance or null for the non-instance.
+	 * @returns True if a new listener was added, otherwise false.
 	 */
-	export function listen(instance: string | null = null): void {
-		room_binding.listen(0 /** room event **/, instance);
+	export function listen(instance: string | null = null): boolean {
+		return room_binding.listen(0 /** room event **/, instance);
 	}
 
 	/**
 	 * Stops listening to room events on the current instance. If `instance` is
 	 * provided, it stops listening for that specific instance, or null for the
 	 * non-instance room.
+	 * @param instance - Instance or null for the non-instance.
+	 * @returns True if a listener existed, otherwise false.
 	 */
-	export function unlisten(instance: string | null = null): void {
-		room_binding.unlisten(0 /** room event **/, instance);
+	export function unlisten(instance: string | null = null): boolean {
+		return room_binding.unlisten(0 /** room event **/, instance);
 	}
 
 	/**
@@ -309,18 +313,22 @@ export namespace Room {
 	 * starts listening for events in that specific instance, or null for any
 	 * room instance. Char events will be sent to `onCharEvent` for the
 	 * instance.
+	 * @param instance - Instance or null for any instance.
+	 * @returns True if a new listener was added, otherwise false.
 	 */
-	export function listenCharEvent(instance: string | null = null): void {
-		room_binding.listen(1 /** char event **/, instance);
+	export function listenCharEvent(instance: string | null = null): boolean {
+		return room_binding.listen(1 /** char event **/, instance);
 	}
 
 	/**
 	 * Stops listening to char events in the room. If `instance` is set, it
 	 * stops listening for events in that specific instance, or null for any
 	 * room instance.
+	 * @param instance - Instance or null for any instance.
+	 * @returns True if a listener existed, otherwise false.
 	 */
-	export function unlistenCharEvent(instance: string | null = null): void {
-		room_binding.unlisten(1 /** char event **/, instance);
+	export function unlistenCharEvent(instance: string | null = null): boolean {
+		return room_binding.unlisten(1 /** char event **/, instance);
 	}
 
 	/**
@@ -331,18 +339,22 @@ export namespace Room {
 	 *
 	 * Only one script may listen to a given exit at any time. Only one script
 	 * may listen to any exit with the null wildcard at any one time
+	 * @param exitId - Exit ID or null for any exit.
+	 * @returns True if a new listener was added, otherwise false.
 	 */
-	export function listenExit(exitId: string | null = null): void {
-		room_binding.listenExit(exitId);
+	export function listenExit(exitId: string | null = null): boolean {
+		return room_binding.listenExit(exitId);
 	}
 
 	/**
 	 * Stops listening to exit usage in the room. If `exitId` is set, it stops
 	 * listening for exit use for that specific exit, or null to stop listening
 	 * for the the wildcard listener.
+	 * @param exitId - Exit ID or null for any exit.
+	 * @returns True if a listener existed, otherwise false.
 	 */
-	export function unlistenExit(exitId: string | null = null): void {
-		room_binding.unlistenExit(exitId);
+	export function unlistenExit(exitId: string | null = null): boolean {
+		return room_binding.unlistenExit(exitId);
 	}
 
 	/**

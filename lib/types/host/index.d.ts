@@ -229,27 +229,35 @@ declare namespace Room {
 	 * set, it starts listening for events in that specific instance, or null
 	 * for any room instance. Room events will be sent to `onRoomEvent` for the
 	 * instance.
+	 * @param instance - Instance or null for the non-instance.
+	 * @returns True if a new listener was added, otherwise false.
 	 */
-	function listen(instance?: string | null): void;
+	function listen(instance?: string | null): boolean;
 	/**
 	 * Stops listening to room events on the current instance. If `instance` is
 	 * provided, it stops listening for that specific instance, or null for the
 	 * non-instance room.
+	 * @param instance - Instance or null for the non-instance.
+	 * @returns True if a listener existed, otherwise false.
 	 */
-	function unlisten(instance?: string | null): void;
+	function unlisten(instance?: string | null): boolean;
 	/**
 	 * Starts listening to char events in the room. If `instance` is set, it
 	 * starts listening for events in that specific instance, or null for any
 	 * room instance. Char events will be sent to `onCharEvent` for the
 	 * instance.
+	 * @param instance - Instance or null for any instance.
+	 * @returns True if a new listener was added, otherwise false.
 	 */
-	function listenCharEvent(instance?: string | null): void;
+	function listenCharEvent(instance?: string | null): boolean;
 	/**
 	 * Stops listening to char events in the room. If `instance` is set, it
 	 * stops listening for events in that specific instance, or null for any
 	 * room instance.
+	 * @param instance - Instance or null for any instance.
+	 * @returns True if a listener existed, otherwise false.
 	 */
-	function unlistenCharEvent(instance?: string | null): void;
+	function unlistenCharEvent(instance?: string | null): boolean;
 	/**
 	 * Starts listening to exit usage in the room, including any instance. If
 	 * `exitId` is null, it acts as a wildcard to listen to any exit otherwise
@@ -258,14 +266,18 @@ declare namespace Room {
 	 *
 	 * Only one script may listen to a given exit at any time. Only one script
 	 * may listen to any exit with the null wildcard at any one time
+	 * @param exitId - Exit ID or null for any exit.
+	 * @returns True if a new listener was added, otherwise false.
 	 */
-	function listenExit(exitId?: string | null): void;
+	function listenExit(exitId?: string | null): boolean;
 	/**
 	 * Stops listening to exit usage in the room. If `exitId` is set, it stops
 	 * listening for exit use for that specific exit, or null to stop listening
 	 * for the the wildcard listener.
+	 * @param exitId - Exit ID or null for any exit.
+	 * @returns True if a listener existed, otherwise false.
 	 */
-	function unlistenExit(exitId?: string | null): void;
+	function unlistenExit(exitId?: string | null): boolean;
 	/**
 	 * Sends a "describe" event to the current room instance.
 	 */

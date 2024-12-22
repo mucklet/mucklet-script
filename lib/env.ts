@@ -2,10 +2,10 @@
 export declare namespace Room {
 
 	@external("env", "room.listen")
-	export function listen(type: i32, instance: string | null): void
+	export function listen(type: i32, instance: string | null): boolean
 
 	@external("env", "room.unlisten")
-	export function unlisten(type: i32, instance: string | null): void
+	export function unlisten(type: i32, instance: string | null): boolean
 
 	@external("env", "room.describe")
 	export function describe(msg: string): void
@@ -44,10 +44,10 @@ export declare namespace Room {
 	export function setExit(exitId: string, json: string): void
 
 	@external("env", "room.listenExit")
-	export function listenExit(exitId: string | null): void
+	export function listenExit(exitId: string | null): boolean
 
 	@external("env", "room.unlistenExit")
-	export function unlistenExit(exitId: string | null): void
+	export function unlistenExit(exitId: string | null): boolean
 }
 
 export declare namespace Script {
