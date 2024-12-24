@@ -1,9 +1,124 @@
 /** ID for in game entities such as characters, rooms, and areas. */
-declare type ID = string;
+type ID = string;
 /** Timestamp as a UTC timestamp in milliseconds. */
-declare type Timestamp = i64;
+type Timestamp = i64;
 /** Duration in milliseconds. */
-declare type Duration = i64;
+type Duration = i64;
+/** Char state */
+declare namespace CharState {
+	const Asleep: any;
+	const Awake: any;
+	const Dazed: any;
+	const Any: any;
+}
+type CharState = i32;
+/** Char idle level */
+declare namespace IdleLevel {
+	const Asleep: any;
+	const Active: any;
+	const Idle: any;
+	const Inactive: any;
+}
+type IdleLevel = i32;
+/** RP state */
+declare namespace RPState {
+	const None: any;
+	const LFRP: any;
+}
+type RPState = i32;
+/** Exit navigation direction */
+declare namespace ExitNav {
+	const None: any;
+	const North: any;
+	const NorthEast: any;
+	const East: any;
+	const SouthEast: any;
+	const South: any;
+	const SouthWest: any;
+	const West: any;
+	const NorthWest: any;
+}
+type ExitNav = i32;
+/** Exit navigation icon */
+declare namespace ExitIcon {
+	const None: any;
+	const North: any;
+	const NorthEast: any;
+	const East: any;
+	const SouthEast: any;
+	const South: any;
+	const SouthWest: any;
+	const West: any;
+	const NorthWest: any;
+	const Up: any;
+	const Down: any;
+	const In: any;
+	const Out: any;
+}
+type ExitIcon = i32;
+/**
+ * ExitIntercept is an intercepted use of an exit.
+ */
+declare class ExitIntercept {
+	/** Intercept ID */
+	interceptId: i32;
+	/** Character ID */
+	charId: ID;
+	/** Exit ID */
+	exitId: ID;
+	/**
+	 * Makes the character use an exit. If exitId is null, the character is sent
+	 * through the exit that they originally tried to use.
+	 *
+	 * The exit may be hidden or inactive.
+	 * @param exitId Exit ID or null for the originally used exit.
+	 */
+	useExit(exitId?: ID | null): void;
+	/**
+	 * Cancels a character's attempt to use an exit and shows them an info
+	 * message instead. If msg is null, the default exit timeout message will be
+	 * shown.
+	 * @param msg Info message to show, or default message if null.
+	 */
+	cancel(msg?: string | null): void;
+}
+/**
+ * BaseIterator is an iterator over items with an ID.
+ */
+declare class BaseIterator {
+	protected iterator: i32;
+	/**
+	 * Constructor of the Iterator instance.
+	 */
+	constructor(iterator: i32);
+	/**
+	 * Advances the iterator by one. Always check isValid() after a next()
+	 * to ensure have not reached the end of the iterator.
+	 */
+	next(): void;
+	/**
+	 * Rewinds the iterator cursor all the way back to first position, which
+	 * would be the smallest key, or greatest key if inReverse() was called.
+	 *
+	 * Any iterator prefix passed to withPrefix() will be used on rewind.
+	 * The iterator is rewound by default.
+	 */
+	rewind(): void;
+	/**
+	 * Returns the key string of the current key-value pair. It will abort
+	 * if the cursor has reached the end of the iterator.
+	 */
+	getID(): ID;
+	/**
+	 * Returns false when the cursor is at the end of the iterator.
+	 */
+	isValid(): boolean;
+	/**
+	 * Closes the iterator. Any further calls to the iterator will cause an
+	 * error. May be called multiple times.
+	 */
+	close(): void;
+}
 /**
  * Room API functions and types.
  */
@@ -52,18 +167,117 @@ declare namespace Room {
 		created: Timestamp;
 	}
 	/**
-	 * Starts listening to room events on the current instance. If `instance` is
-	 * set, it starts listening for that specific instance, or null for the
-	 * non-instance room. Room events will be sent to `onRoomEvent` for the
-	 * instance.
+	 * Room character.
 	 */
-	function listen(instance?: string | null): void;
+	class Char {
+		/** Character ID. */
+		id: string;
+		/** Character name. */
+		name: string;
+		/** Character surname. */
+		surname: string;
+		/** Character avatar. */
+		avatar: ID;
+		/** Character species. */
+		species: string;
+		/** Character gender. */
+		gender: string;
+		/** Character description. */
+		desc: string;
+		/** Character image. */
+		image: ID;
+		/** Character state. */
+		state: CharState;
+		/** Character idle status. */
+		idle: IdleLevel;
+		/** Character RP state. */
+		rp: RPState;
+	}
+	/**
+	 * Room exit.
+	 */
+	class Exit {
+		/** Exit ID. */
+		id: string;
+		/** Exit keys. */
+		keys: string[];
+		/** Exit name. */
+		name: string;
+		/** Exit icon. */
+		icon: ExitIcon;
+		/** Exit navigation direction. */
+		nav: ExitNav;
+		/** Leave message. */
+		leaveMsg: string;
+		/** Arrival message. */
+		arriveMsg: string;
+		/** Travel message. */
+		travelMsg: string;
+		/** Target room. */
+		targetRoom: ID;
+		/** Created timestamp. */
+		created: Timestamp;
+		/** Is hidden flag. */
+		hidden: boolean;
+		/** Is inactive flag. */
+		inactive: boolean;
+		/** Is transparent flag. */
+		transparent: boolean;
+	}
+	/**
+	 * Starts listening to room events on the current instance. If `instance` is
+	 * set, it starts listening for events in that specific instance, or null
+	 * for any room instance. Room events will be sent to `onRoomEvent` for the
+	 * instance.
+	 * @param instance - Instance or null for the non-instance.
+	 * @returns True if a new listener was added, otherwise false.
+	 */
+	function listen(instance?: string | null): boolean;
 	/**
 	 * Stops listening to room events on the current instance. If `instance` is
 	 * provided, it stops listening for that specific instance, or null for the
 	 * non-instance room.
+	 * @param instance - Instance or null for the non-instance.
+	 * @returns True if a listener existed, otherwise false.
 	 */
-	function unlisten(instance?: string | null): void;
+	function unlisten(instance?: string | null): boolean;
+	/**
+	 * Starts listening to char events in the room. If `instance` is set, it
+	 * starts listening for events in that specific instance, or null for any
+	 * room instance. Char events will be sent to `onCharEvent` for the
+	 * instance.
+	 * @param instance - Instance or null for any instance.
+	 * @returns True if a new listener was added, otherwise false.
+	 */
+	function listenCharEvent(instance?: string | null): boolean;
+	/**
+	 * Stops listening to char events in the room. If `instance` is set, it
+	 * stops listening for events in that specific instance, or null for any
+	 * room instance.
+	 * @param instance - Instance or null for any instance.
+	 * @returns True if a listener existed, otherwise false.
+	 */
+	function unlistenCharEvent(instance?: string | null): boolean;
+	/**
+	 * Starts listening to exit usage in the room, including any instance. If
+	 * `exitId` is null, it acts as a wildcard to listen to any exit otherwise
+	 * not being listened to specifically. Exit use events will be sent to
+	 * `onExitUse`.
+	 *
+	 * Only one script may listen to a given exit at any time. Only one script
+	 * may listen to any exit with the null wildcard at any one time
+	 * @param exitId - Exit ID or null for any exit.
+	 * @returns True if a new listener was added, otherwise false.
+	 */
+	function listenExit(exitId?: string | null): boolean;
+	/**
+	 * Stops listening to exit usage in the room. If `exitId` is set, it stops
+	 * listening for exit use for that specific exit, or null to stop listening
+	 * for the the wildcard listener.
+	 * @param exitId - Exit ID or null for any exit.
+	 * @returns True if a listener existed, otherwise false.
+	 */
+	function unlistenExit(exitId?: string | null): boolean;
 	/**
 	 * Sends a "describe" event to the current room instance.
 	 */
@@ -102,18 +316,87 @@ declare namespace Room {
 	function useProfile(key: string, safe?: boolean): void;
 	/**
 	 * Sweep a single character from the room by sending them home.
-	 * @param char - Character ID.
+	 * @param charId - Character ID.
 	 * @param msg - Message to show too the room when the character is teleported away. Defaults to other teleport messages.
 	 */
-	function sweepChar(char: ID, msg: string | null): void;
+	function sweepChar(charId: ID, msg: string | null): void;
 	/**
 	 * Checks if a character is the owner of the room, or if the owner shares
 	 * the same player as the character. It does not include admins or builders.
-	 * @param char - Character ID.
+	 * @param charId - Character ID.
 	 */
-	function canEdit(char: ID): boolean;
+	function canEdit(charId: ID): boolean;
+	/**
+	 * Gets an iterator for the characters in the room that iterates from the
+	 * character most recently entering the room.
+	 * @param state - State of the characters to iterate over.
+	 * @param reverse - Flag to reverse the iteration direction, starting with the character that has been in the room the longest.
+	 * @returns Character iterator.
+	 */
+	function charIterator(state?: CharState, reverse?: boolean): CharIterator;
+	/**
+	 * Gets an iterator for the exits in the room. Order is undefined.
+	 * @returns Exit iterator.
+	 */
+	function exitIterator(): ExitIterator;
+	/**
+	 * Gets a character in the room by ID.
+	 * @param charId - Character ID.
+	 * @returns Char object or null if the character is not found in the room.
+	 */
+	function getChar(charId: ID): Char | null;
+	/**
+	 * Gets an exit in the room by keyword.
+	 * @param exitId - Exit ID.
+	 * @returns Exit object or null if the exit is not found in the room.
+	 */
+	function getExit(keyword: string): Exit | null;
+	/**
+	 * Gets an exit in the room by ID.
+	 * @param exitId - Exit ID.
+	 * @returns Exit object or null if the exit is not found in the room.
+	 */
+	function getExitById(exitId: ID): Exit | null;
+	/**
+	 * Gets the exit order of visible exits in the room as an array of IDs.
+	 * @returns Exit object or null if the exit is not found in the room.
+	 */
+	function getExitOrder(): ID[];
+	/**
+	 * Set exit information.
+	 *
+	 * The parameters must be an object that may be converted to json with the
+	 * following paramters. Any other fields will be ignored.
+	 * @param exitId - Exit ID.
+	 * @param {object} [fields] Exit fields to update.
+	 * @param {string} [fields.name] Name of the exit.
+	 * @param {string[]} [fields.keys] Exit keywords used with the go command.
+	 * @param {boolean} [fields.leaveMsg] Message seen by the origin room. Usually in present tense (eg. "leaves ...").
+	 * @param {boolean} [fields.arriveMsg] Message seen by the arrival room. Usually in present tense (eg. "arrives from ...").
+	 * @param {boolean} [fields.travelMsg] 	Message seen by the exit user. Usually in present tense (eg. "goes ...").
+	 * @param {ExitIcon} [fields.icon] Icon for the exit.
+	 * @param {ExitNav} [fields.nav] Navigation direction for the exit.
+	 * @param {boolean} [fields.hidden] Flag telling if the exit is hidden, preventing it from being listed.
+	 * @param {boolean} [fields.inactive] Flag telling if the exit is inactive, preventing it from being listed and used.
+	 * @param {boolean} [fields.transparent] Flag telling if the exit is transparent, allowing you to see awake characters in the target room.
+	 * @param {i32|i32u|i64|i64u} [fields.order] Sort order of the exit with 0 being the first listed. Ignored if the exit is hidden or inactive.
+	 */
+	function setExit<T>(exitId: ID, fields: T): void;
+	class CharIterator extends BaseIterator {
+		/**
+		 * Returns the current char. It will abort if the cursor has reached the
+		 * end of the iterator.
+		 */
+		getChar(): Char;
+	}
+	class ExitIterator extends BaseIterator {
+		/**
+		 * Returns the current char. It will abort if the cursor has reached the
+		 * end of the iterator.
+		 */
+		getExit(): Exit;
+	}
 }
-
 /**
  * Script API functions.
  */
@@ -163,10 +446,21 @@ declare namespace Script {
 	 * @param topic - Message topic. May be any kind of string.
 	 * @param data - Additional data. Must be valid JSON.
 	 * @param delay - Delay in milliseconds.
+	 * @returns Schedule ID or null if the message was posted without delay of if the receiving script was not listening.
 	 */
-	function post(addr: string, topic: string, data?: string | null, delay?: i64): void;
+	function post(addr: string, topic: string, data?: string | null, delay?: i64): ID | null;
+	/**
+	 * Cancel a message previously scheduled with `Script.post` with a delay.
+	 *
+	 * The post can only be canceled from the same room instance that sent it.
+	 * The method returns true if the post was successfully canceled, or false if
+	 * the scheduleId is either null, not sent by the script instance, or if the
+	 * post was already sent.
+	 * @param scheduleId - Schedule ID returned by script.Post.
+	 * @returns True if the post was successfully canceled, otherwise false.
+	 */
+	function cancelPost(scheduleId: ID | null): boolean;
 }
-
 /**
  * Event classes used with JSON.parse to decode room events.
  */
@@ -304,7 +598,6 @@ declare namespace Event {
 	class Wakeup extends BaseCharMsg {
 	}
 }
-
 /**
  * Store API function classes to get, set, and iterate over stored key/value
  * entries.
@@ -321,6 +614,13 @@ declare namespace Event {
  * runtime state may be disposed in between calls.
  */
 declare namespace Store {
+	/**
+	 * Sets the database transaction to read-only during the script call,
+	 * allowing multiple iterators to be open at the same time.
+	 *
+	 * Must be called before using the store.
+	 */
+	function readOnly(): void;
 	/**
 	 * Adds a key and a string value to the store, or updates that key's value
 	 * if it already exists.

@@ -60,7 +60,7 @@ declare namespace JSON {
 	 * @param data T
 	 * @returns string
 	 */
-	export function stringify<T>(data: T): string;
+	function stringify<T>(data: T): string;
 
 	/**
 	 * Parses valid JSON strings into their original format.
@@ -70,5 +70,5 @@ declare namespace JSON {
 	 * @param data string
 	 * @returns T
 	 */
-	export function parse<T>(data: string): T;
+	function parse<T>(data: string): T;
 }

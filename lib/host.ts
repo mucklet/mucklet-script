@@ -2,6 +2,8 @@ import {
 	Room as room_binding,
 	Script as script_binding,
 	Store as store_binding,
+	Iterator as iterator_binding,
+	ExitIntercept as exitintercept_binding,
 } from "./env";
 import { JSON } from 'json-as'
 export { JSON };
@@ -12,6 +14,161 @@ export type ID = string;
 export type Timestamp = i64;
 /** Duration in milliseconds. */
 export type Duration = i64;
+/** Char state */
+export namespace CharState {
+	export const Asleep = i32(0);
+	export const Awake = i32(1)
+	export const Dazed = i32(2);
+	export const Any = i32(255);
+}
+export type CharState = i32;
+/** Char idle level */
+export namespace IdleLevel {
+	export const Asleep = i32(0);
+	export const Active = i32(1);
+	export const Idle = i32(2);
+	export const Inactive = i32(3);
+}
+export type IdleLevel = i32;
+/** RP state */
+export namespace RPState {
+	export const None = i32(0);
+	export const LFRP = i32(1);
+}
+export type RPState = i32;
+/** Exit navigation direction */
+export namespace ExitNav {
+	export const None = i32(0)
+	export const North = i32(1)
+	export const NorthEast = i32(2)
+	export const East = i32(3)
+	export const SouthEast = i32(4)
+	export const South = i32(5)
+	export const SouthWest = i32(6)
+	export const West = i32(7)
+	export const NorthWest = i32(8)
+}
+export type ExitNav = i32;
+/** Exit navigation icon */
+export namespace ExitIcon {
+	export const None = i32(0)
+	export const North = i32(1)
+	export const NorthEast = i32(2)
+	export const East = i32(3)
+	export const SouthEast = i32(4)
+	export const South = i32(5)
+	export const SouthWest = i32(6)
+	export const West = i32(7)
+	export const NorthWest = i32(8)
+	export const Up = i32(9)
+	export const Down = i32(10)
+	export const In = i32(11)
+	export const Out = i32(12)
+}
+export type ExitIcon = i32;
+
+// @ts-expect-error
+@inline
+function keyToBuffer<T>(key: T): ArrayBuffer {
+	if (key instanceof ArrayBuffer) {
+		return key
+	} else if (isString(key)) {
+		return String.UTF8.encode((key as string));
+	}
+	// @ts-expect-error
+	return key;
+}
+
+/**
+ * ExitIntercept is an intercepted use of an exit.
+ */
+export class ExitIntercept {
+	/** Intercept ID */
+	interceptId: i32 = 0;
+	/** Character ID */
+	charId: ID = "";
+	/** Exit ID */
+	exitId: ID = "";
+
+	/**
+	 * Makes the character use an exit. If exitId is null, the character is sent
+	 * through the exit that they originally tried to use.
+	 *
+	 * The exit may be hidden or inactive.
+	 * @param exitId Exit ID or null for the originally used exit.
+	 */
+	useExit(exitId: ID | null = null): void {
+		exitintercept_binding.useExit(this.interceptId, exitId);
+	}
+
+	/**
+	 * Cancels a character's attempt to use an exit and shows them an info
+	 * message instead. If msg is null, the default exit timeout message will be
+	 * shown.
+	 * @param msg Info message to show, or default message if null.
+	 */
+	cancel(msg: string | null = null): void {
+		exitintercept_binding.cancel(this.interceptId, msg);
+	}
+}
+
+/**
+ * BaseIterator is an iterator over items with an ID.
+ */
+class BaseIterator {
+	protected iterator: i32;
+	/**
+	 * Constructor of the Iterator instance.
+	 */
+	constructor(iterator: i32) {
+		this.iterator = iterator;
+	}
+
+	/**
+	 * Advances the iterator by one. Always check isValid() after a next()
+	 * to ensure have not reached the end of the iterator.
+	 */
+	next(): void {
+		iterator_binding.next(this.iterator);
+	}
+
+	/**
+	 * Rewinds the iterator cursor all the way back to first position, which
+	 * would be the smallest key, or greatest key if inReverse() was called.
+	 *
+	 * Any iterator prefix passed to withPrefix() will be used on rewind.
+	 * The iterator is rewound by default.
+	 */
+	rewind(): void {
+		iterator_binding.seek(this.iterator, null);
+	}
+
+	/**
+	 * Returns the key string of the current key-value pair. It will abort
+	 * if the cursor has reached the end of the iterator.
+	 */
+	getID(): ID {
+		return String.UTF8.decode(iterator_binding.key(this.iterator));
+	}
+
+	/**
+	 * Returns false when the cursor is at the end of the iterator.
+	 */
+	isValid(): boolean {
+		return iterator_binding.valid(this.iterator, null);
+	}
+
+	/**
+	 * Closes the iterator. Any further calls to the iterator will cause an
+	 * error. May be called multiple times.
+	 */
+	close(): void {
+		if (this.iterator >= 0) {
+			iterator_binding.close(this.iterator);
+		}
+		this.iterator = -2;
+	}
+}
 
 /**
  * Room API functions and types.
@@ -67,22 +224,137 @@ export namespace Room {
 	}
 
 	/**
-	 * Starts listening to room events on the current instance. If `instance` is
-	 * set, it starts listening for that specific instance, or null for the
-	 * non-instance room. Room events will be sent to `onRoomEvent` for the
-	 * instance.
+	 * Room character.
 	 */
-	export function listen(instance: string | null = null): void {
-		room_binding.listen(instance);
+	@json
+	export class Char {
+		/** Character ID. */
+		id: string = "";
+		/** Character name. */
+		name: string = "";
+		/** Character surname. */
+		surname: string = "";
+		/** Character avatar. */
+		avatar: ID = "";
+		/** Character species. */
+		species: string = "";
+		/** Character gender. */
+		gender: string = "";
+		/** Character description. */
+		desc: string = "";
+		/** Character image. */
+		image: ID = "";
+		/** Character state. */
+		state: CharState = CharState.Asleep;
+		/** Character idle status. */
+		idle: IdleLevel = IdleLevel.Asleep;
+		/** Character RP state. */
+		rp: RPState = RPState.None;
+	}
+
+	/**
+	 * Room exit.
+	 */
+	@json
+	export class Exit {
+		/** Exit ID. */
+		id: string = "";
+		/** Exit keys. */
+		keys: string[] = [];
+		/** Exit name. */
+		name: string = "";
+		/** Exit icon. */
+		icon: ExitIcon = ExitIcon.None;
+		/** Exit navigation direction. */
+		nav: ExitNav = ExitNav.None;
+		/** Leave message. */
+		leaveMsg: string = "";
+		/** Arrival message. */
+		arriveMsg: string = "";
+		/** Travel message. */
+		travelMsg: string = "";
+		/** Target room. */
+		targetRoom: ID = "";
+		/** Created timestamp. */
+		created: Timestamp = 0;
+		/** Is hidden flag. */
+		hidden: boolean = false;
+		/** Is inactive flag. */
+		inactive: boolean = false;
+		/** Is transparent flag. */
+		transparent: boolean = false;
+	}
+
+	/**
+	 * Starts listening to room events on the current instance. If `instance` is
+	 * set, it starts listening for events in that specific instance, or null
+	 * for any room instance. Room events will be sent to `onRoomEvent` for the
+	 * instance.
+	 * @param instance - Instance or null for the non-instance.
+	 * @returns True if a new listener was added, otherwise false.
+	 */
+	export function listen(instance: string | null = null): boolean {
+		return room_binding.listen(0 /** room event **/, instance);
 	}
 
 	/**
 	 * Stops listening to room events on the current instance. If `instance` is
 	 * provided, it stops listening for that specific instance, or null for the
 	 * non-instance room.
+	 * @param instance - Instance or null for the non-instance.
+	 * @returns True if a listener existed, otherwise false.
 	 */
-	export function unlisten(instance: string | null = null): void {
-		room_binding.unlisten(instance);
+	export function unlisten(instance: string | null = null): boolean {
+		return room_binding.unlisten(0 /** room event **/, instance);
+	}
+
+	/**
+	 * Starts listening to char events in the room. If `instance` is set, it
+	 * starts listening for events in that specific instance, or null for any
+	 * room instance. Char events will be sent to `onCharEvent` for the
+	 * instance.
+	 * @param instance - Instance or null for any instance.
+	 * @returns True if a new listener was added, otherwise false.
+	 */
+	export function listenCharEvent(instance: string | null = null): boolean {
+		return room_binding.listen(1 /** char event **/, instance);
+	}
+
+	/**
+	 * Stops listening to char events in the room. If `instance` is set, it
+	 * stops listening for events in that specific instance, or null for any
+	 * room instance.
+	 * @param instance - Instance or null for any instance.
+	 * @returns True if a listener existed, otherwise false.
+	 */
+	export function unlistenCharEvent(instance: string | null = null): boolean {
+		return room_binding.unlisten(1 /** char event **/, instance);
+	}
+
+	/**
+	 * Starts listening to exit usage in the room, including any instance. If
+	 * `exitId` is null, it acts as a wildcard to listen to any exit otherwise
+	 * not being listened to specifically. Exit use events will be sent to
+	 * `onExitUse`.
+	 *
+	 * Only one script may listen to a given exit at any time. Only one script
+	 * may listen to any exit with the null wildcard at any one time
+	 * @param exitId - Exit ID or null for any exit.
+	 * @returns True if a new listener was added, otherwise false.
+	 */
+	export function listenExit(exitId: string | null = null): boolean {
+		return room_binding.listenExit(exitId);
+	}
+
+	/**
+	 * Stops listening to exit usage in the room. If `exitId` is set, it stops
+	 * listening for exit use for that specific exit, or null to stop listening
+	 * for the the wildcard listener.
+	 * @param exitId - Exit ID or null for any exit.
+	 * @returns True if a listener existed, otherwise false.
+	 */
+	export function unlistenExit(exitId: string | null = null): boolean {
+		return room_binding.unlistenExit(exitId);
 	}
 
 	/**
@@ -136,20 +408,133 @@ export namespace Room {
 
 	/**
 	 * Sweep a single character from the room by sending them home.
-	 * @param char - Character ID.
+	 * @param charId - Character ID.
 	 * @param msg - Message to show too the room when the character is teleported away. Defaults to other teleport messages.
 	 */
-	export function sweepChar(char: ID, msg: string | null): void  {
-		return room_binding.sweepChar(char, msg);
+	export function sweepChar(charId: ID, msg: string | null): void  {
+		return room_binding.sweepChar(charId, msg);
 	}
 
 	/**
 	 * Checks if a character is the owner of the room, or if the owner shares
 	 * the same player as the character. It does not include admins or builders.
-	 * @param char - Character ID.
+	 * @param charId - Character ID.
 	 */
-	export function canEdit(char: ID): boolean  {
-		return room_binding.canEdit(char);
+	export function canEdit(charId: ID): boolean  {
+		return room_binding.canEdit(charId);
+	}
+
+	/**
+	 * Gets an iterator for the characters in the room that iterates from the
+	 * character most recently entering the room.
+	 * @param state - State of the characters to iterate over.
+	 * @param reverse - Flag to reverse the iteration direction, starting with the character that has been in the room the longest.
+	 * @returns Character iterator.
+	 */
+	export function charIterator(state: CharState = CharState.Any, reverse: boolean = false): CharIterator {
+		return new CharIterator(room_binding.charIterator(state, reverse));
+	}
+
+	/**
+	 * Gets an iterator for the exits in the room. Order is undefined.
+	 * @returns Exit iterator.
+	 */
+	export function exitIterator(): ExitIterator {
+		return new ExitIterator(room_binding.exitIterator());
+	}
+
+
+	/**
+	 * Gets a character in the room by ID.
+	 * @param charId - Character ID.
+	 * @returns Char object or null if the character is not found in the room.
+	 */
+	export function getChar(charId: ID): Char | null {
+		const dta = room_binding.getChar(charId)
+		if (dta == null) {
+			return null
+		}
+		return JSON.parse<Char>(dta);
+	}
+
+	/**
+	 * Gets an exit in the room by keyword.
+	 * @param exitId - Exit ID.
+	 * @returns Exit object or null if the exit is not found in the room.
+	 */
+	export function getExit(keyword: string): Exit | null {
+		const dta = room_binding.getExit(keyword, true)
+		if (dta == null) {
+			return null
+		}
+		return JSON.parse<Exit>(dta);
+	}
+
+	/**
+	 * Gets an exit in the room by ID.
+	 * @param exitId - Exit ID.
+	 * @returns Exit object or null if the exit is not found in the room.
+	 */
+	export function getExitById(exitId: ID): Exit | null {
+		const dta = room_binding.getExit(exitId, false)
+		if (dta == null) {
+			return null
+		}
+		return JSON.parse<Exit>(dta);
+	}
+
+	/**
+	 * Gets the exit order of visible exits in the room as an array of IDs.
+	 * @returns Exit object or null if the exit is not found in the room.
+	 */
+	export function getExitOrder(): ID[] {
+		return room_binding.getExitOrder();
+	}
+
+	/**
+	 * Set exit information.
+	 *
+	 * The parameters must be an object that may be converted to json with the
+	 * following paramters. Any other fields will be ignored.
+	 * @param exitId - Exit ID.
+	 * @param {object} [fields] Exit fields to update.
+	 * @param {string} [fields.name] Name of the exit.
+	 * @param {string[]} [fields.keys] Exit keywords used with the go command.
+	 * @param {boolean} [fields.leaveMsg] Message seen by the origin room. Usually in present tense (eg. "leaves ...").
+	 * @param {boolean} [fields.arriveMsg] Message seen by the arrival room. Usually in present tense (eg. "arrives from ...").
+	 * @param {boolean} [fields.travelMsg] 	Message seen by the exit user. Usually in present tense (eg. "goes ...").
+	 * @param {ExitIcon} [fields.icon] Icon for the exit.
+	 * @param {ExitNav} [fields.nav] Navigation direction for the exit.
+	 * @param {boolean} [fields.hidden] Flag telling if the exit is hidden, preventing it from being listed.
+	 * @param {boolean} [fields.inactive] Flag telling if the exit is inactive, preventing it from being listed and used.
+	 * @param {boolean} [fields.transparent] Flag telling if the exit is transparent, allowing you to see awake characters in the target room.
+	 * @param {i32|i32u|i64|i64u} [fields.order] Sort order of the exit with 0 being the first listed. Ignored if the exit is hidden or inactive.
+	 */
+	export function setExit<T>(exitId: ID, fields: T): void {
+		let dta = JSON.stringify(fields);
+		room_binding.setExit(exitId, dta);
+	}
+
+	class CharIterator extends BaseIterator {
+		/**
+		 * Returns the current char. It will abort if the cursor has reached the
+		 * end of the iterator.
+		 */
+		getChar(): Char {
+			// @ts-expect-error
+			return JSON.parse<Char>(String.UTF8.decode(iterator_binding.value(super.iterator)));
+		}
+	}
+
+	class ExitIterator extends BaseIterator {
+		/**
+		 * Returns the current char. It will abort if the cursor has reached the
+		 * end of the iterator.
+		 */
+		getExit(): Exit {
+			// @ts-expect-error
+			return JSON.parse<Exit>(String.UTF8.decode(iterator_binding.value(super.iterator)));
+		}
 	}
 }
 
@@ -209,9 +594,27 @@ export namespace Script {
 	 * @param topic - Message topic. May be any kind of string.
 	 * @param data - Additional data. Must be valid JSON.
 	 * @param delay - Delay in milliseconds.
+	 * @returns Schedule ID or null if the message was posted without delay of if the receiving script was not listening.
 	 */
-	export function post(addr: string, topic: string, data: string | null = null, delay: i64 = 0): void {
-		script_binding.post(addr, topic, data, delay);
+	export function post(addr: string, topic: string, data: string | null = null, delay: i64 = 0): ID | null {
+		return script_binding.post(addr, topic, data, delay);
+	}
+
+	/**
+	 * Cancel a message previously scheduled with `Script.post` with a delay.
+	 *
+	 * The post can only be canceled from the same room instance that sent it.
+	 * The method returns true if the post was successfully canceled, or false if
+	 * the scheduleId is either null, not sent by the script instance, or if the
+	 * post was already sent.
+	 * @param scheduleId - Schedule ID returned by script.Post.
+	 * @returns True if the post was successfully canceled, otherwise false.
+	 */
+	export function cancelPost(scheduleId: ID | null): boolean {
+		if (scheduleId == null) {
+			return false;
+		}
+		return script_binding.cancelPost(scheduleId);
 	}
 }
 
@@ -405,16 +808,14 @@ export namespace Event {
  */
 export namespace Store {
 
-	// @ts-expect-error
-	@inline
-	function keyToBuffer<T>(key: T): ArrayBuffer {
-		if (key instanceof ArrayBuffer) {
-			return key
-		} else if (isString(key)) {
-			return String.UTF8.encode((key as string));
-		}
-		// @ts-expect-error
-		return key;
+	/**
+	 * Sets the database transaction to read-only during the script call,
+	 * allowing multiple iterators to be open at the same time.
+	 *
+	 * Must be called before using the store.
+	 */
+	export function readOnly(): void {
+		store_binding.readOnly();
 	}
 
 	/**
@@ -522,7 +923,7 @@ export namespace Store {
 		 */
 		next(): void {
 			this.ensureIterator();
-			store_binding.iteratorNext(this.iterator);
+			iterator_binding.next(this.iterator);
 		}
 
 		/**
@@ -536,7 +937,7 @@ export namespace Store {
 		 */
 		seek<T>(key: T): void {
 			this.ensureIterator();
-			store_binding.iteratorSeek(this.iterator, keyToBuffer(key));
+			iterator_binding.seek(this.iterator, keyToBuffer(key));
 		}
 
 		/**
@@ -548,7 +949,7 @@ export namespace Store {
 		 */
 		rewind(): void {
 			this.ensureIterator();
-			store_binding.iteratorSeek(this.iterator, null);
+			iterator_binding.seek(this.iterator, null);
 		}
 
 		/**
@@ -557,7 +958,7 @@ export namespace Store {
 		 */
 		getKeyString(): string {
 			this.ensureIterator();
-			return String.UTF8.decode(store_binding.iteratorKey(this.iterator));
+			return String.UTF8.decode(iterator_binding.key(this.iterator));
 		}
 
 		/**
@@ -566,7 +967,7 @@ export namespace Store {
 		 */
 		getKeyBuffer(): ArrayBuffer {
 			this.ensureIterator();
-			return store_binding.iteratorKey(this.iterator);
+			return iterator_binding.key(this.iterator);
 		}
 
 		/**
@@ -575,7 +976,7 @@ export namespace Store {
 		 */
 		getValueString(): string {
 			this.ensureIterator();
-			return String.UTF8.decode(store_binding.iteratorItem(this.iterator));
+			return String.UTF8.decode(iterator_binding.value(this.iterator));
 		}
 
 		/**
@@ -584,7 +985,7 @@ export namespace Store {
 		 */
 		getValueBuffer(): ArrayBuffer {
 			this.ensureIterator();
-			return store_binding.iteratorItem(this.iterator);
+			return iterator_binding.value(this.iterator);
 		}
 
 		/**
@@ -594,7 +995,7 @@ export namespace Store {
 		 */
 		isValid(): boolean {
 			this.ensureIterator();
-			return store_binding.iteratorValid(this.iterator, null);
+			return iterator_binding.valid(this.iterator, null);
 		}
 
 		/**
@@ -606,7 +1007,7 @@ export namespace Store {
 		 */
 		isValidForPrefix<T>(prefix: T | null): boolean {
 			this.ensureIterator();
-			return store_binding.iteratorValid(this.iterator, keyToBuffer(prefix));
+			return iterator_binding.valid(this.iterator, keyToBuffer(prefix));
 		}
 
 
@@ -616,7 +1017,7 @@ export namespace Store {
 		 */
 		close(): void {
 			if (this.iterator >= 0) {
-				store_binding.iteratorClose(this.iterator);
+				iterator_binding.close(this.iterator);
 			}
 			this.iterator = -2;
 		}
