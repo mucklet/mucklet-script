@@ -11,11 +11,6 @@
   "bin": {
     "mucklet-script": "./bin/index.js"
   },
-  "devDependencies": {
-    "assemblyscript": "^0.27.31",
-    "json-as": "^0.9.26",
-    "visitor-as": "^0.11.4"
-  },
   "overrides": {
     "assemblyscript": "$assemblyscript"
   },
@@ -25,5 +20,11 @@
       "import": "./build/script.js",
       "types": "./build/script.d.ts"
     }
+  },
+  "dependencies": {
+    "assemblyscript": "^0.27.31",
+    "json-as": "^0.9.26",
+    "tinyargs": "^0.1.4",
+    "visitor-as": "^0.11.4"
   }
 }
