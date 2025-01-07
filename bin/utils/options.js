@@ -1,3 +1,4 @@
+import { createInterface } from "readline";
 import { stdoutColors } from "./terminal.js";
 
 const TAB = "  ";
@@ -5,7 +6,7 @@ const PAD = 15;
 
 /**
  * Generate help from an array of options.
- * @param {Array.<{name: string, flags: Array.<string>, desc: string }>} options Array of options
+ * @param {Array.<{name: string, flags: Array.<string>, desc: string, positional: boolean}>} options Array of options
  * @param {object} [opts] Optional parameters
  * @param {string} [opts.indent] Indentation for each line. Defaults to "".
  * @param {string} [opts.padding] Padding for flags column, Defaults to 20.
@@ -14,7 +15,7 @@ const PAD = 15;
 export function help(options, opts) {
 	const indent = opts?.indent || TAB;
 	const padding = opts.padding || PAD;
-	return options.map(o => {
+	return options.filter(o => !o.positional).map(o => {
 		let s = indent || "";
 		if (o.flags) {
 			o.flags.forEach(f => s += "-" + f + ", ");
@@ -64,4 +65,30 @@ export function printHelp(desc, opts) {
 			})
 			: "")
 	);
+}
+
+/**
+ * Asks the question: "Do you want to proceed?" and exits if answer is not empty
+ * and not Y or Yes.
+ * @param {boolean} forceYes Skip asking the question and assume Yes.
+ * @returns {Promise} Promise that resolves on Yes.
+ */
+export function proceedQuestion(forceYes = false) {
+	return new Promise(resolve => {
+		if (forceYes) {
+			resolve();
+		} else {
+			const rl = createInterface({
+				input: process.stdin,
+				output: process.stdout
+			});
+			return rl.question(stdoutColors.white("Do you want to proceed?") + " [Y/n] ", result => {
+				rl.close();
+				if (!/^(|y|yes)$/i.test(result)) {
+					process.exit(1);
+				}
+				resolve();
+			});
+		}
+	});
 }

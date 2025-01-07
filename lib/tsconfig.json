@@ -6,6 +6,6 @@
       "../../assemblyscript/std/types",
       "./types"
     ],
-    "types": [ "assembly", "host", "json-as" ],
+    "types": [ "assembly", "host", "json-as" ]
   }
 }
