@@ -9,6 +9,7 @@ const version = require("../package.json").version;
 
 const cmds = [
 	{ cmd: 'init', desc: "Sets up a new Mucklet script project or updates an existing one" },
+	{ cmd: 'build', desc: "Builds a Mucklet script project or a single script file" },
 	{ cmd: 'logs', desc: "Fetches the logs of published scripts" },
 	{ cmd: 'publish', desc: "Publishes scripts to a Mucklet realm" },
 ];
@@ -41,7 +42,7 @@ if (!cmds.find(o => o.cmd == cmd)) {
 		} catch (ex) {
 			printError(ex?.message || ex);
 		}
-		
+
 		if (cli.help) {
 			help();
 			process.exit(0);

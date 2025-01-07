@@ -3,25 +3,21 @@ import path from "path";
 import { parse } from "tinyargs";
 import { fileURLToPath } from "url";
 import { stdoutColors } from "./utils/terminal.js";
-import { printHelp, printError, proceedQuestion } from "./utils/options.js";
+import { printHelp, proceedQuestion } from "./utils/options.js";
+import { formatPath, mergeObjects } from "./utils/tools.js";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const options = [
-	{ name: "help", flags: ["h"], type: Boolean, stop: true, desc: "Show this message"},
+	{ name: "help", flags: ["h"], type: Boolean, stop: true, desc: "Show this message" },
 	{ name: "directory", type: String, positional: true, when: (cli) => !cli.help },
 ];
-  
 
 function help() {
 	printHelp("Set up a new Mucklet script project or update an existing one.", {
 		syntax: stdoutColors.cyan("mucklet-script init") + " [OPTIONS] DIRECTORY",
 		options: options,
 	});
-}
-
-function formatPath(from, to) {
-	return './' + path.relative(from, to).replace(/\\/g, '/');
 }
 
 export default async function(version, args) {
@@ -182,33 +178,4 @@ function ensureJsonFile(name, path, createProps, updateProps) {
 		console.log(stdoutColors.green("  Updated: ") + path);
 	}
 	console.log();
-}
-
-function isObject(item) {
-	return (item && typeof item === 'object' && !Array.isArray(item));
-}
-
-/**
- * Merge two objects.
- */
-export function mergeObjects(target, ...sources) {
-	if (!sources.length) {
-		return target;
-	}
-	const source = sources.shift();
-
-	if (isObject(target) && isObject(source)) {
-		for (const key in source) {
-			const v = source[key];
-			if (isObject(v)) {
-				if (!target[key]) {
-					target[key] = {};
-				}
-				mergeObjects(target[key], v);
-			} else if (typeof v != 'undefined') {
-				target[key] = v;
-			}
-		}
-	}
-	return mergeObjects(target, ...sources);
 }
