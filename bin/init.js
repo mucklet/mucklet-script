@@ -130,8 +130,8 @@ function createProject(version, paths, cli) {
 		{
 			"name": "mucklet-script-project",
 			"scripts": {
-			  "test": "node tests",
-			  "build": "mucklet-script build scripts/index.ts"
+			  "test": "mucklet-script test",
+			  "build": "mucklet-script build"
 			},
 		},
 		{
