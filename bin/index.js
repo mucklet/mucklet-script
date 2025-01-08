@@ -22,7 +22,10 @@ const TAB = "  ";
 
 function help() {
 	printHelp("Set up and manage a mucklet script project.", {
-		syntax: stdoutColors.cyan("mucklet-script") + " COMMAND [OPTIONS]",
+		syntax: [
+			stdoutColors.cyan("mucklet-script") + " COMMAND [OPTIONS]",
+			stdoutColors.cyan("mucklet-script help") + " COMMAND",
+		],
 		commands: cmds,
 		options: options,
 	});

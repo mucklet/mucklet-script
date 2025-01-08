@@ -57,7 +57,7 @@ export function printHelp(desc, opts) {
 	console.log("\n" +
 		desc +
 		(opts.syntax
-			? "\n\n" + stdoutColors.white("SYNTAX") + "\n" + indent + opts.syntax
+			? "\n\n" + stdoutColors.white("SYNTAX") + opts.syntax.map(s => "\n" + indent + s).join("")
 			: "") +
 		(opts.commands
 			? "\n\n" + stdoutColors.white("COMMANDS") + opts.commands.map(o => "\n" + indent + stdoutColors.cyan(o.cmd) + (" ".repeat(padding - o.cmd.length)) + o.desc).join("")

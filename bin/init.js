@@ -15,7 +15,7 @@ const options = [
 
 function help() {
 	printHelp("Set up a new Mucklet script project or update an existing one.", {
-		syntax: stdoutColors.cyan("mucklet-script init") + " [OPTIONS] DIRECTORY",
+		syntax: [ stdoutColors.cyan("mucklet-script init") + " [OPTIONS] DIRECTORY" ],
 		options: options,
 	});
 }
