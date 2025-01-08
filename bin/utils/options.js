@@ -2,23 +2,27 @@ import { createInterface } from "readline";
 import { stdoutColors } from "./terminal.js";
 
 const TAB = "  ";
-const PAD = 15;
+const PAD = 20;
 
 /**
  * Generate help from an array of options.
  * @param {Array.<{name: string, flags: Array.<string>, desc: string, positional: boolean}>} options Array of options
  * @param {object} [opts] Optional parameters
  * @param {string} [opts.indent] Indentation for each line. Defaults to "".
- * @param {string} [opts.padding] Padding for flags column, Defaults to 20.
+ * @param {string} [opts.padding] Padding for flags column. Defaults to 20.
+ * @param {string} [opts.noflagIndent] Additional indentation on no flags. Defaults to "    ".
  * @returns {string} Help string
  */
 export function help(options, opts) {
 	const indent = opts?.indent || TAB;
 	const padding = opts.padding || PAD;
+	const noflagIndent = opts?.noflagIndent || "    ";
 	return options.filter(o => !o.positional).map(o => {
 		let s = indent || "";
-		if (o.flags) {
+		if (o.flags?.length) {
 			o.flags.forEach(f => s += "-" + f + ", ");
+		} else {
+			s += noflagIndent;
 		}
 		s += "--" + o.name;
 		s += (" ".repeat(padding - s.length + indent.length)) + o.desc;

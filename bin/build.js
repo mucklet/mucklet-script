@@ -23,14 +23,19 @@ const defaultMuckletConfig = {
 };
 
 const options = [
-	{ name: "config", flags: ["c"], type: String, desc: "Mucklet script config file", default: "mucklet.config.js" },
-	{ name: "file", flags: ["f"], type: String,  desc: "Script file to build" },
+	{ name: "config", flags: ["c"], type: String, desc: "Mucklet script project config file", default: "mucklet.config.js" },
+	{ name: "name", flags: ["n"], type: String,  desc: "Name of project script(s) to build" },
+	{ name: "room", flags: ["r"], type: String,  desc: "Room ID of project script(s) to build" },
+	{ name: "outDir", type: String,  desc: "Output directory for build files" },
+	{ name: "outFile", type: String,  desc: "Output wasm file name" },
+	{ name: "textFile", type: String,  desc: "Output wasm text file name" },
 	{ name: "help", flags: ["h"], type: Boolean, stop: true, desc: "Show this message" },
+	{ name: "files", type: String, positional: true, multiple: true, optionalValue: true },
 ];
 
 function help() {
-	printHelp("Build a Mucklet script project or single script files.", {
-		syntax: stdoutColors.cyan("mucklet-script build") + " [OPTIONS]",
+	printHelp("Build a Mucklet script project or single script file.", {
+		syntax: stdoutColors.cyan("mucklet-script build") + " [OPTIONS] [FILE ...]",
 		options: options,
 	});
 }
@@ -44,11 +49,38 @@ export default async function(version, args) {
 
 	const cfg = await loadConfig(version, cli.config || 'mucklet.config.js', !cli.config);
 
-	if (cli.file) {
-		cfg.scripts = [{
-			name: path.parse(cli.file).name,
-			path: cli.file,
-		}];
+	if (cli.files) {
+		if (cli.name) {
+			printError("cannot filter by name when building single script files", help);
+		}
+		if (cli.room) {
+			printError("cannot filter by room ID when building single script files", help);
+		}
+		cfg.scripts = cli.files.map(file => ({
+			name: path.parse(file).name,
+			path: file,
+		}));
+	}
+
+	// Output configuration
+	if (cli.outDir) {
+		cfg.output = Object.assign({}, cfg.output, { dir: cli.outDir })
+	}
+	if (cli.outFile) {
+		cfg.output = Object.assign({}, cfg.output, { outFile: cli.outFile })
+	}
+	if (cli.textFile) {
+		cfg.output = Object.assign({}, cfg.output, { textFile: cli.textFile })
+	}
+
+	// Filter by name
+	if (cli.name && cfg.scripts) {
+		cfg.scripts = cfg.scripts.filter(script => script.name == cli.name);
+	}
+
+	// Filter by room ID
+	if (cli.room && cfg.scripts) {
+		cfg.scripts = cfg.scripts.filter(script => script.room == cli.room || ("#" + script.room) == cli.room);
 	}
 
 	await buildScripts(cfg);
