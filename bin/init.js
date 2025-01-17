@@ -1,12 +1,9 @@
 import fs from "fs";
 import path from "path";
 import { parse } from "tinyargs";
-import { fileURLToPath } from "url";
 import { stdoutColors } from "./utils/terminal.js";
 import { printHelp, proceedQuestion } from "./utils/options.js";
-import { formatPath, mergeObjects } from "./utils/tools.js";
-
-const dirname = path.dirname(fileURLToPath(import.meta.url));
+import { formatPath, mergeObjects, rootDir } from "./utils/tools.js";
 
 const options = [
 	{ name: "help", flags: ["h"], type: Boolean, stop: true, desc: "Show this message" },
@@ -15,7 +12,7 @@ const options = [
 
 function help() {
 	printHelp("Set up a new Mucklet script project or update an existing one.", {
-		syntax: [ stdoutColors.cyan("mucklet-script init") + " [OPTIONS] DIRECTORY" ],
+		syntax: [ stdoutColors.cyan("mucklet-script init") + " [options] <directory>" ],
 		options: options,
 	});
 }
@@ -27,7 +24,6 @@ export default async function(version, args) {
 		process.exit(0);
 	}
 
-	const rootDir = path.join(dirname, '..');
 	const projectDir = path.resolve(cli.directory);
 	const scriptsDir = path.join(projectDir, 'scripts');
 	const tsconfigFile = path.join(scriptsDir, 'tsconfig.json');
@@ -75,7 +71,7 @@ export default async function(version, args) {
 		[ buildgitignoreFile, "Git configuration that excludes compiled binaries from source control.", !buildgitignoreFileExists ],
 		[ testsIndexFile, "Example test to check that the script is functioning.", !testsIndexFileExists ],
 		[ packageFile, "Package info containing the necessary commands to compile Mucklet scripts.", !packageFileExists],
-		[ muckletConfigFile, "Mucklet script configuration.", !muckletConfigFileExists ],
+		[ muckletConfigFile, "Mucklet script project configuration.", !muckletConfigFileExists ],
 		[ gitignoreFile, "Git configuration that excludes node_modules and other generated files.", !gitignoreFileExists ],
 	].filter(v => v[2])
 

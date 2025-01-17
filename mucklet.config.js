@@ -40,7 +40,17 @@ const config = {
 	},
 	realm: {
 		/** URL to the realm API WebSocket endpoint. */
-		// apiUrl: "wss://api.test.mucklet.com"
+		// apiUrl: "wss://api.test.mucklet.com",
+
+		/**
+		 * For security reason, it is not possible to store the token in the config file.
+		 *
+		 * Instead consider using:
+		 * * MUCKLET_TOKEN_FILE environment variable with the path to a file containing the token
+		 * * MUCKLET_TOKEN environment variable containing the token
+		 * * --tokenfile flag with a path to a file containing the token
+		 * * --token flag with the token.
+		 */
 	},
 	scripts: [
 		{
@@ -52,6 +62,9 @@ const config = {
 
 			/** Room ID to publish to. */
 			// room: "aaaaaaaaaaaaaaaaaaaa",
+
+			/** Active status. If not set, active status is not changed. */
+			// active: true,
 
 			/**
 			 * Path to the script file relative to the config file.

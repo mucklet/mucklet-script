@@ -23,7 +23,9 @@
   },
   "dependencies": {
     "assemblyscript": "^0.27.31",
+    "isomorphic-ws": "^5.0.0",
     "json-as": "^0.9.26",
+    "resclient": "^2.5.0",
     "tinyargs": "^0.1.4",
     "visitor-as": "^0.11.4"
   }
