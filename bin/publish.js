@@ -1,8 +1,6 @@
-import os from "os";
 import { readFile } from "fs/promises";
 import path from "path";
 import { parse } from "tinyargs";
-import { randomBytes } from "crypto";
 import { stdoutColors } from "./utils/terminal.js";
 import { printHelp, printError } from "./utils/options.js";
 import { getToken, loadConfig, compileScript, errToString } from "./utils/tools.js";
@@ -150,11 +148,9 @@ async function publishScript(cfg, script, client, version) {
 	if (!room) {
 		return skipWithMessage("missing room");
 	}
-	// if (!room.match(/^[a-z0-9](20)$/)) {
-	// 	let msg = "invalid room ID";
-	// 	console.log("Skipping: " + stdoutColors.red(msg));
-	// 	return msg;
-	// }
+	if (!room.match(/^[a-vA-V0-9]{20,20}$/)) {
+		return skipWithMessage("invalid room ID");
+	}
 
 	const outputDir = replacePlaceholder(cfg.output?.dir || defaultOutputDir, script);
 	const outFile = path.join(outputDir, replacePlaceholder(cfg.output?.outFile || defaultOutFile, script));
