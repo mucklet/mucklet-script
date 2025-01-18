@@ -94,19 +94,23 @@ async function publishScripts(cfg, token, version) {
 
 	try {
 
-		let errors = [];
+		let result = [];
 
 		for (const script of cfg.scripts) {
-			errors.push(await publishScript(cfg, script, client, version));
+			result.push(await publishScript(cfg, script, client, version));
 		}
 
-		console.log("\n" + stdoutColors.white("Publish result:"));
+		console.log("\n\n" + stdoutColors.white("Publish result:"));
 		console.log(cfg.scripts.map((script, idx) => {
-			let name = script.name + (script.room ? "Room #" + script.room : "");
-			return "  " +
-				(errors[idx]
-					? stdoutColors.red("✗ ") + name + " - " + stdoutColors.red(errors[idx])
-					: stdoutColors.green("✓ ") + name
+			let name = " - " + stdoutColors.cyan(script.name) + (script.room ? " - Room #" + script.room : "");
+			let o = result[idx];
+			const space = "\n    ";
+			return "\n  " +
+				(o?.errors
+					? stdoutColors.red("Failed") + name + (o.errors.map(s => space + s).join("") || '')
+					: o?.skipped
+						? stdoutColors.yellow("Skipped") + name + (o.skipped.map(s => space + s).join("") || '')
+						: stdoutColors.green("Success") + name + (o?.result?.map(s => space + s).join("") || '')
 				);
 		}).join("\n"));
 	} finally {
@@ -121,30 +125,41 @@ function replacePlaceholder(file, script) {
 }
 
 function skipWithMessage(msg) {
-	console.log("Skipping: " + stdoutColors.red(msg));
-	return msg;
+	console.log("  Skipping: " + stdoutColors.yellow(msg));
+	return { skipped: [ msg ] };
 }
 
 function errorMsg(msg, err) {
 	err = errToString(err);
 	console.log();
-	console.log(stdoutColors.red(err));
-	return msg + ": " + err;
+	console.log("  " + stdoutColors.red(err));
+	return { errors: [ stdoutColors.red(msg + ": " + err) ] };
 }
 
+/**
+ * Publishes a single script.
+ * @param {MuckletConfig} cfg Mucklet configuration object.
+ * @param {*} script Script configuration object.
+ * @param {ApiClient*} client API client-
+ * @param {string} version Version in the format "1.X.Y".
+ * @returns {{ result?: string, skipped?: string, error?: any }} Publish result.
+ */
 async function publishScript(cfg, script, client, version) {
-	console.log("\nBuilding script " + stdoutColors.cyan(script.path) + " ...");
-
 	const room = (script.room || "").trim().replace(/^#/, '');
+
+	console.log("\nPublishing script " + stdoutColors.cyan(script.name) + (room ? " - Room #" + room : ''));
+
 	if (!room) {
 		return skipWithMessage("missing room");
 	}
 	if (!room.match(/^[a-vA-V0-9]{20,20}$/)) {
-		return skipWithMessage("invalid room ID");
+		return errorMsg("invalid room ID");
 	}
 
 	const outputDir = replacePlaceholder(cfg.output?.dir || defaultOutputDir, script);
 	const outFile = path.join(outputDir, replacePlaceholder(cfg.output?.outFile || defaultOutFile, script));
+
+	console.log("  Building script " + stdoutColors.cyan(script.path) + " ...");
 
 	try {
 		compileScript(script.path, outFile);
@@ -154,11 +169,14 @@ async function publishScript(cfg, script, client, version) {
 			? stdoutColors.red(err.stderr.toString())
 			: err,
 		);
-		return "build error";
+		return { errors: [ stdoutColors.red("build error") ] };
 	}
 
-	console.log("Outfile: " + stdoutColors.cyan(outFile));
-	console.log("Getting existing room script ...");
+	console.log("  Reading output file " + stdoutColors.cyan(outFile) + " ...");
+
+	const contents = await readFile(outFile, { encoding: 'base64' });
+
+	console.log("  Getting existing room script ...");
 
 	let roomScript;
 	try {
@@ -167,14 +185,10 @@ async function publishScript(cfg, script, client, version) {
 		return errorMsg("error getting room", err);
 	}
 
-
-	console.log("Upload file...");
-	const contents = await readFile(outFile, { encoding: 'base64' });
-
 	if (roomScript) {
-		console.log(`Updating room script #${roomScript.id} ...`);
+		console.log(`  Updating room script #${roomScript.id} ...`);
 		try {
-			roomScript = await roomScript.call('set', {
+			await roomScript.call('set', {
 				key: script.name,
 				binary: contents,
 				target: version,
@@ -184,7 +198,7 @@ async function publishScript(cfg, script, client, version) {
 			return errorMsg("error updating room script", err);
 		}
 	} else {
-		console.log("Creating room script ...");
+		console.log("  Creating room script ...");
 		try {
 			roomScript = await client.call(`core.room.${room}.scripts`, 'create', {
 				binary: contents,
@@ -196,7 +210,11 @@ async function publishScript(cfg, script, client, version) {
 		}
 	}
 
-	return null;
+	return { result: [
+		`Script ID   #${roomScript.id}`,
+		`Hash        `,
+		`Active      ${roomScript.active ? "Yes" : "No"}`,
+	] };
 }
 
 /**
