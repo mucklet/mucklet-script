@@ -8,30 +8,21 @@ import { createClient } from "./utils/client.js";
 
 const defaultOutputDir = ".";
 const defaultOutFile = "[name].wasm";
-const defaultTextFile = "[name].wat";
-
-const defaultMuckletConfig = {
-	output: {
-		"path": defaultOutputDir,
-		"outFile": defaultOutFile,
-		"textFile": defaultTextFile,
-	},
-};
 
 const options = [
-	{ name: "config", flags: ["c"], type: String, default: "mucklet.config.js", value: "file", desc: "Mucklet script project config file" },
-	{ name: "name", type: String, value: "keyword",  desc: "Name of project script(s) to publish" },
-	{ name: "room", type: String, value: "room id",  desc: "Room ID of project script(s) to publish" },
-	{ name: "apiurl", flags: ["a"], type: String, value: "url",  desc: "Realm API WebSocket URL (eg. wss://api.test.mucklet.com)" },
-	{ name: "token", flags: ["t"], type: String, value: "string",  desc: [
+	{ name: "config", flags: [ "c" ], type: String, default: "mucklet.config.js", value: "file", desc: "Mucklet script project config file" },
+	{ name: "name", type: String, value: "keyword", desc: "Name of project script(s) to publish" },
+	{ name: "room", type: String, value: "room id", desc: "Room ID of project script(s) to publish" },
+	{ name: "apiurl", flags: [ "a" ], type: String, value: "url", desc: "Realm API WebSocket URL (eg. wss://api.test.mucklet.com)" },
+	{ name: "token", flags: [ "t" ], type: String, value: "string", desc: [
 		"Manager token (generated in realm under Player Settings)",
 		"Overrides the MUCKLET_TOKEN environment variable",
-	]},
-	{ name: "tokenfile", flags: ["T"], type: String, value: "file",  desc: [
+	] },
+	{ name: "tokenfile", flags: [ "T" ], type: String, value: "file", desc: [
 		"File containing the manager token",
 		"Overrides the MUCKLET_TOKEN_FILE environment variable",
-	]},
-	{ name: "help", flags: ["h"], type: Boolean, stop: true, desc: "Show this message" },
+	] },
+	{ name: "help", flags: [ "h" ], type: Boolean, stop: true, desc: "Show this message" },
 	{ name: "file", type: String, positional: true, optionalValue: true },
 ];
 

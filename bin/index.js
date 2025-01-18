@@ -15,10 +15,8 @@ const cmds = [
 ];
 
 const options = [
-	{ name: "help", flags: ["h"], type: Boolean, stop: true, desc: "Show this message"},
+	{ name: "help", flags: [ "h" ], type: Boolean, stop: true, desc: "Show this message" },
 ];
-
-const TAB = "  ";
 
 function help() {
 	printHelp("Set up and manage a mucklet script project.", {
@@ -41,13 +39,12 @@ if (!cmd) {
 if (cmd[0] == '-') {
 	try {
 		const cli = parse(process.argv.slice(2), options);
+		if (cli.help) {
+			help();
+			process.exit(0);
+		}
 	} catch (ex) {
 		printError(ex?.message || ex);
-	}
-
-	if (cli.help) {
-		help();
-		process.exit(0);
 	}
 }
 

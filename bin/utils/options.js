@@ -36,7 +36,7 @@ export function help(options, opts) {
 			l += 3 + o.value.length;
 		}
 		let desc = Array.isArray(o.desc) ? o.desc : [ o.desc ];
-		s += (" ".repeat(Math.max(1, padding - l + indent.length))) + desc[0] + desc.slice(1).map(d => "\n" + (" ".repeat(padding + indent.length))+ d).join("");
+		s += (" ".repeat(Math.max(1, padding - l + indent.length))) + desc[0] + desc.slice(1).map(d => "\n" + (" ".repeat(padding + indent.length)) + d).join("");
 		return s;
 	}).join("\n");
 }
@@ -78,7 +78,7 @@ export function printHelp(desc, opts) {
 				indent: indent,
 				padding: padding,
 			})
-			: "")
+			: ""),
 	);
 }
 
@@ -95,7 +95,7 @@ export function proceedQuestion(forceYes = false) {
 		} else {
 			const rl = createInterface({
 				input: process.stdin,
-				output: process.stdout
+				output: process.stdout,
 			});
 			return rl.question(stdoutColors.white("Do you want to proceed?") + " [Y/n] ", result => {
 				rl.close();

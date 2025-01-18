@@ -12,7 +12,6 @@ beforeEach(() => {
 		describe: mock.fn((msg) => {}),
 		listen: mock.fn((instance) => {}),
 		unlisten: mock.fn((instance) => {}),
-		describe: mock.fn((msg) => {}),
 		getRoom: mock.fn(() => JSON.stringify(room)),
 		setRoom: mock.fn((json) => {}),
 		useProfile: mock.fn((key, safe) => {}),
@@ -35,12 +34,12 @@ beforeEach(() => {
 		iteratorValid: mock.fn((iterator, prefix) => false),
 		iteratorKey: mock.fn((iterator) => new ArrayBuffer(1)),
 		iteratorItem: mock.fn((iterator) => new ArrayBuffer(1)),
-	}
+	};
 });
 afterEach(() => {
 	// Garbage collect after each test.
 	script.__collect();
-})
+});
 
 describe('Script onActivate', () => {
 	it('calls room describe with greeting', () => {

@@ -6,7 +6,7 @@ import { printHelp, proceedQuestion } from "./utils/options.js";
 import { formatPath, mergeObjects, rootDir } from "./utils/tools.js";
 
 const options = [
-	{ name: "help", flags: ["h"], type: Boolean, stop: true, desc: "Show this message" },
+	{ name: "help", flags: [ "h" ], type: Boolean, stop: true, desc: "Show this message" },
 	{ name: "directory", type: String, positional: true, when: (cli) => !cli.help },
 ];
 
@@ -36,13 +36,11 @@ export default async function(version, args) {
 	const muckletConfigFile = path.join(projectDir, 'mucklet.config.js');
 	const gitignoreFile = path.join(projectDir, '.gitignore');
 
-	const projectDirExists = fs.existsSync(projectDir);
 	const scriptsDirExists = fs.existsSync(scriptsDir);
 	const tsconfigFileExists = fs.existsSync(tsconfigFile);
 	const entryFileExists = fs.existsSync(entryFile);
 	const buildDirExists = fs.existsSync(buildDir);
 	const buildgitignoreFileExists = fs.existsSync(buildgitignoreFile);
-	const testsDirExists = fs.existsSync(testsDir);
 	const testsIndexFileExists = fs.existsSync(testsIndexFile);
 	const packageFileExists = fs.existsSync(packageFile);
 	const muckletConfigFileExists = fs.existsSync(muckletConfigFile);
@@ -66,14 +64,14 @@ export default async function(version, args) {
 	const creates = [
 		[ scriptsDir, "Directory holding the Mucklet script files.", !scriptsDirExists ],
 		[ entryFile, "Example entry room script file to get you started.", !entryFileExists ],
-		[ tsconfigFile, "TypeScript configuration for IDE code completion and hover information.", !tsconfigFileExists],
-		[ buildDir, "Build artifact directory where compiled script files are stored.", !buildDirExists],
+		[ tsconfigFile, "TypeScript configuration for IDE code completion and hover information.", !tsconfigFileExists ],
+		[ buildDir, "Build artifact directory where compiled script files are stored.", !buildDirExists ],
 		[ buildgitignoreFile, "Git configuration that excludes compiled binaries from source control.", !buildgitignoreFileExists ],
 		[ testsIndexFile, "Example test to check that the script is functioning.", !testsIndexFileExists ],
-		[ packageFile, "Package info containing the necessary commands to compile Mucklet scripts.", !packageFileExists],
+		[ packageFile, "Package info containing the necessary commands to compile Mucklet scripts.", !packageFileExists ],
 		[ muckletConfigFile, "Mucklet script project configuration.", !muckletConfigFileExists ],
 		[ gitignoreFile, "Git configuration that excludes node_modules and other generated files.", !gitignoreFileExists ],
-	].filter(v => v[2])
+	].filter(v => v[2]);
 
 	const updates = [
 		[ 'package.json', packageFileExists ],
@@ -86,10 +84,10 @@ export default async function(version, args) {
 			? "\n" + stdoutColors.white("This command will create the following files in the directory:") +
 				"\n" + stdoutColors.cyan(projectDir) + "\n\n"
 			: "") +
-		(creates.map(([filePath, description]) => "  " + stdoutColors.cyan(formatPath(projectDir, filePath)) + "\n  " + description + "\n").join("\n")) +
+		(creates.map(([ filePath, description ]) => "  " + stdoutColors.cyan(formatPath(projectDir, filePath)) + "\n  " + description + "\n").join("\n")) +
 		(updates.length
 			? "\nThe command will try to update existing " + (updates.map(([ name ]) => stdoutColors.cyan(name)).join(" and ")) + " to match the latest version.\n"
-			: "")
+			: ""),
 	  );
 
 	await proceedQuestion();
@@ -106,7 +104,7 @@ function createProject(version, paths, cli) {
 		paths.tsconfigFile,
 		{
 			"include": [
-				"./**/*.ts"
+				"./**/*.ts",
 			],
 		},
 		{
@@ -127,14 +125,14 @@ function createProject(version, paths, cli) {
 			"name": "mucklet-script-project",
 			"scripts": {
 			  "test": "mucklet-script test",
-			  "build": "mucklet-script build"
+			  "build": "mucklet-script build",
 			},
 		},
 		{
 			"type": "module",
 			"dependencies": {
-				"mucklet-script": "^" + version
-			}
+				"mucklet-script": "^" + version,
+			},
 		},
 	);
 	ensureFile("'" + stdoutColors.cyan("mucklet.config.js") + "'", paths.muckletConfigFile, path.join(paths.rootDir, 'mucklet.config.js'));

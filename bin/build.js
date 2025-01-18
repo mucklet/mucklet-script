@@ -17,13 +17,13 @@ const defaultMuckletConfig = {
 };
 
 const options = [
-	{ name: "config", flags: ["c"], type: String, desc: "Mucklet script project config file", default: "mucklet.config.js", value: "file" },
-	{ name: "name", type: String,  desc: "Name of project script(s) to build", value: "keyword" },
-	{ name: "room", type: String,  desc: "Room ID of project script(s) to build", value: "room id" },
-	{ name: "outdir", type: String,  desc: "Output directory for build files", value: "directory" },
-	{ name: "outfile", type: String,  desc: "Output wasm file name", value: "file name" },
-	{ name: "textfile", type: String,  desc: "Output wasm text file name", value: "file name" },
-	{ name: "help", flags: ["h"], type: Boolean, stop: true, desc: "Show this message" },
+	{ name: "config", flags: [ "c" ], type: String, desc: "Mucklet script project config file", default: "mucklet.config.js", value: "file" },
+	{ name: "name", type: String, desc: "Name of project script(s) to build", value: "keyword" },
+	{ name: "room", type: String, desc: "Room ID of project script(s) to build", value: "room id" },
+	{ name: "outdir", type: String, desc: "Output directory for build files", value: "directory" },
+	{ name: "outfile", type: String, desc: "Output wasm file name", value: "file name" },
+	{ name: "textfile", type: String, desc: "Output wasm text file name", value: "file name" },
+	{ name: "help", flags: [ "h" ], type: Boolean, stop: true, desc: "Show this message" },
 	{ name: "files", type: String, positional: true, multiple: true, optionalValue: true },
 ];
 
@@ -58,13 +58,13 @@ export default async function(version, args) {
 
 	// Output configuration
 	if (cli.outDir) {
-		cfg.output = Object.assign({}, cfg.output, { dir: cli.outDir })
+		cfg.output = Object.assign({}, cfg.output, { dir: cli.outDir });
 	}
 	if (cli.outFile) {
-		cfg.output = Object.assign({}, cfg.output, { outFile: cli.outFile })
+		cfg.output = Object.assign({}, cfg.output, { outFile: cli.outFile });
 	}
 	if (cli.textFile) {
-		cfg.output = Object.assign({}, cfg.output, { textFile: cli.textFile })
+		cfg.output = Object.assign({}, cfg.output, { textFile: cli.textFile });
 	}
 
 	// Filter by name
@@ -121,7 +121,7 @@ async function buildScript(cfg, script) {
 			? stdoutColors.red(err.stderr.toString())
 			: err,
 		);
-		return false
+		return false;
 	}
 
 	console.log("Outfile: " + stdoutColors.cyan(outFile));

@@ -18,6 +18,9 @@ export function isObject(item) {
 
 /**
  * Merge two objects.
+ * @param {object} target Target object. Will be modified.
+ * @param {object} sources Source objects.
+ * @returns {object} Target object.
  */
 export function mergeObjects(target, ...sources) {
 	if (!sources.length) {
@@ -68,13 +71,13 @@ export async function loadConfig(version, configFile, defaultOnNotFound) {
 
 	try {
 		cfg = (await import(formatPath(dirname, configFile))).default;
-	} catch(ex) {
+	} catch (ex) {
 		throw "error loading config file: " + (ex?.message || ex);
 	}
 
 	return Promise.resolve(typeof cfg == "function"
 		? cfg(version)
-		: cfg
+		: cfg,
 	);
 }
 
@@ -88,7 +91,7 @@ export function compileScript(path, outFile, textFile) {
 		{
 			cwd: rootDir,
 			stdio: [ "pipe", "pipe", "pipe" ],
-		}
+		},
 	);
 }
 
