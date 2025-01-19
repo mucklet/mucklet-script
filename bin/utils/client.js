@@ -55,3 +55,22 @@ export async function createClient(apiUrl, token) {
 
 	return client;
 }
+
+/**
+ * Get a room script model by name from the API.
+ * @param {ApiClient} client API client.
+ * @param {string} room  Room ID.
+ * @param {*} name Script name/key
+ * @returns {Model}
+ */
+export async function getRoomScriptByName(client, room, name) {
+	name = name.toLowerCase();
+	let roomScripts = await client.get(`core.room.${room}.scripts`);
+	for (let roomScript of roomScripts) {
+		if (roomScript.key == name) {
+			return roomScript;
+		}
+	}
+	return null;
+}
+

@@ -131,3 +131,18 @@ export async function sha256File(path) {
 		rs.on('end', () => resolve(hash.digest('base64')));
 	});
 }
+
+function pad(n) {
+	return (n < 10 ? '0' : '') + n;
+}
+
+export function formatTime(t) {
+	const date = new Date(t);
+	return date.getFullYear() +
+		'-' + pad(date.getMonth() + 1) +
+		'-' + pad(date.getDate()) +
+		' ' + pad(date.getHours()) +
+		':' + pad(date.getMinutes()) +
+		':' + pad(date.getSeconds()) +
+		'.' + ("000" + date.getMilliseconds()).slice(-3);
+}

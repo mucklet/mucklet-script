@@ -4,7 +4,7 @@ import { parse } from "tinyargs";
 import { stdoutColors } from "./utils/terminal.js";
 import { printHelp, printError } from "./utils/options.js";
 import { getToken, loadConfig, compileScript, errToString, sha256File } from "./utils/tools.js";
-import { createClient } from "./utils/client.js";
+import { createClient, getRoomScriptByName } from "./utils/client.js";
 
 const defaultOutputDir = ".";
 const defaultOutFile = "[name].wasm";
@@ -147,7 +147,7 @@ function errorMsg(msg, err) {
 /**
  * Publishes a single script.
  * @param {MuckletConfig} cfg Mucklet configuration object.
- * @param {*} script Script configuration object.
+ * @param {ScriptConfig} script Script configuration object.
  * @param {ApiClient*} client API client-
  * @param {string} version Version in the format "1.X.Y".
  * @returns {{ result?: string, skipped?: string, error?: any }} Publish result.
@@ -240,22 +240,4 @@ async function publishScript(cfg, script, client, version) {
 		`Script ID   #${roomScript.id}`,
 		`Active      ${roomScript.active ? "Yes" : "No"}`,
 	] };
-}
-
-/**
- * Get a room script model by name from the API.
- * @param {ApiClient} client API client.
- * @param {string} room  Room ID.
- * @param {*} name Script name/key
- * @returns {Model}
- */
-async function getRoomScriptByName(client, room, name) {
-	name = name.toLowerCase();
-	let roomScripts = await client.get(`core.room.${room}.scripts`);
-	for (let roomScript of roomScripts) {
-		if (roomScript.key == name) {
-			return roomScript;
-		}
-	}
-	return null;
 }
