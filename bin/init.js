@@ -10,6 +10,33 @@ const options = [
 	{ name: "directory", type: String, positional: true, when: (cli) => !cli.help },
 ];
 
+const commands = {
+	"npm": {
+		install: "npm install",
+		run: "npm run",
+		test: "npm test",
+	},
+	"yarn": {
+		install: "yarn install",
+		run: "yarn",
+		test: "yarn test",
+	},
+	"pnpm": {
+		install: "pnpm install",
+		run: "pnpm run",
+		test: "pnpm test",
+	},
+};
+
+const pm = "npm";
+if (typeof process.env.npm_config_user_agent === "string") {
+	if (/\byarn\//.test(process.env.npm_config_user_agent)) {
+		pm = "yarn";
+	} else if (/\bpnpm\//.test(process.env.npm_config_user_agent)) {
+		pm = "pnpm";
+	}
+}
+
 function help() {
 	printHelp("Set up a new Mucklet script project or update an existing one.", {
 		syntax: [ stdoutColors.cyan("mucklet-script init") + " [options] <directory>" ],
@@ -92,6 +119,7 @@ export default async function(version, args) {
 
 	await proceedQuestion();
 	createProject(version, paths, cli);
+	projectCompleted();
 }
 
 function createProject(version, paths, cli) {
@@ -126,6 +154,8 @@ function createProject(version, paths, cli) {
 			"scripts": {
 			  "test": "mucklet-script test",
 			  "build": "mucklet-script build",
+			  "publish": "mucklet-script publish",
+			  "logs": "mucklet-script logs --follow",
 			},
 		},
 		{
@@ -137,6 +167,42 @@ function createProject(version, paths, cli) {
 	);
 	ensureFile("'" + stdoutColors.cyan("mucklet.config.js") + "'", paths.muckletConfigFile, path.join(paths.rootDir, 'mucklet.config.js'));
 	ensureFile("'" + stdoutColors.cyan(".gitignore") + "'", paths.gitignoreFile, path.join(paths.rootDir, '.gitignore'));
+}
+
+function projectCompleted() {
+	console.log([
+		stdoutColors.green("Done!"),
+		"",
+		"Don't forget to install dependencies before you start:",
+		"",
+		stdoutColors.cyan("  " + commands[pm].install),
+		"",
+		"To edit the example script file, open '" + stdoutColors.cyan("scripts/index.ts") + "' in your editor of choice.",
+		"Create as many additional files as necessary and use them as imports.",
+		"",
+		"To build the example script to check for compilation errors, run:",
+		"",
+		stdoutColors.cyan("  " + commands[pm].run + " build"),
+		"",
+		"To publish the script to a Mucklet realm, first open '" + stdoutColors.cyan("mucklet.config.js") + "' and uncomment and edit:",
+		stdoutColors.green("    // apiUrl: \"wss://api.test.mucklet.com\","),
+		stdoutColors.green("    // room: \"aaaaaaaaaaaaaaaaaaaa\","),
+		"",
+		"Get a Manager token (generated under Player Settings in realm) and then run:",
+		"",
+		stdoutColors.cyan("  " + commands[pm].run + " publish -- --token=mgr.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+		stdoutColors.gray("  The token can also be set in the MUCKLET_TOKEN environment variable."),
+		"",
+		"To view the console logs from the script, run:",
+		"",
+		stdoutColors.cyan("  " + commands[pm].run + " logs -- --token=mgr.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+		"",
+		"More info can be found on the Mucklet script GitHub page:",
+		"",
+		"  https://github.com/mucklet/mucklet-script",
+		"",
+		"Enjoy scripting!",
+	].join("\n"));
 }
 
 function ensureDirectory(name, dir) {

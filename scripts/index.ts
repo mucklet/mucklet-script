@@ -14,6 +14,7 @@
  */
 export function onActivate(): void {
 	Room.describe("Hello, world!");
+	console.log("Hello, console!");
 }
 
 /**

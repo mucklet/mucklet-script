@@ -28,7 +28,7 @@ const options = [
 ];
 
 function help() {
-	printHelp("Build a Mucklet script project or single script file.", {
+	printHelp("Build a Mucklet script project or single script files.", {
 		syntax: [ stdoutColors.cyan("mucklet-script build") + " [options] [file ...]" ],
 		options: options,
 	});
