@@ -22,6 +22,8 @@ const options = [
 		"File containing the manager token",
 		"Overrides the MUCKLET_TOKEN_FILE environment variable",
 	] },
+	{ name: "outdir", type: String, desc: "Output directory for build files", value: "directory" },
+	{ name: "outfile", type: String, desc: "Output wasm file name", value: "file name" },
 	{ name: "help", flags: [ "h" ], type: Boolean, stop: true, desc: "Show this message" },
 	{ name: "file", type: String, positional: true, optionalValue: true },
 ];
@@ -40,19 +42,23 @@ export default async function(version, args) {
 		process.exit(0);
 	}
 
-	const cfg = await loadConfig(version, cli.config || 'mucklet.config.js', !cli.config && {});
+	const cfg = await loadConfig(version, cli.config || 'mucklet.config.js', {});
 
-	if (cli.files) {
-		if (cli.name) {
-			printError("cannot filter by name when building single script files", help);
-		}
-		if (cli.room) {
-			printError("cannot filter by room ID when building single script files", help);
-		}
-		cfg.scripts = cli.files.map(file => ({
-			name: path.parse(file).name,
-			path: file,
-		}));
+	// File uses room and name from cli flags
+	if (cli.file) {
+		cfg.scripts = [{
+			name: cli.name || path.parse(cli.file).name,
+			room: cli.room,
+			path: cli.file,
+		}];
+	}
+
+	// Output configuration
+	if (cli.outDir) {
+		cfg.output = Object.assign({}, cfg.output, { dir: cli.outDir });
+	}
+	if (cli.outFile) {
+		cfg.output = Object.assign({}, cfg.output, { outFile: cli.outFile });
 	}
 
 	// Realm configuration
