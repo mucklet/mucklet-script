@@ -3,7 +3,7 @@ import path from "path";
 import { parse } from "tinyargs";
 import { stdoutColors } from "./utils/terminal.js";
 import { printHelp, printError } from "./utils/options.js";
-import { getToken, loadConfig, compileScript, errToString } from "./utils/tools.js";
+import { getToken, loadConfig, compileScript, errToString, sha256File } from "./utils/tools.js";
 import { createClient } from "./utils/client.js";
 
 const defaultOutputDir = ".";
@@ -90,6 +90,8 @@ async function publishScripts(cfg, token, version) {
 		return;
 	}
 
+	console.log("\nConnecting to " + stdoutColors.cyan(cfg.realm.apiUrl) + " ...");
+
 	const client = await createClient(cfg.realm.apiUrl, token);
 
 	try {
@@ -110,8 +112,8 @@ async function publishScripts(cfg, token, version) {
 					? stdoutColors.red("Failed") + name + (o.errors.map(s => space + s).join("") || '')
 					: o?.skipped
 						? stdoutColors.yellow("Skipped") + name + (o.skipped.map(s => space + s).join("") || '')
-						: stdoutColors.green("Success") + name + (o?.result?.map(s => space + s).join("") || '')
-				);
+						: stdoutColors.green("Success") + name
+				) + (o?.result?.map(s => space + s).join("") || '');
 		}).join("\n"));
 	} finally {
 		client.disconnect();
@@ -124,9 +126,9 @@ function replacePlaceholder(file, script) {
 		.replace(/\[room\]/, script.room || "noroom");
 }
 
-function skipWithMessage(msg) {
+function skipWithMessage(msg, result) {
 	console.log("  Skipping: " + stdoutColors.yellow(msg));
-	return { skipped: [ msg ] };
+	return { skipped: [ msg ], result };
 }
 
 function errorMsg(msg, err) {
@@ -186,14 +188,31 @@ async function publishScript(cfg, script, client, version) {
 	}
 
 	if (roomScript) {
+
+		// Check if it is identical.
+		const roomScriptDetails = await client.get(`core.roomscript.${roomScript.id}.details`);
+		let params = {
+			key: script.name.toLowerCase() != roomScript.key ? script.name.toLowerCase() : undefined,
+			target: version != roomScriptDetails.target ? version : undefined,
+			active: typeof script.active == "boolean" && script.active != roomScript.active ? script.active : undefined,
+			binary: contents,
+		};
+		if (roomScriptDetails.binary?.sha256) {
+			const hash = await sha256File(outFile);
+			if (roomScriptDetails.binary.sha256 == hash) {
+				delete params.binary;
+			}
+		}
+		if (!Object.keys(params).find(k => typeof params[k] !== "undefined")) {
+			return skipWithMessage("Unchanged", [
+				`Script ID   #${roomScript.id}`,
+				`Active      ${roomScript.active ? "Yes" : "No"}`,
+			]);
+		}
+
 		console.log(`  Updating room script #${roomScript.id} ...`);
 		try {
-			await roomScript.call('set', {
-				key: script.name,
-				binary: contents,
-				target: version,
-				active: typeof script.active == "boolean" ? script.active : undefined,
-			});
+			await roomScript.call('set', params);
 		} catch (err) {
 			return errorMsg("error updating room script", err);
 		}
@@ -201,6 +220,7 @@ async function publishScript(cfg, script, client, version) {
 		console.log("  Creating room script ...");
 		try {
 			roomScript = await client.call(`core.room.${room}.scripts`, 'create', {
+				key: script.name,
 				binary: contents,
 				target: version,
 				active: typeof script.active == "boolean" ? script.active : undefined,
@@ -212,7 +232,6 @@ async function publishScript(cfg, script, client, version) {
 
 	return { result: [
 		`Script ID   #${roomScript.id}`,
-		`Hash        `,
 		`Active      ${roomScript.active ? "Yes" : "No"}`,
 	] };
 }

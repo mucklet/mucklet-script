@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import crypto from "crypto";
 import { execSync } from "child_process";
 import { fileURLToPath } from "url";
 
@@ -118,5 +119,15 @@ export function errToString(err) {
 		return typeof params[idx] != 'undefined' ?
 			params[idx] :
 			'???';
+	});
+}
+
+export async function sha256File(path) {
+	return new Promise((resolve, reject) => {
+		const hash = crypto.createHash('sha256');
+		const rs = fs.createReadStream(path);
+		rs.on('error', reject);
+		rs.on('data', chunk => hash.update(chunk));
+		rs.on('end', () => resolve(hash.digest('base64')));
 	});
 }

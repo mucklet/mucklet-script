@@ -1,6 +1,9 @@
 import { createRequire } from 'module';
+import { errToString } from './tools.js';
 const require = createRequire(import.meta.url);
-const ResClient = require('resclient').default;
+const resclient = require('resclient');
+const ResClient = resclient.default;
+const isResError = resclient.isResError;
 const WebSocket = require('isomorphic-ws');
 
 class ApiClient extends ResClient {
@@ -13,7 +16,6 @@ class ApiClient extends ResClient {
 			token,
 		}).catch(err => {
 			this.authErr = err;
-			console.error(err);
 		}));
 	}
 
@@ -35,7 +37,21 @@ export async function createClient(apiUrl, token) {
 	const client = new ApiClient(apiUrl, token);
 
 	// Try to load user to directly validate the token.
-	await client.getUser();
+	let user;
+	try {
+		user = await client.getUser();
+	} catch (err) {
+		if (err.code == 'system.connectionError') {
+			throw "failed to connect to realm api";
+		}
+		if (err.code == 'system.notFound') {
+			throw "api service unavailable";
+		}
+		throw errToString(err);
+	}
+	if (isResError(user)) {
+		throw "error getting user: " + errToString(err);
+	}
 
 	return client;
 }
