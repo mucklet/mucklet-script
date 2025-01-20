@@ -1,11 +1,11 @@
 {
+  "extends": "assemblyscript/std/assembly.json",
   "compilerOptions": {
-    "noLib": true,
-    "allowJs": false,
     "typeRoots": [
       "../node_modules/assemblyscript/std/types",
-      "../node_modules/json-as/assembly",
+      "../../assemblyscript/std/types",
       "./types"
     ],
+    "types": [ "assembly", "host", "json-as" ]
   }
 }

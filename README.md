@@ -1,22 +1,32 @@
 <h2 align="center"><b>Mucklet Room Script</b></h2>
 
-A development environment to build and test room scripts for Mucklet.com, a
-textual world of roleplay.
+A development cli tool used to build, test, and deploy room scripts for
+Mucklet.com, a textual world of roleplay.
 
-# Quick start
+## Quick start
 
-Install [Git](https://git-scm.com/downloads) and
-[NodeJS](https://nodejs.org/en/download/), and run the following commands:
+Install [NodeJS](https://nodejs.org/en/download/), and run the following commands:
 
 ```text
-git clone https://github.com/mucklet/mucklet-script.git
-cd mucklet-script
+npx mucklet-script init myproject
+cd myproject
 npm install
 npm run build
-npm test
 ```
 
-# Examples
+## Usage
+
+For full usage, run:
+```
+npx mucklet-script
+```
+
+## Documentation
+
+* [Configuration](docs/configuration.md)
+
+
+## Script examples
 
 Script file | Description
 --- | ---
@@ -29,16 +39,19 @@ Script file | Description
 [lock_outside.ts](./examples/lock_outside.ts) | A script that prevents characters from using an exit locked by the script running the [lock_inside.ts](./examples/lock_inside.ts) script.
 [secret_exit.ts](./examples/secret_exit.ts) | A script that reveals a secret passage when the password "tapeworm" is spoken.
 
-# About
+## About
 
-The Mucklet Script development environment lets you create and test scripts
-locally before uploading them to the Mucklet realm.
+The _mucklet-script_ cli tool lets you:
+* create and initialize new script projects
+* build and test scripts
+* deploy scripts to a Mucklet realm
+* fetch and display script console logs
 
 Scripts are written using [AssemblyScript](https://www.assemblyscript.org/), a
 statically typed language similar to TypeScript, sharing many of its features
 and standard library functions (including its _.ts_ suffix).
 
-## Standard library
+### Standard library
 
 In addition to the [AssemblyScript's standard
 library](https://www.assemblyscript.org/stdlib/globals.html), Mucklet room
@@ -66,47 +79,5 @@ Store.setString("foo", "bar")
 let str = Store.getString("foo")
 ```
 
-## How to use
-
-1. Open this project in an editor that supports TypeScript type checking, such as VSCode.
-2. Edit the AssemblyScript file at: [script/index.ts](./script/index.ts)
-3. Try to compile the script:
-   ```text
-   npm run build
-   ```
-4. Edit the tests in: [tests/index.js](./tests/index.js)
-5. Run the tests:
-   ```text
-   npm test
-   ```
-
-## How to deploy to Mucklet Realm
-
-1. Copy the content of [script/index.ts](./script/index.ts).
-2. In the Mucklet realm, go to the desired room.
-3. To create a new script, type:
-   ```text
-   create roomscript myscript = <PASTE YOUR SCRIPT HERE>
-   ```
-   To update an existing script, type:
-   ```text
-   set roomscript myscript : source = <PASTE YOUR SCRIPT HERE>
-   ```
-4. To activate the script, type:
-   ```text
-   set roomscript myscript : active = yes
-   ```
-
-For a list of commands available for managing room scripts, type:
-```text
-help build rooms
-```
-
 (Room scripting is a restricted feature, only available to _supporters_ and
-_pioneers_. The commands may not be available to everyone.)
-
-## Limitations
-
-This project is currently structured to only support a single room script.
-Contribution to improve this repository to allow writing multiple separate room
-script files, and test suits for each file, is welcome.
+_pioneers_. Deploying scripts may not be available to everyone.)
