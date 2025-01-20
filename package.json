@@ -15,12 +15,17 @@
     "assemblyscript": "$assemblyscript"
   },
   "type": "module",
-  "exports": {
-    ".": {
-      "import": "./build/script.js",
-      "types": "./build/script.d.ts"
-    }
-  },
+  "files": [
+    "/bin",
+    "/docs",
+    "/examples",
+    "/lib",
+    "/scripts",
+    "/tests",
+    "asconfig.json",
+    "mucklet.config.js",
+    "tsconfig.json"
+  ],
   "dependencies": {
     "assemblyscript": "^0.27.31",
     "isomorphic-ws": "^5.0.0",

@@ -1,6 +1,9 @@
 # dependencies
 node_modules
 
+# npm pack files
+/*.tgz
+
 # misc
 .DS_Store
 npm-debug.log
