@@ -200,16 +200,17 @@ async function deployScript(cfg, script, client, version) {
 		const roomScriptDetails = await client.get(`core.roomscript.${roomScript.id}.details`);
 		let params = {
 			key: script.name.toLowerCase() != roomScript.key ? script.name.toLowerCase() : undefined,
-			target: version != roomScriptDetails.target ? version : undefined,
-			active: typeof script.active == "boolean" && script.active != roomScript.active ? script.active : undefined,
 			binary: contents,
 			filename: outFilename,
+			target: version,
+			active: typeof script.active == "boolean" && script.active != roomScript.active ? script.active : undefined,
 		};
 		if (roomScriptDetails.binary?.sha256) {
 			const hash = await sha256File(outFile);
 			if (roomScriptDetails.binary.sha256 == hash) {
 				delete params.binary;
 				delete params.filename;
+				delete params.target;
 			}
 		}
 		if (!Object.keys(params).find(k => typeof params[k] !== "undefined")) {
