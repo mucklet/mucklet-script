@@ -141,7 +141,7 @@ function createProject(version, paths, cli) {
 	);
 	// Build
 	ensureDirectory("'" + stdoutColors.cyan("build") + "'", paths.buildDir);
-	ensureFile("'" + stdoutColors.cyan("build/.gitignore") + "'", paths.buildgitignoreFile, path.join(paths.rootDir, 'build', '.gitignore'));
+	ensureFile("'" + stdoutColors.cyan("build/.gitignore") + "'", paths.buildgitignoreFile, null, "*\n!.gitignore\n");
 	// // Tests
 	// ensureDirectory("'" + stdoutColors.cyan("tests") + "'", paths.testsDir);
 	// ensureFile("'" + stdoutColors.cyan("scripts/index.ts") + "'", paths.testsIndexFile, path.join(paths.rootDir, 'tests', 'index.js'));
@@ -217,10 +217,14 @@ function ensureDirectory(name, dir) {
 	console.log();
 }
 
-function ensureFile(name, dstPath, srcPath) {
+function ensureFile(name, dstPath, srcPath, content) {
 	console.log("Ensuring " + name + " exists...");
 	if (!fs.existsSync(dstPath)) {
-		fs.copyFileSync(srcPath, dstPath);
+		if (srcPath) {
+			fs.copyFileSync(srcPath, dstPath);
+		} else {
+			fs.writeFileSync(dstPath, content);
+		}
 		console.log(stdoutColors.green("  Created: ") + dstPath);
 	} else {
 		console.log(stdoutColors.yellow("  Exists: ") + dstPath);

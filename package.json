@@ -1,6 +1,6 @@
 {
   "name": "mucklet-script",
-  "version": "1.64.0",
+  "version": "1.64.1",
   "scripts": {
     "test": "node tests",
     "build": "asc script/index.ts --runtime minimal --exportRuntime --lib ./lib/host.ts --lib ./lib/env.ts"
@@ -8,6 +8,11 @@
   "author": "Accipiter Nisus <accipiter@gmail.com>",
   "license": "Apache-2.0",
   "description": "A project to build and test room scripts for Mucklet realms.",
+  "repository": {
+    "url": "https://github.com/mucklet/mucklet-script",
+    "type": "git"
+  },
+  "homepage": "https://github.com/mucklet/mucklet-script#readme",
   "bin": {
     "mucklet-script": "./bin/index.js"
   },
