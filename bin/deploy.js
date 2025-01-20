@@ -165,7 +165,8 @@ async function deployScript(cfg, script, client, version) {
 	}
 
 	const outputDir = replacePlaceholder(cfg.output?.dir || defaultOutputDir, script);
-	const outFile = path.join(outputDir, replacePlaceholder(cfg.output?.outFile || defaultOutFile, script));
+	const outFilename = replacePlaceholder(cfg.output?.outFile || defaultOutFile, script);
+	const outFile = path.join(outputDir, outFilename);
 
 	console.log("  Building script " + stdoutColors.cyan(script.path) + " ...");
 
@@ -202,11 +203,13 @@ async function deployScript(cfg, script, client, version) {
 			target: version != roomScriptDetails.target ? version : undefined,
 			active: typeof script.active == "boolean" && script.active != roomScript.active ? script.active : undefined,
 			binary: contents,
+			filename: outFilename,
 		};
 		if (roomScriptDetails.binary?.sha256) {
 			const hash = await sha256File(outFile);
 			if (roomScriptDetails.binary.sha256 == hash) {
 				delete params.binary;
+				delete params.filename;
 			}
 		}
 		if (!Object.keys(params).find(k => typeof params[k] !== "undefined")) {
@@ -228,6 +231,7 @@ async function deployScript(cfg, script, client, version) {
 			roomScript = await client.call(`core.room.${room}.scripts`, 'create', {
 				key: script.name,
 				binary: contents,
+				filename: outFilename,
 				target: version,
 				active: typeof script.active == "boolean" ? script.active : undefined,
 			});
