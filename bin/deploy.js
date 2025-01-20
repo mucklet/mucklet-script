@@ -11,8 +11,8 @@ const defaultOutFile = "[name].wasm";
 
 const options = [
 	{ name: "config", flags: [ "c" ], type: String, default: "mucklet.config.js", value: "file", desc: "Mucklet script project config file" },
-	{ name: "name", type: String, value: "keyword", desc: "Name of project script(s) to publish" },
-	{ name: "room", type: String, value: "room id", desc: "Room ID of project script(s) to publish" },
+	{ name: "name", type: String, value: "keyword", desc: "Name of project script(s) to deploy" },
+	{ name: "room", type: String, value: "room id", desc: "Room ID of project script(s) to deploy" },
 	{ name: "apiurl", flags: [ "a" ], type: String, value: "url", desc: "Realm API WebSocket URL (eg. wss://api.test.mucklet.com)" },
 	{ name: "token", flags: [ "t" ], type: String, value: "string", desc: [
 		"Manager token (generated in realm under Player Settings)",
@@ -29,8 +29,8 @@ const options = [
 ];
 
 function help() {
-	printHelp("Publish scripts to a Mucklet realm.", {
-		syntax: [ stdoutColors.cyan("mucklet-script publish") + " [options] [file]" ],
+	printHelp("Deploy scripts to a Mucklet realm.", {
+		syntax: [ stdoutColors.cyan("mucklet-script deploy") + " [options] [file]" ],
 		options: options,
 	});
 }
@@ -87,12 +87,12 @@ export default async function(version, args) {
 		throw "missing realm api url";
 	}
 
-	await publishScripts(cfg, token, version);
+	await deployScripts(cfg, token, version);
 }
 
-async function publishScripts(cfg, token, version) {
+async function deployScripts(cfg, token, version) {
 	if (!cfg.scripts?.length) {
-		printError("no scripts to publish", help);
+		printError("no scripts to deploy", help);
 		return;
 	}
 
@@ -105,10 +105,10 @@ async function publishScripts(cfg, token, version) {
 		let result = [];
 
 		for (const script of cfg.scripts) {
-			result.push(await publishScript(cfg, script, client, version));
+			result.push(await deployScript(cfg, script, client, version));
 		}
 
-		console.log("\n\n" + stdoutColors.white("Publish result:"));
+		console.log("\n\n" + stdoutColors.white("Deploy result:"));
 		console.log(cfg.scripts.map((script, idx) => {
 			let name = " - " + stdoutColors.cyan(script.name) + (script.room ? " - Room #" + script.room : "");
 			let o = result[idx];
@@ -145,17 +145,17 @@ function errorMsg(msg, err) {
 }
 
 /**
- * Publishes a single script.
+ * Deploys a single script.
  * @param {MuckletConfig} cfg Mucklet configuration object.
  * @param {ScriptConfig} script Script configuration object.
  * @param {ApiClient*} client API client-
  * @param {string} version Version in the format "1.X.Y".
- * @returns {{ result?: string, skipped?: string, error?: any }} Publish result.
+ * @returns {{ result?: string, skipped?: string, error?: any }} Deploy result.
  */
-async function publishScript(cfg, script, client, version) {
+async function deployScript(cfg, script, client, version) {
 	const room = (script.room || "").trim().replace(/^#/, '');
 
-	console.log("\nPublishing script " + stdoutColors.cyan(script.name) + (room ? " - Room #" + room : ''));
+	console.log("\nDeploying script " + stdoutColors.cyan(script.name) + (room ? " - Room #" + room : ''));
 
 	if (!room) {
 		return skipWithMessage("missing room");

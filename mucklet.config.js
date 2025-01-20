@@ -48,16 +48,10 @@ const config = {
 	scripts: [
 		{
 			/**
-			 * Script name. Is used as keyword on publish.
+			 * Script name. Is used as keyword when deployed.
 			 * Required property.
 			 */
 			name: "example",
-
-			/** Room ID to publish to. */
-			// room: "aaaaaaaaaaaaaaaaaaaa",
-
-			/** Active status. If not set, active status is not changed. */
-			// active: true,
 
 			/**
 			 * Path to the script file relative to the config file.
@@ -65,8 +59,11 @@ const config = {
 			 */
 			path: "scripts/index.ts",
 
-			/** Path to the script test file. */
-			test: "tests/index.js",
+			/** Room ID to deploy to. */
+			// room: "aaaaaaaaaaaaaaaaaaaa",
+
+			/** Active status. If not set, active status is not changed. */
+			// active: true,
 		},
 	],
 };

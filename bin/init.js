@@ -57,8 +57,8 @@ export default async function(version, args) {
 	const entryFile = path.join(scriptsDir, 'index.ts');
 	const buildDir = path.join(projectDir, 'build');
 	const buildgitignoreFile = path.join(buildDir, '.gitignore');
-	const testsDir = path.join(projectDir, 'tests');
-	const testsIndexFile = path.join(testsDir, 'index.js');
+	// const testsDir = path.join(projectDir, 'tests');
+	// const testsIndexFile = path.join(testsDir, 'index.js');
 	const packageFile = path.join(projectDir, 'package.json');
 	const muckletConfigFile = path.join(projectDir, 'mucklet.config.js');
 	const gitignoreFile = path.join(projectDir, '.gitignore');
@@ -68,7 +68,7 @@ export default async function(version, args) {
 	const entryFileExists = fs.existsSync(entryFile);
 	const buildDirExists = fs.existsSync(buildDir);
 	const buildgitignoreFileExists = fs.existsSync(buildgitignoreFile);
-	const testsIndexFileExists = fs.existsSync(testsIndexFile);
+	// const testsIndexFileExists = fs.existsSync(testsIndexFile);
 	const packageFileExists = fs.existsSync(packageFile);
 	const muckletConfigFileExists = fs.existsSync(muckletConfigFile);
 	const gitignoreFileExists = fs.existsSync(gitignoreFile);
@@ -81,8 +81,8 @@ export default async function(version, args) {
 		entryFile,
 		buildDir,
 		buildgitignoreFile,
-		testsDir,
-		testsIndexFile,
+		// testsDir,
+		// testsIndexFile,
 		packageFile,
 		muckletConfigFile,
 		gitignoreFile,
@@ -94,7 +94,7 @@ export default async function(version, args) {
 		[ tsconfigFile, "TypeScript configuration for IDE code completion and hover information.", !tsconfigFileExists ],
 		[ buildDir, "Build artifact directory where compiled script files are stored.", !buildDirExists ],
 		[ buildgitignoreFile, "Git configuration that excludes compiled binaries from source control.", !buildgitignoreFileExists ],
-		[ testsIndexFile, "Example test to check that the script is functioning.", !testsIndexFileExists ],
+		// [ testsIndexFile, "Example test to check that the script is functioning.", !testsIndexFileExists ],
 		[ packageFile, "Package info containing the necessary commands to compile Mucklet scripts.", !packageFileExists ],
 		[ muckletConfigFile, "Mucklet script project configuration.", !muckletConfigFileExists ],
 		[ gitignoreFile, "Git configuration that excludes node_modules and other generated files.", !gitignoreFileExists ],
@@ -142,9 +142,9 @@ function createProject(version, paths, cli) {
 	// Build
 	ensureDirectory("'" + stdoutColors.cyan("build") + "'", paths.buildDir);
 	ensureFile("'" + stdoutColors.cyan("build/.gitignore") + "'", paths.buildgitignoreFile, path.join(paths.rootDir, 'build', '.gitignore'));
-	// Tests
-	ensureDirectory("'" + stdoutColors.cyan("tests") + "'", paths.testsDir);
-	ensureFile("'" + stdoutColors.cyan("scripts/index.ts") + "'", paths.testsIndexFile, path.join(paths.rootDir, 'tests', 'index.js'));
+	// // Tests
+	// ensureDirectory("'" + stdoutColors.cyan("tests") + "'", paths.testsDir);
+	// ensureFile("'" + stdoutColors.cyan("scripts/index.ts") + "'", paths.testsIndexFile, path.join(paths.rootDir, 'tests', 'index.js'));
 	// Config
 	ensureJsonFile(
 		"'" + stdoutColors.cyan("package.json") + "'",
@@ -152,9 +152,9 @@ function createProject(version, paths, cli) {
 		{
 			"name": "mucklet-script-project",
 			"scripts": {
-			  "test": "mucklet-script test",
+			//   "test": "mucklet-script test",
 			  "build": "mucklet-script build",
-			  "publish": "mucklet-script publish",
+			  "deploy": "mucklet-script deploy",
 			  "logs": "mucklet-script logs --follow",
 			},
 		},
@@ -184,13 +184,14 @@ function projectCompleted() {
 		"",
 		stdoutColors.cyan("  " + commands[pm].run + " build"),
 		"",
-		"To publish the script to a Mucklet realm, first open '" + stdoutColors.cyan("mucklet.config.js") + "' and uncomment and edit:",
+		"To deploy the script to a Mucklet realm, first open '" + stdoutColors.cyan("mucklet.config.js") + "' and uncomment and edit:",
 		stdoutColors.green("    // apiUrl: \"wss://api.test.mucklet.com\","),
+		"and",
 		stdoutColors.green("    // room: \"aaaaaaaaaaaaaaaaaaaa\","),
 		"",
 		"Get a Manager token (generated under Player Settings in realm) and then run:",
 		"",
-		stdoutColors.cyan("  " + commands[pm].run + " publish -- --token=mgr.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+		stdoutColors.cyan("  " + commands[pm].run + " deploy -- --token=mgr.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
 		stdoutColors.gray("  The token can also be set in the MUCKLET_TOKEN environment variable."),
 		"",
 		"To view the console logs from the script, run:",

@@ -10,8 +10,8 @@ const version = require("../package.json").version;
 const cmds = [
 	{ cmd: 'init', desc: "Sets up a new Mucklet script project or updates an existing one" },
 	{ cmd: 'build', desc: "Builds a Mucklet script project or a single script file" },
-	{ cmd: 'publish', desc: "Publishes scripts to a Mucklet realm" },
-	{ cmd: 'logs', desc: "Fetches the logs of published scripts" },
+	{ cmd: 'deploy', desc: "Deploys scripts to a Mucklet realm" },
+	{ cmd: 'logs', desc: "Fetches the logs of deployed scripts" },
 ];
 
 const options = [
