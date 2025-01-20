@@ -1,4 +1,4 @@
-<h2 align="center"><b>Mucklet Room Script</b></h2>
+<h2 align="center"><b>Mucklet Script</b></h2>
 
 A development cli tool used to build, test, and deploy room scripts for
 Mucklet.com, a textual world of roleplay.
@@ -24,7 +24,6 @@ npx mucklet-script
 ## Documentation
 
 * [Configuration](docs/configuration.md)
-
 
 ## Script examples
 

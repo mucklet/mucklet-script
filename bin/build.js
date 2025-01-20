@@ -95,9 +95,9 @@ async function buildScripts(cfg) {
 	console.log("\n" + stdoutColors.white("Build result:"));
 	console.log(cfg.scripts.map((script, idx) => (
 		"  " +
-		(result[idx] ? stdoutColors.green("✓ ") : stdoutColors.red("✗ ")) +
-		script.name +
-		(script.room ? "Room #" + script.room : "")
+		(result[idx] ? stdoutColors.green("Success") : stdoutColors.red("Failure")) +
+		" - " + stdoutColors.cyan(script.name) +
+		(script.room ? " - Room #" + script.room : "")
 	)).join("\n"));
 }
 
