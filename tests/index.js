@@ -3,7 +3,7 @@ import assert from 'assert';
 import { describe, it, mock, beforeEach, afterEach } from 'node:test';
 
 beforeEach(() => {
-	const room = { id: "bv4b0ogt8749qsg77l9g", name: "Station Park" };
+	const room = { id: "c2d1ml0t874bj4eva85g", name: "Carpentry Cabin" };
 	const iterator = 0;
 	// Mock host binding functions. For functions that returns a value (such as
 	// room.getRoom, or store.getItem), you can have tests replace the mock
@@ -12,7 +12,6 @@ beforeEach(() => {
 		describe: mock.fn((msg) => {}),
 		listen: mock.fn((instance) => {}),
 		unlisten: mock.fn((instance) => {}),
-		describe: mock.fn((msg) => {}),
 		getRoom: mock.fn(() => JSON.stringify(room)),
 		setRoom: mock.fn((json) => {}),
 		useProfile: mock.fn((key, safe) => {}),
@@ -35,12 +34,12 @@ beforeEach(() => {
 		iteratorValid: mock.fn((iterator, prefix) => false),
 		iteratorKey: mock.fn((iterator) => new ArrayBuffer(1)),
 		iteratorItem: mock.fn((iterator) => new ArrayBuffer(1)),
-	}
+	};
 });
 afterEach(() => {
 	// Garbage collect after each test.
 	script.__collect();
-})
+});
 
 describe('Script onActivate', () => {
 	it('calls room describe with greeting', () => {

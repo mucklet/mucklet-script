@@ -8,19 +8,35 @@
   "author": "Accipiter Nisus <accipiter@gmail.com>",
   "license": "Apache-2.0",
   "description": "A project to build and test room scripts for Mucklet realms.",
-  "devDependencies": {
-    "assemblyscript": "^0.27.31",
-    "json-as": "^0.9.26",
-    "visitor-as": "^0.11.4"
+  "bin": {
+    "mucklet-script": "./bin/index.js"
   },
   "overrides": {
     "assemblyscript": "$assemblyscript"
   },
   "type": "module",
-  "exports": {
-    ".": {
-      "import": "./build/script.js",
-      "types": "./build/script.d.ts"
-    }
+  "files": [
+    "/bin",
+    "/docs",
+    "/examples",
+    "/lib",
+    "/scripts",
+    "/tests",
+    "asconfig.json",
+    "mucklet.config.js",
+    "tsconfig.json"
+  ],
+  "dependencies": {
+    "assemblyscript": "^0.27.31",
+    "isomorphic-ws": "^5.0.0",
+    "json-as": "^0.9.26",
+    "resclient": "^2.5.0",
+    "tinyargs": "^0.1.4",
+    "visitor-as": "^0.11.4"
+  },
+  "devDependencies": {
+    "eslint": "^9.18.0",
+    "eslint-plugin-jsdoc": "^50.6.2",
+    "jsdoc": "^4.0.4"
   }
 }
