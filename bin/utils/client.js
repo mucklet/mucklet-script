@@ -65,11 +65,18 @@ export async function createClient(apiUrl, token) {
  */
 export async function getRoomScriptByName(client, room, name) {
 	name = name.toLowerCase();
-	let roomScripts = await client.get(`core.room.${room}.scripts`);
-	for (let roomScript of roomScripts) {
-		if (roomScript.key == name) {
-			return roomScript;
+	try {
+		let roomScripts = await client.get(`core.room.${room}.scripts`);
+		for (let roomScript of roomScripts) {
+			if (roomScript.key == name) {
+				return roomScript;
+			}
 		}
+	} catch (err) {
+		if (err?.code == 'system.notFound') {
+			throw "room not found";
+		}
+		throw err;
 	}
 	return null;
 }

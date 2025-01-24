@@ -141,7 +141,9 @@ async function showLogs(cfg, token, follow, tail) {
 				}
 			} catch (err) {
 				console.log("  " + stdoutColors.red(errToString(err)));
-				console.error(err);
+				if (typeof err != 'string') {
+					console.error(err);
+				}
 			}
 		}
 
@@ -230,7 +232,11 @@ async function getRoomScriptDetails(script, client) {
 			throw "invalid room ID";
 		}
 
-		scriptId = (await getRoomScriptByName(client, room, script.name)).id;
+		const roomScript = await getRoomScriptByName(client, room, script.name);
+		if (!roomScript) {
+			return skipMsg("script not deployed to room");
+		}
+		scriptId = roomScript.id;
 	}
 
 	return await client.get(`core.roomscript.${scriptId}.details`);
