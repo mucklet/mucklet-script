@@ -10,6 +10,22 @@ const options = [
 	{ name: "directory", type: String, positional: true, when: (cli) => !cli.help },
 ];
 
+// Define git ignore contents because npm does not include it when packing.
+const gitignoreFileContents = `# dependencies
+node_modules
+
+# npm pack files
+/*.tgz
+
+# misc
+.DS_Store
+npm-debug.log
+yarn-error.log
+yarn.lock
+.yarnclean
+.vscode
+`;
+
 const commands = {
 	"npm": {
 		install: "npm install",
@@ -166,7 +182,7 @@ function createProject(version, paths, cli) {
 		},
 	);
 	ensureFile("'" + stdoutColors.cyan("mucklet.config.js") + "'", paths.muckletConfigFile, path.join(paths.rootDir, 'mucklet.config.js'));
-	ensureFile("'" + stdoutColors.cyan(".gitignore") + "'", paths.gitignoreFile, path.join(paths.rootDir, '.gitignore'));
+	ensureFile("'" + stdoutColors.cyan(".gitignore") + "'", paths.gitignoreFile, null, gitignoreFileContents);
 }
 
 function projectCompleted() {
