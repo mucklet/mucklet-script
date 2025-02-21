@@ -170,6 +170,136 @@ class BaseIterator {
 	}
 }
 
+/** Command field types. */
+export namespace Field {
+
+	@json
+	export class Text implements CommandField {
+		public spanLines: boolean = false;
+		public spellcheck: boolean = false;
+		public trimSpace: boolean = false;
+		public maxLength: u32 = 0;
+
+		constructor(private desc: string) {}
+
+		getType(): string {
+			return "text";
+		}
+
+		getDesc(): string {
+			return this.desc;
+		}
+
+		getOpts(): string | null {
+			return ("{" +
+				`"spanLines":` + JSON.stringify(this.spanLines) +
+				`,"spellCheck":` + JSON.stringify(this.spellcheck) +
+				`,"trimSpace":` + JSON.stringify(this.trimSpace) +
+				`,"maxLength":` + JSON.stringify(this.maxLength) +
+			"}");
+		}
+
+		/**
+		 * Sets span lines flag. Is false by default.
+		 * @param spanLines - Flag telling if the text can be spanned across multiple lines.
+		 */
+		setSpanLines(spanLines: boolean): this {
+			this.spanLines = spanLines;
+			return this;
+		}
+
+		/**
+		 * Sets flag to spellcheck text. Is true by default.
+		 * @param spellcheck - Flag telling if the text should be checked for spelling errors.
+		 */
+		setSpellcheck(spellcheck: boolean): this {
+			this.spellcheck = spellcheck;
+			return this;
+		}
+
+		/**
+		 * Sets flag to trim leading space characters. Is true by default.
+		 * @param trimSpace - Flag telling if initial space should be trimmed.
+		 */
+		setTrimSpace(trimSpace: boolean): this {
+			this.trimSpace = trimSpace;
+			return this;
+		}
+
+		/**
+		 * Sets text max length. Zero (0) means server max length. Is 0 by default.
+		 * @param maxLength - Flag telling if initial space should be trimmed.
+		 */
+		setMaxLength(maxLength: u32): this {
+			this.maxLength = maxLength;
+			return this;
+		}
+	}
+}
+
+export interface CommandField {
+	/** Returns the type of the command field. */
+	getType(): string;
+
+	/** Returns the help description of the command field. */
+	getDesc(): string;
+
+	/** Returns the options of the command field as a JSOn encoded string. */
+	getOpts(): string | null;
+}
+
+/**
+ * Command is an object that represents a custom command.
+ */
+export class Command {
+	private fieldDefs: Map<string, string> = new Map<string, string>();
+	/**
+	 * Constructor of the Command instance.
+	 */
+	constructor(public pattern: string) {}
+
+	/**
+	 * Sets the definition for a command field.
+	 * @param key - Field <key> as found in command pattern.
+	 * @param def - Field definition.
+	 */
+	field(key: string, def: CommandField): Command {
+		assert(!this.fieldDefs.has(key), `command already has definition for field "${key}"`);
+		let type = def.getType();
+		let desc = def.getDesc();
+		let opts = def.getOpts();
+		const fieldDef = ("{" +
+			`"type":` + JSON.stringify(type) +
+			`,"desc":` + JSON.stringify(desc) +
+			(opts != null ? `,"opts":` + opts : "") +
+		"}");
+		this.fieldDefs.set(key, fieldDef);
+		return this;
+	}
+
+	/**
+	 * Converts the command into a JSON structure.
+	 */
+	json(): string {
+		const keys = this.fieldDefs.keys();
+		// Quick exit with only pattern if no fields are defined.
+		if (keys.length == 0) {
+			return `{"pattern":${JSON.stringify(this.pattern)}}`;
+		}
+
+		let s = "";
+		for (let i = 0; i < keys.length; i++) {
+			let key = keys[i];
+			if (s != "") {
+				s += ","
+			}
+			s += JSON.stringify(key) + ":" + this.fieldDefs.get(key);
+		}
+		return `{"pattern":${JSON.stringify(this.pattern)},"fields":{${s}}}`;
+	}
+}
+
+
 /**
  * Room API functions and types.
  */
@@ -399,11 +529,11 @@ export namespace Room {
 
 	/**
 	 * Switches to a stored room profile by profile key.
-	 * @param key - Keyword for the stored profile.
+	 * @param keyword - Keyword for the stored profile.
 	 * @param safe - Flag to prevent the room's current profile to be overwritten by the stored profile, if it contains unstored changes.
 	 */
-	export function useProfile(key: string, safe: boolean = false): void  {
-		return room_binding.useProfile(key, safe);
+	export function useProfile(keyword: string, safe: boolean = false): void  {
+		return room_binding.useProfile(keyword, safe);
 	}
 
 	/**
@@ -513,6 +643,30 @@ export namespace Room {
 	export function setExit<T>(exitId: ID, fields: T): void {
 		let dta = JSON.stringify(fields);
 		room_binding.setExit(exitId, dta);
+	}
+
+	/**
+	 * Adds a custom command to the room.
+	 *
+	 * Pattern is a string describing the general command structure, and may
+	 * contain <Fields> and [optional] parts.
+	 *
+	 * Any field defined in the pattern must have a corresponding field entry.
+	 *
+	 * @param keyword - Keyword for the command.
+	 * @param cmd - Command to add.
+	 * @param fields - Field definitions.
+	 */
+	export function addCommand(keyword: string, cmd: Command, priority: u32 = 0): void {
+		return room_binding.addCommand(keyword, cmd.json(), priority);
+	}
+
+	/**
+	 * Removes a custom command, added by the script, from the room.
+	 * @param keyword - Keyword for the command.
+	 */
+	export function removeCommand(keyword: string): boolean {
+		return room_binding.removeCommand(keyword);
 	}
 
 	class CharIterator extends BaseIterator {

@@ -2,7 +2,7 @@ import { parse } from "tinyargs";
 import { stdoutColors } from "./utils/terminal.js";
 import { printHelp, printError } from "./utils/options.js";
 import { getToken, loadConfig, errToString, formatTime } from "./utils/tools.js";
-import { createClient, getRoomScriptByName } from "./utils/client.js";
+import { createClient, getRoomScriptByName, isResError } from "./utils/client.js";
 
 const options = [
 	{ name: "config", flags: [ "c" ], type: String, default: "mucklet.config.js", value: "file", desc: "Mucklet script project config file" },
@@ -200,8 +200,12 @@ async function showLogs(cfg, token, follow, tail) {
 }
 
 function onLogAdd(prefix, log) {
-	const lvl = logLvl[log.lvl] || { color: s => s, tag: "[???]" };
-	console.log(prefix + stdoutColors.white(formatTime(log.time)) + " " + lvl.color(lvl.tag + " " + log.msg));
+	if (isResError(log)) {
+		console.log(prefix + stdoutColors.red("Error getting entry " + log.getResourceId() + ": " + errToString(log)));
+	} else {
+		const lvl = logLvl[log.lvl] || { color: s => s, tag: "[???]" };
+		console.log(prefix + stdoutColors.white(formatTime(log.time)) + " " + lvl.color(lvl.tag + " " + log.msg));
+	}
 }
 
 /**

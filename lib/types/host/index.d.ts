@@ -119,6 +119,69 @@ declare class BaseIterator {
 	 */
 	close(): void;
 }
+/** Command field types. */
+declare namespace Field {
+	class Text implements CommandField {
+		private desc;
+		spanLines: boolean;
+		spellcheck: boolean;
+		trimSpace: boolean;
+		maxLength: u32;
+		constructor(desc: string);
+		getType(): string;
+		getDesc(): string;
+		getOpts(): string | null;
+		/**
+		 * Sets span lines flag. Is false by default.
+		 * @param spanLines - Flag telling if the text can be spanned across multiple lines.
+		 */
+		setSpanLines(spanLines: boolean): this;
+		/**
+		 * Sets flag to spellcheck text. Is true by default.
+		 * @param spellcheck - Flag telling if the text should be checked for spelling errors.
+		 */
+		setSpellcheck(spellcheck: boolean): this;
+		/**
+		 * Sets flag to trim leading space characters. Is true by default.
+		 * @param trimSpace - Flag telling if initial space should be trimmed.
+		 */
+		setTrimSpace(trimSpace: boolean): this;
+		/**
+		 * Sets text max length. Zero (0) means server max length. Is 0 by default.
+		 * @param maxLength - Flag telling if initial space should be trimmed.
+		 */
+		setMaxLength(maxLength: u32): this;
+	}
+}
+interface CommandField {
+	/** Returns the type of the command field. */
+	getType(): string;
+	/** Returns the help description of the command field. */
+	getDesc(): string;
+	/** Returns the options of the command field as a JSOn encoded string. */
+	getOpts(): string | null;
+}
+/**
+ * Command is an object that represents a custom command.
+ */
+declare class Command {
+	pattern: string;
+	private fieldDefs;
+	/**
+	 * Constructor of the Command instance.
+	 */
+	constructor(pattern: string);
+	/**
+	 * Sets the definition for a command field.
+	 * @param key - Field <key> as found in command pattern.
+	 * @param def - Field definition.
+	 */
+	field(key: string, def: CommandField): Command;
+	/**
+	 * Converts the command into a JSON structure.
+	 */
+	json(): string;
+}
 /**
  * Room API functions and types.
  */
@@ -310,10 +373,10 @@ declare namespace Room {
 	function setRoom<T>(fields: T): void;
 	/**
 	 * Switches to a stored room profile by profile key.
-	 * @param key - Keyword for the stored profile.
+	 * @param keyword - Keyword for the stored profile.
 	 * @param safe - Flag to prevent the room's current profile to be overwritten by the stored profile, if it contains unstored changes.
 	 */
-	function useProfile(key: string, safe?: boolean): void;
+	function useProfile(keyword: string, safe?: boolean): void;
 	/**
 	 * Sweep a single character from the room by sending them home.
 	 * @param charId - Character ID.
@@ -382,6 +445,24 @@ declare namespace Room {
 	 * @param {i32|i32u|i64|i64u} [fields.order] Sort order of the exit with 0 being the first listed. Ignored if the exit is hidden or inactive.
 	 */
 	function setExit<T>(exitId: ID, fields: T): void;
+	/**
+	 * Adds a custom command to the room.
+	 *
+	 * Pattern is a string describing the general command structure, and may
+	 * contain <Fields> and [optional] parts.
+	 *
+	 * Any field defined in the pattern must have a corresponding field entry.
+	 *
+	 * @param keyword - Keyword for the command.
+	 * @param cmd - Command to add.
+	 * @param fields - Field definitions.
+	 */
+	function addCommand(keyword: string, cmd: Command, priority?: u32): void;
+	/**
+	 * Removes a custom command, added by the script, from the room.
+	 * @param keyword - Keyword for the command.
+	 */
+	function removeCommand(keyword: string): boolean;
 	class CharIterator extends BaseIterator {
 		/**
 		 * Returns the current char. It will abort if the cursor has reached the

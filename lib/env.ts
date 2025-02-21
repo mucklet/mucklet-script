@@ -48,6 +48,12 @@ export declare namespace Room {
 
 	@external("env", "room.unlistenExit")
 	export function unlistenExit(exitId: string | null): boolean
+
+	@external("env", "room.addCommand")
+	export function addCommand(key: string, cmd: string, priority: u32): void
+
+	@external("env", "room.removeCommand")
+	export function removeCommand(key: string): boolean
 }
 
 export declare namespace Script {

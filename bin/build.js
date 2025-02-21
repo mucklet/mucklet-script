@@ -1,8 +1,9 @@
 import path from "path";
 import { parse } from "tinyargs";
+import { stat } from "fs/promises";
 import { stdoutColors } from "./utils/terminal.js";
 import { printHelp, printError } from "./utils/options.js";
-import { loadConfig, compileScript } from "./utils/tools.js";
+import { loadConfig, compileScript, formatByteSize } from "./utils/tools.js";
 
 const defaultOutputDir = ".";
 const defaultOutFile = "[name].wasm";
@@ -123,8 +124,9 @@ async function buildScript(cfg, script) {
 		);
 		return false;
 	}
-
-	console.log("Outfile: " + stdoutColors.cyan(outFile));
-	console.log("TextFile: " + stdoutColors.cyan(textFile));
+	var outfileSize = (await stat(outFile)).size;
+	var textfileSize = (await stat(textFile)).size;
+	console.log("Outfile: " + stdoutColors.cyan(outFile) + stdoutColors.gray(" (" + formatByteSize(outfileSize) + ")"));
+	console.log("TextFile: " + stdoutColors.cyan(textFile) + stdoutColors.gray(" (" + formatByteSize(textfileSize) + ")"));
 	return true;
 }

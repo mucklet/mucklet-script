@@ -1,9 +1,9 @@
-import { readFile } from "fs/promises";
+import { readFile, stat } from "fs/promises";
 import path from "path";
 import { parse } from "tinyargs";
 import { stdoutColors } from "./utils/terminal.js";
 import { printHelp, printError } from "./utils/options.js";
-import { getToken, loadConfig, compileScript, errToString, sha256File } from "./utils/tools.js";
+import { getToken, loadConfig, compileScript, errToString, sha256File, formatByteSize } from "./utils/tools.js";
 import { createClient, getRoomScriptByName } from "./utils/client.js";
 
 const defaultOutputDir = ".";
@@ -187,6 +187,8 @@ async function deployScript(cfg, script, client, version) {
 
 	console.log("  Getting existing room script ...");
 
+	var stats = await stat(outFile);
+
 	let roomScript;
 	try {
 		roomScript = await getRoomScriptByName(client, room, script.name);
@@ -216,6 +218,7 @@ async function deployScript(cfg, script, client, version) {
 		if (!Object.keys(params).find(k => typeof params[k] !== "undefined")) {
 			return skipWithMessage("Unchanged", [
 				`Script ID   #${roomScript.id}`,
+				`Size        ${formatByteSize(stats.size)}`,
 				`Active      ${roomScript.active ? "Yes" : "No"}`,
 			]);
 		}
@@ -243,6 +246,8 @@ async function deployScript(cfg, script, client, version) {
 
 	return { result: [
 		`Script ID   #${roomScript.id}`,
+		`Filename    ${outFilename}`,
+		`Size        ${formatByteSize(stats.size)}`,
 		`Active      ${roomScript.active ? "Yes" : "No"}`,
 	] };
 }
