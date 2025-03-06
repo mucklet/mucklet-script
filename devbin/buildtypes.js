@@ -13,7 +13,7 @@ exec('tsc lib/host.ts --declaration --emitDeclarationOnly --outDir build/types',
 	content = content
 		.replace(/^import \{.*\n/gm, "")      // (delete the line)
 		.replace(/^export \{.*\n/gm, "")      // (delete the line)
-		.replace(/^\s*export \{\};\n/gm, "")   // (delete lines with just `export {};`)
+		.replace(/^\s*export \{\};\n/gm, "")  // (delete lines with just `export {};`)
 		.replace(/^(\s*)export /gm, "$1")     // (remove the 'export' word)
 		.replace(/ {4}/g, "\t");              // (replace spaces with tabs)
 
