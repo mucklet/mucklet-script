@@ -114,3 +114,11 @@ export declare namespace ExitIntercept {
 	@external("env", "exitIntercept.cancel")
 	export function cancel(interceptId: i32, msg: string | null): void
 }
+
+export declare namespace CmdIntercept {
+	@external("env", "cmdIntercept.info")
+	export function info(interceptId: i32, exitId: string): void
+
+	@external("env", "cmdIntercept.error")
+	export function error(interceptId: i32, msg: string): void
+}

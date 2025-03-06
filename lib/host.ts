@@ -4,6 +4,7 @@ import {
 	Store as store_binding,
 	Iterator as iterator_binding,
 	ExitIntercept as exitintercept_binding,
+	CmdIntercept as cmdintercept_binding,
 } from "./env";
 import { JSON } from 'json-as'
 export { JSON };
@@ -113,6 +114,36 @@ export class ExitIntercept {
 }
 
 /**
+ * CmdIntercept is a command action triggered by a character.
+ */
+export class CmdIntercept {
+	/** Intercept ID */
+	interceptId: i32 = 0;
+	/** Character ID */
+	charId: ID = "";
+	/** Command keyword */
+	keyword: string = "";
+	/** Command data in JSON format. */
+	data: JSON.Raw = "";
+
+	/**
+	 * Responds to the command action with an info message.
+	 * @param msg Info message.
+	 */
+	info(msg: string): void {
+		cmdintercept_binding.info(this.interceptId, msg);
+	}
+
+	/**
+	 * Responds to the command action with an error message.
+	 * @param msg Error message.
+	 */
+	error(msg: string): void {
+		cmdintercept_binding.error(this.interceptId, msg);
+	}
+}
+
+/**
  * BaseIterator is an iterator over items with an ID.
  */
 class BaseIterator {
@@ -170,14 +201,25 @@ class BaseIterator {
 	}
 }
 
+/** Command field type input values. */
+export namespace FieldValue {
+
+	@json
+	export class Text {
+		public value: string = "";
+	}
+}
+
 /** Command field types. */
 export namespace Field {
 
 	@json
 	export class Text implements CommandField {
+
 		public spanLines: boolean = false;
-		public spellcheck: boolean = false;
-		public trimSpace: boolean = false;
+		public spellCheck: boolean = true;
+		public trimSpace: boolean = true;
+		public formatText: boolean = false;
 		public maxLength: u32 = 0;
 
 		constructor(private desc: string) {}
@@ -193,8 +235,9 @@ export namespace Field {
 		getOpts(): string | null {
 			return ("{" +
 				`"spanLines":` + JSON.stringify(this.spanLines) +
-				`,"spellCheck":` + JSON.stringify(this.spellcheck) +
+				`,"spellCheck":` + JSON.stringify(this.spellCheck) +
 				`,"trimSpace":` + JSON.stringify(this.trimSpace) +
+				`,"formatText":` + JSON.stringify(this.formatText) +
 				`,"maxLength":` + JSON.stringify(this.maxLength) +
 			"}");
 		}
@@ -209,11 +252,11 @@ export namespace Field {
 		}
 
 		/**
-		 * Sets flag to spellcheck text. Is true by default.
-		 * @param spellcheck - Flag telling if the text should be checked for spelling errors.
+		 * Sets flag to spellCheck text. Is true by default.
+		 * @param spellCheck - Flag telling if the text should be checked for spelling errors.
 		 */
-		setSpellcheck(spellcheck: boolean): this {
-			this.spellcheck = spellcheck;
+		setSpellCheck(spellCheck: boolean): this {
+			this.spellCheck = spellCheck;
 			return this;
 		}
 
@@ -223,6 +266,15 @@ export namespace Field {
 		 */
 		setTrimSpace(trimSpace: boolean): this {
 			this.trimSpace = trimSpace;
+			return this;
+		}
+
+		/**
+		 * Sets flag to format text while typing. Is false by default.
+		 * @param formatText - Flag telling the text should be formatted while typing.
+		 */
+		setFormatText(formatText: boolean): this {
+			this.formatText = formatText;
 			return this;
 		}
 
@@ -256,7 +308,7 @@ export class Command {
 	/**
 	 * Constructor of the Command instance.
 	 */
-	constructor(public pattern: string) {}
+	constructor(public pattern: string, public desc: string = "") {}
 
 	/**
 	 * Sets the definition for a command field.
@@ -282,20 +334,19 @@ export class Command {
 	 */
 	json(): string {
 		const keys = this.fieldDefs.keys();
-		// Quick exit with only pattern if no fields are defined.
-		if (keys.length == 0) {
-			return `{"pattern":${JSON.stringify(this.pattern)}}`;
-		}
-
-		let s = "";
-		for (let i = 0; i < keys.length; i++) {
-			let key = keys[i];
-			if (s != "") {
-				s += ","
+		let s = `{"pattern":${JSON.stringify(this.pattern)},"desc":${JSON.stringify(this.desc)}`;
+		if (keys.length > 0) {
+			s += `,"fields":{`
+			for (let i = 0; i < keys.length; i++) {
+				let key = keys[i];
+				if (i > 0) {
+					s += ","
+				}
+				s += JSON.stringify(key) + ":" + this.fieldDefs.get(key);
 			}
-			s += JSON.stringify(key) + ":" + this.fieldDefs.get(key);
+			s += `}`;
 		}
-		return `{"pattern":${JSON.stringify(this.pattern)},"fields":{${s}}}`;
+		return s + `}`;
 	}
 }
 

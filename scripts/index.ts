@@ -135,3 +135,34 @@ export function onExitUse(
 ): void {
 	// Handle the intercepted exit use
 }
+
+/**
+ * onCommand is called when a character uses a custom command. It requires that
+ * `Room.addCommand` has been called earlier to register the command, usually in
+ * the `onActivate()` function. The script may send a response to the caller
+ * using either `cmdIntercept.info` or `cmdIntercept.error`, but it is not
+ * required. The response must be sent within 1 second from the call.
+ *
+ * Not required. Can be remove if not used.
+ *
+ * @example
+ * Adds a "send ping" command that responds with an info message:
+ * ```
+ * export function onActivate(): void {
+ *     Room.addCommand("ping", new Command("send ping", "Sends a ping to the script.");
+ * }
+ *
+ * export function onCommand(addr: string, cmdIntercept: CmdIntercept): void {
+ *     cmdIntercept.info("Pong!");
+ * }
+ * ```
+ *
+ * @param addr - Address of this script instance receiving the event.
+ * @param cmdIntercep - Exit intercept object.
+ */
+export function onCommand(
+	addr: string,
+	cmdIntercept: CmdIntercept,
+): void {
+	// Handle the command
+}
