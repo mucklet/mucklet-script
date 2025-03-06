@@ -3,8 +3,8 @@ import {
 	Script as script_binding,
 	Store as store_binding,
 	Iterator as iterator_binding,
-	ExitIntercept as exitintercept_binding,
-	CmdIntercept as cmdintercept_binding,
+	ExitAction as exitaction_binding,
+	CmdAction as cmdaction_binding,
 } from "./env";
 import { JSON } from 'json-as'
 export { JSON };
@@ -81,11 +81,11 @@ function keyToBuffer<T>(key: T): ArrayBuffer {
 }
 
 /**
- * ExitIntercept is an intercepted use of an exit.
+ * ExitAction is an action representing an intercepted use of an exit.
  */
-export class ExitIntercept {
-	/** Intercept ID */
-	interceptId: i32 = 0;
+export class ExitAction {
+	/** Action ID */
+	actionId: i32 = 0;
 	/** Character ID */
 	charId: ID = "";
 	/** Exit ID */
@@ -99,7 +99,7 @@ export class ExitIntercept {
 	 * @param exitId Exit ID or null for the originally used exit.
 	 */
 	useExit(exitId: ID | null = null): void {
-		exitintercept_binding.useExit(this.interceptId, exitId);
+		exitaction_binding.useExit(this.actionId, exitId);
 	}
 
 	/**
@@ -109,16 +109,16 @@ export class ExitIntercept {
 	 * @param msg Info message to show, or default message if null.
 	 */
 	cancel(msg: string | null = null): void {
-		exitintercept_binding.cancel(this.interceptId, msg);
+		exitaction_binding.cancel(this.actionId, msg);
 	}
 }
 
 /**
- * CmdIntercept is a command action triggered by a character.
+ * CmdAction is a command action triggered by a character.
  */
-export class CmdIntercept {
-	/** Intercept ID */
-	interceptId: i32 = 0;
+export class CmdAction {
+	/** Action ID */
+	actionId: i32 = 0;
 	/** Character ID */
 	charId: ID = "";
 	/** Command keyword */
@@ -131,7 +131,7 @@ export class CmdIntercept {
 	 * @param msg Info message.
 	 */
 	info(msg: string): void {
-		cmdintercept_binding.info(this.interceptId, msg);
+		cmdaction_binding.info(this.actionId, msg);
 	}
 
 	/**
@@ -139,7 +139,7 @@ export class CmdIntercept {
 	 * @param msg Error message.
 	 */
 	error(msg: string): void {
-		cmdintercept_binding.error(this.interceptId, msg);
+		cmdaction_binding.error(this.actionId, msg);
 	}
 }
 

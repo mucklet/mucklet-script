@@ -36,7 +36,7 @@ export function onMessage(addr: string, topic: string, dta: string, sender: stri
 
 // onExitUse is called when someone tries to use the exit. It will only be
 // called if `Room.listenExit` has been called prior to the event.
-export function onExitUse(addr: string, exitIntercept: ExitIntercept): void {
+export function onExitUse(addr: string, exitAction: ExitAction): void {
 	// We cancel the exit use attempt with a message.
-	exitIntercept.cancel("The door seems to be locked.")
+	exitAction.cancel("The door seems to be locked.")
 }

@@ -57,11 +57,11 @@ declare namespace ExitIcon {
 }
 type ExitIcon = i32;
 /**
- * ExitIntercept is an intercepted use of an exit.
+ * ExitAction is an action representing an intercepted use of an exit.
  */
-declare class ExitIntercept {
-	/** Intercept ID */
-	interceptId: i32;
+declare class ExitAction {
+	/** Action ID */
+	actionId: i32;
 	/** Character ID */
 	charId: ID;
 	/** Exit ID */
@@ -81,6 +81,29 @@ declare class ExitIntercept {
 	 * @param msg Info message to show, or default message if null.
 	 */
 	cancel(msg?: string | null): void;
+}
+/**
+ * CmdAction is a command action triggered by a character.
+ */
+declare class CmdAction {
+	/** Action ID */
+	actionId: i32;
+	/** Character ID */
+	charId: ID;
+	/** Command keyword */
+	keyword: string;
+	/** Command data in JSON format. */
+	data: JSON.Raw;
+	/**
+	 * Responds to the command action with an info message.
+	 * @param msg Info message.
+	 */
+	info(msg: string): void;
+	/**
+	 * Responds to the command action with an error message.
+	 * @param msg Error message.
+	 */
+	error(msg: string): void;
 }
 /**
  * BaseIterator is an iterator over items with an ID.
@@ -119,13 +142,20 @@ declare class BaseIterator {
 	 */
 	close(): void;
 }
+/** Command field type input values. */
+declare namespace FieldValue {
+	class Text {
+		value: string;
+	}
+}
 /** Command field types. */
 declare namespace Field {
 	class Text implements CommandField {
 		private desc;
 		spanLines: boolean;
-		spellcheck: boolean;
+		spellCheck: boolean;
 		trimSpace: boolean;
+		formatText: boolean;
 		maxLength: u32;
 		constructor(desc: string);
 		getType(): string;
@@ -137,15 +167,20 @@ declare namespace Field {
 		 */
 		setSpanLines(spanLines: boolean): this;
 		/**
-		 * Sets flag to spellcheck text. Is true by default.
-		 * @param spellcheck - Flag telling if the text should be checked for spelling errors.
+		 * Sets flag to spellCheck text. Is true by default.
+		 * @param spellCheck - Flag telling if the text should be checked for spelling errors.
 		 */
-		setSpellcheck(spellcheck: boolean): this;
+		setSpellCheck(spellCheck: boolean): this;
 		/**
 		 * Sets flag to trim leading space characters. Is true by default.
 		 * @param trimSpace - Flag telling if initial space should be trimmed.
 		 */
 		setTrimSpace(trimSpace: boolean): this;
+		/**
+		 * Sets flag to format text while typing. Is false by default.
+		 * @param formatText - Flag telling the text should be formatted while typing.
+		 */
+		setFormatText(formatText: boolean): this;
 		/**
 		 * Sets text max length. Zero (0) means server max length. Is 0 by default.
 		 * @param maxLength - Flag telling if initial space should be trimmed.
@@ -166,11 +201,12 @@ interface CommandField {
  */
 declare class Command {
 	pattern: string;
+	desc: string;
 	private fieldDefs;
 	/**
 	 * Constructor of the Command instance.
 	 */
-	constructor(pattern: string);
+	constructor(pattern: string, desc?: string);
 	/**
 	 * Sets the definition for a command field.
 	 * @param key - Field <key> as found in command pattern.
