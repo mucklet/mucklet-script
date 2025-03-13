@@ -706,7 +706,7 @@ export namespace Room {
 	 *
 	 * @param keyword - Keyword for the command.
 	 * @param cmd - Command to add.
-	 * @param fields - Field definitions.
+	 * @param priority - Priority for when two or more commands match the same input. Higher priority is selected first.
 	 */
 	export function addCommand(keyword: string, cmd: Command, priority: u32 = 0): void {
 		return room_binding.addCommand(keyword, cmd.json(), priority);
