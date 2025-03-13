@@ -26,7 +26,7 @@ new Command("this is a pattern")
 
 The pattern may contain:
 * Words - Strings consisting of letters (a-z) or numbers (0-9). Consequtive words are separated with space. Words are lower cased.
-* Symbols - Any ascii character that is not a letter or number. Reserved symbols must be escaped with backslash (e.g. `\<`)
+* Symbols - Any ascii character that is not a letter or number. Reserved symbols must be escaped with backslash (e.g. `\<`).
 * Field tags - A section inside `<` and `>` characters (e.g. `<Message>`)
 
 The pattern may NOT contain:
@@ -43,7 +43,7 @@ Examples:
 ```text
 push button
 whitelist <Character>
-bulletin <Keyword> : <Message>
+add bulletin <Keyword> : <Title> = <Message>
 ```
 **Bad** ❌
 ```json
@@ -69,7 +69,7 @@ Field type | Description
 --- | ---
 `Field.Text`    | Text field. May be configured to span multiple lines and use formatted text.
 `Field.Char`    | Character name. May be configured to specify if there character must be awake or in the room.
-`Field.Keyword` | A keyword. May be configured to allow space or other characters.
+`Field.Keyword` | A keyword that uses a limited set of characters that is lower cased. May be configured to exclude space or remove diacritics.
 `Field.Select`  | A predefined list of words/texts which the character may choose one.
 
 For more info on each type, use an IDE that can show type/parameter info for Typescript or Assemblyscript code (such as VSCode).

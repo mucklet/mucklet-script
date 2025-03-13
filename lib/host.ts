@@ -208,17 +208,23 @@ export namespace FieldValue {
 	export class Text {
 		public value: string = "";
 	}
+
+	@json
+	export class Keyword {
+		public value: string = "";
+	}
 }
 
 /** Command field types. */
 export namespace Field {
 
+	// A text field is used for arbitrary text, such as messages, descriptions,
+	// or titles.
 	@json
 	export class Text implements CommandField {
 
 		public spanLines: boolean = false;
 		public spellCheck: boolean = true;
-		public trimSpace: boolean = true;
 		public formatText: boolean = false;
 		public maxLength: u32 = 0;
 
@@ -236,7 +242,6 @@ export namespace Field {
 			return ("{" +
 				`"spanLines":` + JSON.stringify(this.spanLines) +
 				`,"spellCheck":` + JSON.stringify(this.spellCheck) +
-				`,"trimSpace":` + JSON.stringify(this.trimSpace) +
 				`,"formatText":` + JSON.stringify(this.formatText) +
 				`,"maxLength":` + JSON.stringify(this.maxLength) +
 			"}");
@@ -261,15 +266,6 @@ export namespace Field {
 		}
 
 		/**
-		 * Sets flag to trim leading space characters. Is true by default.
-		 * @param trimSpace - Flag telling if initial space should be trimmed.
-		 */
-		setTrimSpace(trimSpace: boolean): this {
-			this.trimSpace = trimSpace;
-			return this;
-		}
-
-		/**
 		 * Sets flag to format text while typing. Is false by default.
 		 * @param formatText - Flag telling the text should be formatted while typing.
 		 */
@@ -280,7 +276,76 @@ export namespace Field {
 
 		/**
 		 * Sets text max length. Zero (0) means server max length. Is 0 by default.
-		 * @param maxLength - Flag telling if initial space should be trimmed.
+		 * @param maxLength - Max length of text.
+		 */
+		setMaxLength(maxLength: u32): this {
+			this.maxLength = maxLength;
+			return this;
+		}
+	}
+
+	// A keyword field is used for keyword names using a limited set of
+	// characters that will be transformed to lower case. By default, a keyword
+	// allows Letters, Numbers, Spaces, apostrophes ('), and dash/minus (-).
+	@json
+	export class Keyword implements CommandField {
+		// public exclude: string = "";
+		public removeDiacritics: boolean = false;
+		// public excludeSpace: boolean = false;
+		public maxLength: u32 = 0;
+
+		constructor(private desc: string) {}
+
+		getType(): string {
+			return "keyword";
+		}
+
+		getDesc(): string {
+			return this.desc;
+		}
+
+		getOpts(): string | null {
+			return ("{" +
+				`"removeDiacritics":` + JSON.stringify(this.removeDiacritics) +
+				// `,"excludeSpace":` + JSON.stringify(this.excludeSpace) +
+				`,"maxLength":` + JSON.stringify(this.maxLength) +
+			"}");
+		}
+
+		// /**
+		//  * Sets a string of characters to exclude. By default
+		//  * Is 0 by default.
+		//  * @param exclude - Characters to exclude.
+		//  */
+		// setExclude(exclude: string): this {
+		// 	this.exclude = exclude;
+		// 	return this;
+		// }
+
+		/**
+		 * Sets flag to remove diacritics from the keyword by decomposing the
+		 * characters and removing any non-print characters and marker in the Mn
+		 * Unicode category. Is false by default.
+		 * @param removeDiacritics - Flag telling if diacritics should be removed.
+		 */
+		setRemoveDiacritics(removeDiacritics: boolean): this {
+			this.removeDiacritics = removeDiacritics;
+			return this;
+		}
+
+		// /**
+		//  * Sets flag to exclude space character from the keyword. Is false by
+		//  * default.
+		//  * @param excludeSpace - Flag telling if space should be excluded.
+		//  */
+		// setExcludeSpace(excludeSpace: boolean): this {
+		// 	this.excludeSpace = excludeSpace;
+		// 	return this;
+		// }
+
+		/**
+		 * Sets text max length. Zero (0) means server max length. Is 0 by default.
+		 * @param maxLength - Max length of text.
 		 */
 		setMaxLength(maxLength: u32): this {
 			this.maxLength = maxLength;

@@ -147,6 +147,9 @@ declare namespace FieldValue {
 	class Text {
 		value: string;
 	}
+	class Keyword {
+		value: string;
+	}
 }
 /** Command field types. */
 declare namespace Field {
@@ -154,7 +157,6 @@ declare namespace Field {
 		private desc;
 		spanLines: boolean;
 		spellCheck: boolean;
-		trimSpace: boolean;
 		formatText: boolean;
 		maxLength: u32;
 		constructor(desc: string);
@@ -172,18 +174,34 @@ declare namespace Field {
 		 */
 		setSpellCheck(spellCheck: boolean): this;
 		/**
-		 * Sets flag to trim leading space characters. Is true by default.
-		 * @param trimSpace - Flag telling if initial space should be trimmed.
-		 */
-		setTrimSpace(trimSpace: boolean): this;
-		/**
 		 * Sets flag to format text while typing. Is false by default.
 		 * @param formatText - Flag telling the text should be formatted while typing.
 		 */
 		setFormatText(formatText: boolean): this;
 		/**
 		 * Sets text max length. Zero (0) means server max length. Is 0 by default.
-		 * @param maxLength - Flag telling if initial space should be trimmed.
+		 * @param maxLength - Max length of text.
+		 */
+		setMaxLength(maxLength: u32): this;
+	}
+	class Keyword implements CommandField {
+		private desc;
+		removeDiacritics: boolean;
+		maxLength: u32;
+		constructor(desc: string);
+		getType(): string;
+		getDesc(): string;
+		getOpts(): string | null;
+		/**
+		 * Sets flag to remove diacritics from the keyword by decomposing the
+		 * characters and removing any non-print characters and marker in the Mn
+		 * Unicode category. Is false by default.
+		 * @param removeDiacritics - Flag telling if diacritics should be removed.
+		 */
+		setRemoveDiacritics(removeDiacritics: boolean): this;
+		/**
+		 * Sets text max length. Zero (0) means server max length. Is 0 by default.
+		 * @param maxLength - Max length of text.
 		 */
 		setMaxLength(maxLength: u32): this;
 	}
@@ -491,7 +509,7 @@ declare namespace Room {
 	 *
 	 * @param keyword - Keyword for the command.
 	 * @param cmd - Command to add.
-	 * @param fields - Field definitions.
+	 * @param priority - Priority for when two or more commands match the same input. Higher priority is selected first.
 	 */
 	function addCommand(keyword: string, cmd: Command, priority?: u32): void;
 	/**
