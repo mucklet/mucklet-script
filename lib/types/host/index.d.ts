@@ -158,8 +158,9 @@ declare namespace Field {
 		spanLines: boolean;
 		spellCheck: boolean;
 		formatText: boolean;
+		minLength: u32;
 		maxLength: u32;
-		constructor(desc: string);
+		constructor(desc?: string);
 		getType(): string;
 		getDesc(): string;
 		getOpts(): string | null;
@@ -179,7 +180,13 @@ declare namespace Field {
 		 */
 		setFormatText(formatText: boolean): this;
 		/**
-		 * Sets text max length. Zero (0) means server max length. Is 0 by default.
+		 * Sets text min length. Must be smaller or equal to max length unless
+		 * max length is set to zero (0).. Is 0 by default.
+		 * @param minLength - Min length of text.
+		 */
+		setMinLength(minLength: u32): this;
+		/**
+		 * Sets text maximum length. Zero (0) means server max length. Is 0 by default.
 		 * @param maxLength - Max length of text.
 		 */
 		setMaxLength(maxLength: u32): this;
@@ -187,8 +194,9 @@ declare namespace Field {
 	class Keyword implements CommandField {
 		private desc;
 		removeDiacritics: boolean;
+		minLength: u32;
 		maxLength: u32;
-		constructor(desc: string);
+		constructor(desc?: string);
 		getType(): string;
 		getDesc(): string;
 		getOpts(): string | null;
@@ -200,7 +208,13 @@ declare namespace Field {
 		 */
 		setRemoveDiacritics(removeDiacritics: boolean): this;
 		/**
-		 * Sets text max length. Zero (0) means server max length. Is 0 by default.
+		 * Sets text min length. Must be smaller or equal to max length unless
+		 * max length is set to zero (0).. Is 0 by default.
+		 * @param minLength - Min length of text.
+		 */
+		setMinLength(minLength: u32): this;
+		/**
+		 * Sets text maximum length. Zero (0) means server max length. Is 0 by default.
 		 * @param maxLength - Max length of text.
 		 */
 		setMaxLength(maxLength: u32): this;

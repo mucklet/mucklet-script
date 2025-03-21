@@ -226,9 +226,10 @@ export namespace Field {
 		public spanLines: boolean = false;
 		public spellCheck: boolean = true;
 		public formatText: boolean = false;
+		public minLength: u32 = 0;
 		public maxLength: u32 = 0;
 
-		constructor(private desc: string) {}
+		constructor(private desc: string = "") {}
 
 		getType(): string {
 			return "text";
@@ -243,6 +244,7 @@ export namespace Field {
 				`"spanLines":` + JSON.stringify(this.spanLines) +
 				`,"spellCheck":` + JSON.stringify(this.spellCheck) +
 				`,"formatText":` + JSON.stringify(this.formatText) +
+				`,"minLength":` + JSON.stringify(this.minLength) +
 				`,"maxLength":` + JSON.stringify(this.maxLength) +
 			"}");
 		}
@@ -275,7 +277,17 @@ export namespace Field {
 		}
 
 		/**
-		 * Sets text max length. Zero (0) means server max length. Is 0 by default.
+		 * Sets text min length. Must be smaller or equal to max length unless
+		 * max length is set to zero (0).. Is 0 by default.
+		 * @param minLength - Min length of text.
+		 */
+		setMinLength(minLength: u32): this {
+			this.minLength = minLength;
+			return this;
+		}
+
+		/**
+		 * Sets text maximum length. Zero (0) means server max length. Is 0 by default.
 		 * @param maxLength - Max length of text.
 		 */
 		setMaxLength(maxLength: u32): this {
@@ -292,9 +304,10 @@ export namespace Field {
 		// public exclude: string = "";
 		public removeDiacritics: boolean = false;
 		// public excludeSpace: boolean = false;
+		public minLength: u32 = 0;
 		public maxLength: u32 = 0;
 
-		constructor(private desc: string) {}
+		constructor(private desc: string = "") {}
 
 		getType(): string {
 			return "keyword";
@@ -308,6 +321,7 @@ export namespace Field {
 			return ("{" +
 				`"removeDiacritics":` + JSON.stringify(this.removeDiacritics) +
 				// `,"excludeSpace":` + JSON.stringify(this.excludeSpace) +
+				`,"minLength":` + JSON.stringify(this.minLength) +
 				`,"maxLength":` + JSON.stringify(this.maxLength) +
 			"}");
 		}
@@ -344,7 +358,17 @@ export namespace Field {
 		// }
 
 		/**
-		 * Sets text max length. Zero (0) means server max length. Is 0 by default.
+		 * Sets text min length. Must be smaller or equal to max length unless
+		 * max length is set to zero (0).. Is 0 by default.
+		 * @param minLength - Min length of text.
+		 */
+		setMinLength(minLength: u32): this {
+			this.minLength = minLength;
+			return this;
+		}
+
+		/**
+		 * Sets text maximum length. Zero (0) means server max length. Is 0 by default.
 		 * @param maxLength - Max length of text.
 		 */
 		setMaxLength(maxLength: u32): this {
