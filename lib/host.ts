@@ -213,6 +213,16 @@ export namespace FieldValue {
 	export class Keyword {
 		public value: string = "";
 	}
+
+	@json
+	export class Integer {
+		public value: i64 = 0;
+	}
+
+	@json
+	export class Float {
+		public value: f64 = 0;
+	}
 }
 
 /** Command field types. */
@@ -301,9 +311,7 @@ export namespace Field {
 	// allows Letters, Numbers, Spaces, apostrophes ('), and dash/minus (-).
 	@json
 	export class Keyword implements CommandField {
-		// public exclude: string = "";
 		public removeDiacritics: boolean = false;
-		// public excludeSpace: boolean = false;
 		public minLength: u32 = 0;
 		public maxLength: u32 = 0;
 
@@ -326,16 +334,6 @@ export namespace Field {
 			"}");
 		}
 
-		// /**
-		//  * Sets a string of characters to exclude. By default
-		//  * Is 0 by default.
-		//  * @param exclude - Characters to exclude.
-		//  */
-		// setExclude(exclude: string): this {
-		// 	this.exclude = exclude;
-		// 	return this;
-		// }
-
 		/**
 		 * Sets flag to remove diacritics from the keyword by decomposing the
 		 * characters and removing any non-print characters and marker in the Mn
@@ -346,16 +344,6 @@ export namespace Field {
 			this.removeDiacritics = removeDiacritics;
 			return this;
 		}
-
-		// /**
-		//  * Sets flag to exclude space character from the keyword. Is false by
-		//  * default.
-		//  * @param excludeSpace - Flag telling if space should be excluded.
-		//  */
-		// setExcludeSpace(excludeSpace: boolean): this {
-		// 	this.excludeSpace = excludeSpace;
-		// 	return this;
-		// }
 
 		/**
 		 * Sets text min length. Must be smaller or equal to max length unless
@@ -373,6 +361,114 @@ export namespace Field {
 		 */
 		setMaxLength(maxLength: u32): this {
 			this.maxLength = maxLength;
+			return this;
+		}
+	}
+
+	// An integer field is used for whole numbers.
+	@json
+	export class Integer implements CommandField {
+		public min: i64 = 0;
+		public max: i64 = 0;
+		private hasMin: boolean = false;
+		private hasMax: boolean = false;
+
+		constructor(private desc: string = "") {}
+
+		getType(): string {
+			return "integer";
+		}
+
+		getDesc(): string {
+			return this.desc;
+		}
+
+		getOpts(): string | null {
+			let s = "{";
+			if (this.hasMin) {
+				s += `"min":` + JSON.stringify(this.min)
+			}
+			if (this.hasMax) {
+				if (s.length > 1) {
+					s = s + ","
+				}
+				s += `"max":` + JSON.stringify(this.max)
+			}
+			return s + "}";
+		}
+
+		/**
+		 * Sets integer min value. Must be smaller or equal to max value.
+		 * @param min - Min value of integer.
+		 */
+		setMin(min: i64): this {
+			this.min = min;
+			this.hasMin = true;
+			return this;
+		}
+
+		/**
+		 * Sets integer max value. Must be greater or equal to min value.
+		 * @param max - Max value of integer
+		 */
+		setMax(max: i64): this {
+			this.max = max;
+			this.hasMax = true;
+			return this;
+		}
+	}
+
+	// A float field is used for decimal numbers.
+	@json
+	export class Float implements CommandField {
+		public min: f64 = 0;
+		public max: f64 = 0;
+		private gtprop: string | null = null;
+		private ltprop: string | null = null;
+
+		constructor(private desc: string = "") {}
+
+		getType(): string {
+			return "float";
+		}
+
+		getDesc(): string {
+			return this.desc;
+		}
+
+		getOpts(): string | null {
+			let s = "{";
+			if (this.gtprop != null) {
+				s += `"${this.gtprop!}":` + JSON.stringify(this.min)
+			}
+			if (this.ltprop != null) {
+				if (s.length > 1) {
+					s = s + ","
+				}
+				s += `"${this.ltprop!}":` + JSON.stringify(this.max)
+			}
+			return s + "}";
+		}
+
+		/**
+		 * Sets float min value. Must be smaller than (or equal if both are inclusive) to max value.
+		 * @param min - Min value of float.
+		 * @param inclusive - Flag to tell if min value is inclusive (>=) on true, or exclusive (>) on false.
+		 */
+		setMin(min: f64, inclusive: bool): this {
+			this.min = min;
+			this.gtprop = inclusive ? "gte" : "gt";
+			return this;
+		}
+
+		/**
+		 * Sets float max value. Must be greater than (or equal if both are inclusive) to min value.
+		 * @param max - Max value of float.
+		 * @param inclusive - Flag to tell if max value is inclusive (<=) on true, or exclusive (<) on false.
+		 */
+		setMax(max: f64, inclusive: bool): this {
+			this.max = max;
+			this.ltprop = inclusive ? "lte" : "lt";
 			return this;
 		}
 	}
@@ -795,7 +891,7 @@ export namespace Room {
 	 *
 	 * @param keyword - Keyword for the command.
 	 * @param cmd - Command to add.
-	 * @param priority - Priority for when two or more commands match the same input. Higher priority is selected first.
+	 * @param priority - Priority for sort order (descending) and when two or more commands match the same input. Higher priority is selected first.
 	 */
 	export function addCommand(keyword: string, cmd: Command, priority: u32 = 0): void {
 		return room_binding.addCommand(keyword, cmd.json(), priority);

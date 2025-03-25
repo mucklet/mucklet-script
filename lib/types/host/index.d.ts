@@ -150,6 +150,12 @@ declare namespace FieldValue {
 	class Keyword {
 		value: string;
 	}
+	class Integer {
+		value: i64;
+	}
+	class Float {
+		value: f64;
+	}
 }
 /** Command field types. */
 declare namespace Field {
@@ -218,6 +224,50 @@ declare namespace Field {
 		 * @param maxLength - Max length of text.
 		 */
 		setMaxLength(maxLength: u32): this;
+	}
+	class Integer implements CommandField {
+		private desc;
+		min: i64;
+		max: i64;
+		private hasMin;
+		private hasMax;
+		constructor(desc?: string);
+		getType(): string;
+		getDesc(): string;
+		getOpts(): string | null;
+		/**
+		 * Sets integer min value. Must be smaller or equal to max value.
+		 * @param min - Min value of integer.
+		 */
+		setMin(min: i64): this;
+		/**
+		 * Sets integer max value. Must be greater or equal to min value.
+		 * @param max - Max value of integer
+		 */
+		setMax(max: i64): this;
+	}
+	class Float implements CommandField {
+		private desc;
+		min: f64;
+		max: f64;
+		private gtprop;
+		private ltprop;
+		constructor(desc?: string);
+		getType(): string;
+		getDesc(): string;
+		getOpts(): string | null;
+		/**
+		 * Sets float min value. Must be smaller than (or equal if both are inclusive) to max value.
+		 * @param min - Min value of float.
+		 * @param inclusive - Flag to tell if min value is inclusive (>=) on true, or exclusive (>) on false.
+		 */
+		setMin(min: f64, inclusive: bool): this;
+		/**
+		 * Sets float max value. Must be greater than (or equal if both are inclusive) to min value.
+		 * @param max - Max value of float.
+		 * @param inclusive - Flag to tell if max value is inclusive (<=) on true, or exclusive (<) on false.
+		 */
+		setMax(max: f64, inclusive: bool): this;
 	}
 }
 interface CommandField {
@@ -523,7 +573,7 @@ declare namespace Room {
 	 *
 	 * @param keyword - Keyword for the command.
 	 * @param cmd - Command to add.
-	 * @param priority - Priority for when two or more commands match the same input. Higher priority is selected first.
+	 * @param priority - Priority for sort order (descending) and when two or more commands match the same input. Higher priority is selected first.
 	 */
 	function addCommand(keyword: string, cmd: Command, priority?: u32): void;
 	/**
