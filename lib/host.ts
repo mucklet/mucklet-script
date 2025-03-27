@@ -223,6 +223,16 @@ export namespace FieldValue {
 	export class Float {
 		public value: f64 = 0;
 	}
+
+	@json
+	export class Char {
+		/** Character ID. */
+		id: string = "";
+		/** Character name. */
+		name: string = "";
+		/** Character surname. */
+		surname: string = "";
+	}
 }
 
 /** Command field types. */
@@ -469,6 +479,58 @@ export namespace Field {
 		setMax(max: f64, inclusive: bool): this {
 			this.max = max;
 			this.ltprop = inclusive ? "lte" : "lt";
+			return this;
+		}
+	}
+
+	// A char field is used to enter the name of a character.
+	@json
+	export class Char implements CommandField {
+		public inRoom: boolean = false;
+		public state: CharState = CharState.Any;
+
+		constructor(private desc: string = "") {}
+
+		getType(): string {
+			return "char";
+		}
+
+		getDesc(): string {
+			return this.desc;
+		}
+
+		getOpts(): string | null {
+			let state = "";
+			switch (this.state) {
+				case CharState.Asleep:
+					state = `"asleep"`;
+					break;
+				case CharState.Awake:
+					state = `"awake"`;
+					break;
+				case CharState.Dazed:
+					state = `"dazed"`;
+					break;
+			}
+			return "{" +
+				`"inRoom":` + JSON.stringify(this.inRoom) +
+				(state == "" ? "" : (`,"state":` + state)) +
+			"}";
+		}
+
+		/**
+		 * Sets inRoom flag, requiring the character to be in the room.
+		 */
+		setInRoom(): this {
+			this.inRoom = true;
+			return this;
+		}
+
+		/**
+		 * Sets state that the character must be in. Default is CharState.Any.
+		 */
+		setState(state: CharState): this {
+			this.state = state;
 			return this;
 		}
 	}

@@ -156,6 +156,14 @@ declare namespace FieldValue {
 	class Float {
 		value: f64;
 	}
+	class Char {
+		/** Character ID. */
+		id: string;
+		/** Character name. */
+		name: string;
+		/** Character surname. */
+		surname: string;
+	}
 }
 /** Command field types. */
 declare namespace Field {
@@ -268,6 +276,23 @@ declare namespace Field {
 		 * @param inclusive - Flag to tell if max value is inclusive (<=) on true, or exclusive (<) on false.
 		 */
 		setMax(max: f64, inclusive: bool): this;
+	}
+	class Char implements CommandField {
+		private desc;
+		inRoom: boolean;
+		state: CharState;
+		constructor(desc?: string);
+		getType(): string;
+		getDesc(): string;
+		getOpts(): string | null;
+		/**
+		 * Sets inRoom flag, requiring the character to be in the room.
+		 */
+		setInRoom(): this;
+		/**
+		 * Sets state that the character must be in. Default is CharState.Any.
+		 */
+		setState(state: CharState): this;
 	}
 }
 interface CommandField {
