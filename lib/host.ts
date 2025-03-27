@@ -225,6 +225,11 @@ export namespace FieldValue {
 	}
 
 	@json
+	export class Bool {
+		public value: bool = 0;
+	}
+
+	@json
 	export class Char {
 		/** Character ID. */
 		id: string = "";
@@ -480,6 +485,24 @@ export namespace Field {
 			this.max = max;
 			this.ltprop = inclusive ? "lte" : "lt";
 			return this;
+		}
+	}
+
+	// An bool field is used for boolean values.
+	@json
+	export class Bool implements CommandField {
+		constructor(private desc: string = "") {}
+
+		getType(): string {
+			return "bool";
+		}
+
+		getDesc(): string {
+			return this.desc;
+		}
+
+		getOpts(): string | null {
+			return null;
 		}
 	}
 

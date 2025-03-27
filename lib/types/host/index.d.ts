@@ -156,6 +156,9 @@ declare namespace FieldValue {
 	class Float {
 		value: f64;
 	}
+	class Bool {
+		value: bool;
+	}
 	class Char {
 		/** Character ID. */
 		id: string;
@@ -276,6 +279,13 @@ declare namespace Field {
 		 * @param inclusive - Flag to tell if max value is inclusive (<=) on true, or exclusive (<) on false.
 		 */
 		setMax(max: f64, inclusive: bool): this;
+	}
+	class Bool implements CommandField {
+		private desc;
+		constructor(desc?: string);
+		getType(): string;
+		getDesc(): string;
+		getOpts(): string | null;
 	}
 	class Char implements CommandField {
 		private desc;
