@@ -13,7 +13,7 @@ export function onActivate(): void {
 export function onCommand(addr: string, cmdAction: CmdAction): void {
 	// Check if the keyword matches the command (in case we have added multiple commands).
 	if (cmdAction.keyword == "pushButton") {
-		Room.describe("The button was pushed!")
+		Room.describe(cmdAction.char.name + " pushed the button!")
 	}
 }
 ```
@@ -34,8 +34,8 @@ The pattern may NOT contain:
 * Any reserved symbol: `(`, `)`, `{`, `}`, `<`, `>`, `[`, `]`, `\`, `/`, `|`, `&`
 
 The pattern may NOT start with:
-* Initial words that matches an existing client command - e.g. `say`, `create tag`
 * A field tag - e.g. `<Character> rules`
+* A symbol - e.g. `! <Message>`
 
 Examples:
 
@@ -47,10 +47,23 @@ add bulletin <Keyword> : <Title> = <Message>
 ```
 **Bad** ❌
 ```json
-say hi       // Matches the 'say' client command
 välj rödräv  // Non-ascii characters
 <Msg> this   // Starts with a tag
+?<Question>  // Starts with a symbol
 ```
+
+> ### Note
+>
+> It is allowed to use patterns matching existing client commands. However, the client will require that the player prefixes the commands with the word `do` to prevent conflict.
+>
+> For the following command:
+> ```typescript
+> Room.addCommand("mySay", new Command("say hi"))
+> ```
+> The user must type:
+> ```text
+> do say hi
+> ```
 
 
 ## Field types
@@ -67,10 +80,14 @@ new Command("send <Message>", "Sends a message to all rooms in the area.")
 There existing types are:
 Field type | Description
 --- | ---
-`Field.Text`    | Text field. May be configured to span multiple lines and use formatted text.
-`Field.Char`    | Character name. May be configured to specify if there character must be awake or in the room.
+`Field.Bool`    | Boolean value. May be either _yes_ (true) or _no_ (false).
+`Field.Char`    | Character name. May be configured to specify if there character must be awake/asleep and/or in the room.
+`Field.Float`   | Decimal number. May be configured with a min/max range.
+`Field.Integer` | Whole number. May be configured with min and max value.
 `Field.Keyword` | A keyword that uses a limited set of characters that is lower cased. May be configured to exclude space or remove diacritics.
-`Field.Select`  | A predefined list of words/texts which the character may choose one.
+`Field.List`    | A predefined list of texts which the character must enter one from.
+`Field.Text`    | Text field. May be configured to span multiple lines and use formatted text.
+
 
 For more info on each type, use an IDE that can show type/parameter info for Typescript or Assemblyscript code (such as VSCode).
 
@@ -130,3 +147,31 @@ Input | Description
 --- | ---
 `send empty` |  Both commands fully matches the text `send empty`, but the `"sendEmpty"` will be used because its priority value (20) is higher than that of `"sendText"` (10).
 `send Hello` |  Since `"sendText"` fully matches the input, it will be used. Priority is ignored.
+
+## Command delimiters
+
+The client will automatically detect if space or a symbol is used to delimit a field from the remaining parts of the command.
+
+When using `Field.Char`, it is always a good idea to delimit with a symbol.
+
+**Examples**
+
+```typescript
+// Because no symbol is used between "<Color>" and "button", the client will
+// automatically filter out colors containing space.
+Room.addCommand("pushColorButton", new Command("push <Color> button")
+	.field("Color", new Field.List("Color of the button.")
+		.addItem("red")
+		.addItem("green")
+		.addItem("dark blue") // Contains space and will not be shown
+	)
+)
+
+// Using a symbol (:) as a delimiter allows the use of space amongst list items.
+Room.addCommand("pullColorLever", new Command("pull <Color> : lever")
+	.field("Color", new Field.List("Color of the lever.")
+		.addItem("candy pink")
+		.addItem("deep saffron")
+	)
+)
+```
