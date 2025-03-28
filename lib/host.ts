@@ -119,8 +119,8 @@ export class ExitAction {
 export class CmdAction {
 	/** Action ID */
 	actionId: i32 = 0;
-	/** Character ID */
-	charId: ID = "";
+	/** Character performing the action */
+	char: Event.Char = new Event.Char();
 	/** Command keyword */
 	keyword: string = "";
 	/** Command data in JSON format. */

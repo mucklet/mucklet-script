@@ -88,8 +88,8 @@ declare class ExitAction {
 declare class CmdAction {
 	/** Action ID */
 	actionId: i32;
-	/** Character ID */
-	charId: ID;
+	/** Character performing the action */
+	char: Event.Char;
 	/** Command keyword */
 	keyword: string;
 	/** Command data in JSON format. */
