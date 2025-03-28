@@ -167,9 +167,15 @@ declare namespace FieldValue {
 		/** Character surname. */
 		surname: string;
 	}
+	class List {
+		value: string;
+	}
 }
 /** Command field types. */
 declare namespace Field {
+	/**
+	 * A text field is used for arbitrary text, such as messages, descriptions, or titles.
+	 */
 	class Text implements CommandField {
 		private desc;
 		spanLines: boolean;
@@ -208,6 +214,11 @@ declare namespace Field {
 		 */
 		setMaxLength(maxLength: u32): this;
 	}
+	/**
+	 * A keyword field is used for keyword names using a limited set of
+	 * characters that will be transformed to lower case. By default, a keyword
+	 * allows Letters, Numbers, Spaces, apostrophes ('), and dash/minus (-).
+	 */
 	class Keyword implements CommandField {
 		private desc;
 		removeDiacritics: boolean;
@@ -236,6 +247,7 @@ declare namespace Field {
 		 */
 		setMaxLength(maxLength: u32): this;
 	}
+	/** An integer field is used for whole numbers. */
 	class Integer implements CommandField {
 		private desc;
 		min: i64;
@@ -257,6 +269,7 @@ declare namespace Field {
 		 */
 		setMax(max: i64): this;
 	}
+	/** A float field is used for decimal numbers. */
 	class Float implements CommandField {
 		private desc;
 		min: f64;
@@ -280,6 +293,7 @@ declare namespace Field {
 		 */
 		setMax(max: f64, inclusive: bool): this;
 	}
+	/** An bool field is used for boolean values. */
 	class Bool implements CommandField {
 		private desc;
 		constructor(desc?: string);
@@ -287,6 +301,7 @@ declare namespace Field {
 		getDesc(): string;
 		getOpts(): string | null;
 	}
+	/** A char field is used to enter the name of a character. */
 	class Char implements CommandField {
 		private desc;
 		inRoom: boolean;
@@ -303,6 +318,31 @@ declare namespace Field {
 		 * Sets state that the character must be in. Default is CharState.Any.
 		 */
 		setState(state: CharState): this;
+	}
+	/**
+	 * A list field is used to select between a list of items. Items must be
+	 * unique, not containing non-printable or newline characters, and be
+	 * trimmed of leading, trailing, and consecutive spaces.
+	 *
+	 * Items should not contain characters used as delimiters to continue the
+	 * command.
+	 */
+	class List implements CommandField {
+		private desc;
+		items: Array<string>;
+		constructor(desc?: string);
+		getType(): string;
+		getDesc(): string;
+		getOpts(): string | null;
+		/**
+		 * Adds a single item to the list.
+		 */
+		addItem(item: string): this;
+		/**
+		 * Sets an array of list items, replacing any previously set items.
+		 * @param items Array of list items.
+		 */
+		setItems(items: Array<string>): this;
 	}
 }
 interface CommandField {

@@ -238,13 +238,19 @@ export namespace FieldValue {
 		/** Character surname. */
 		surname: string = "";
 	}
+
+	@json
+	export class List {
+		public value: string = "";
+	}
 }
 
 /** Command field types. */
 export namespace Field {
 
-	// A text field is used for arbitrary text, such as messages, descriptions,
-	// or titles.
+	/**
+	 * A text field is used for arbitrary text, such as messages, descriptions, or titles.
+	 */
 	@json
 	export class Text implements CommandField {
 
@@ -321,9 +327,11 @@ export namespace Field {
 		}
 	}
 
-	// A keyword field is used for keyword names using a limited set of
-	// characters that will be transformed to lower case. By default, a keyword
-	// allows Letters, Numbers, Spaces, apostrophes ('), and dash/minus (-).
+	/**
+	 * A keyword field is used for keyword names using a limited set of
+	 * characters that will be transformed to lower case. By default, a keyword
+	 * allows Letters, Numbers, Spaces, apostrophes ('), and dash/minus (-).
+	 */
 	@json
 	export class Keyword implements CommandField {
 		public removeDiacritics: boolean = false;
@@ -380,7 +388,7 @@ export namespace Field {
 		}
 	}
 
-	// An integer field is used for whole numbers.
+	/** An integer field is used for whole numbers. */
 	@json
 	export class Integer implements CommandField {
 		public min: i64 = 0;
@@ -433,7 +441,7 @@ export namespace Field {
 		}
 	}
 
-	// A float field is used for decimal numbers.
+	/** A float field is used for decimal numbers. */
 	@json
 	export class Float implements CommandField {
 		public min: f64 = 0;
@@ -488,7 +496,7 @@ export namespace Field {
 		}
 	}
 
-	// An bool field is used for boolean values.
+	/** An bool field is used for boolean values. */
 	@json
 	export class Bool implements CommandField {
 		constructor(private desc: string = "") {}
@@ -506,7 +514,7 @@ export namespace Field {
 		}
 	}
 
-	// A char field is used to enter the name of a character.
+	/** A char field is used to enter the name of a character. */
 	@json
 	export class Char implements CommandField {
 		public inRoom: boolean = false;
@@ -554,6 +562,52 @@ export namespace Field {
 		 */
 		setState(state: CharState): this {
 			this.state = state;
+			return this;
+		}
+	}
+
+	/**
+	 * A list field is used to select between a list of items. Items must be
+	 * unique, not containing non-printable or newline characters, and be
+	 * trimmed of leading, trailing, and consecutive spaces.
+	 *
+	 * Items should not contain characters used as delimiters to continue the
+	 * command.
+	 */
+	@json
+	export class List implements CommandField {
+		public items: Array<string> = new Array<string>();
+
+		constructor(private desc: string = "") {}
+
+		getType(): string {
+			return "list";
+		}
+
+		getDesc(): string {
+			return this.desc;
+		}
+
+		getOpts(): string | null {
+			return "{" +
+				`"items":` + JSON.stringify(this.items) +
+			"}";
+		}
+
+		/**
+		 * Adds a single item to the list.
+		 */
+		addItem(item: string): this {
+			this.items.push(item);
+			return this;
+		}
+
+		/**
+		 * Sets an array of list items, replacing any previously set items.
+		 * @param items Array of list items.
+		 */
+		setItems(items: Array<string>): this {
+			this.items = items;
 			return this;
 		}
 	}
