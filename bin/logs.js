@@ -117,6 +117,14 @@ function hasDuplicateKey(roomScripts) {
 	return false;
 }
 
+function validateLog(prefix, log) {
+	if (isResError(log)) {
+		console.log(prefix + stdoutColors.red("Error getting entry " + log.getResourceId() + ": " + errToString(log)));
+		return false;
+	}
+	return true;
+}
+
 async function showLogs(cfg, token, follow, tail) {
 	if (!cfg.scripts?.length) {
 		printError("no scripts to show logs for", help);
@@ -170,7 +178,8 @@ async function showLogs(cfg, token, follow, tail) {
 				? stdoutColors[colors[i]](name + (" ".repeat(maxLen - name.length)) + "  | ")
 				: '';
 			i = (i + 1) % colors.length;
-			let rslogs = rs.logs.toArray();
+			// Validate log entries and output errors.
+			let rslogs = rs.logs.toArray().filter(log => validateLog(prefix, log));
 			if (tail != "all" && rslogs.length > tail) {
 				rslogs.sort((a, b) => a.time - b.time || a.id.localeCompare(b.id));
 				rslogs = rslogs.slice(rslogs.length - tail);
@@ -186,7 +195,7 @@ async function showLogs(cfg, token, follow, tail) {
 		console.log();
 
 		// Sort all log entries and display them.
-		logs.sort((a, b) => a.log.time - b.log.time || a.log.id.localeCompare(b.log.id));
+		logs.sort((a, b) => a.log.time - b.log.time || a.log?.id?.localeCompare(b.log?.id));
 		for (let l of logs) {
 			onLogAdd(l.prefix, l.log);
 		}
@@ -200,9 +209,7 @@ async function showLogs(cfg, token, follow, tail) {
 }
 
 function onLogAdd(prefix, log) {
-	if (isResError(log)) {
-		console.log(prefix + stdoutColors.red("Error getting entry " + log.getResourceId() + ": " + errToString(log)));
-	} else {
+	if (validateLog(prefix, log)) {
 		const lvl = logLvl[log.lvl] || { color: s => s, tag: "[???]" };
 		console.log(prefix + stdoutColors.white(formatTime(log.time)) + " " + lvl.color(lvl.tag + " " + log.msg));
 	}

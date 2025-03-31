@@ -10,19 +10,30 @@
 // To get a room script's address, type: roomscript <KEYWORD>
 const inside = "room.cccccccccccccccccccc#dddddddddddddddddddd"
 
+// Checks if the intercom is active (turned on).
+function isActive(): boolean {
+	// Get the stored "active" value to tell if the intercom is active.
+	// Null means inactive while anything else means turned active
+	return Store.getBuffer("active") != null
+}
+
 export function onActivate(): void {
+	// Start listening to the inside room for when intercom status changes.
 	Script.listen([inside])
-	if (Store.getBuffer("active") != null) {
+	// Start listening to the room if the intercom is active.
+	if (isActive()) {
 		Room.listen()
 	}
+	// Post a request to the inside room to resend the current intercom status
+	// just to make sure the rooms are synchronized.
+	Script.post(inside, "update")
 }
 
 // onMessage is called when the inside room script sends a message to this
 // script.
 export function onMessage(addr: string, topic: string, dta: string): void {
-	// Get the stored "active" value to tell if the intercom is turned on.
-	// Null means turned off while anything else means turned on.
-	const active = Store.getBuffer("active") != null;
+	// Get the current active state of the intercom.
+	const active = isActive()
 
 	// If "on" is received, and the intercom was turned off, turn it on.
 	if (topic == "on" && !active) {
@@ -44,7 +55,7 @@ export function onMessage(addr: string, topic: string, dta: string): void {
 		Room.describe("The speaker goes silent, and the red light fades out.")
 	}
 
-	// If "event" and the intercom was turned on, show the event message.
+	// If "event" and the intercom is active, show the event message.
 	if (topic == "event" && active) {
 		// Make sure the data is a "say" event. This inside room script
 		// shouldn't send any other event, but just to make sure.
