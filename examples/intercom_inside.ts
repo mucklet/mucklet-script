@@ -21,6 +21,9 @@
 // To get a room script's address, type: roomscript <KEYWORD>
 const outside = "room.aaaaaaaaaaaaaaaaaaaa#bbbbbbbbbbbbbbbbbbbb"
 
+const onHelp = "Turns on the intercom to let you speak with characters outside.\nThe intercom only relays `say` messages."
+const offHelp = "Turns off the intercom."
+
 // Checks if the intercom is active (turned on).
 function isActive(): boolean {
 	// Get the stored "active" value to tell if the intercom is active.
@@ -33,11 +36,12 @@ function updateOutside(): void {
 	Script.post(outside, isActive() ? "on" : "off")
 }
 
-
+// onActivate is called when the script (not the intercom) is activated.
 export function onActivate(): void {
 	// Add the "turn on intercom" and "turn off intercom" commands.
-	Room.addCommand("on", new Command("turn on intercom", "Turns on the intercom."))
-	Room.addCommand("off", new Command("turn off intercom", "Turns off the intercom."))
+	// Priority (20 and 10) is used to sort "on" before "off".
+	Room.addCommand("on", new Command("turn on intercom", onHelp), 20)
+	Room.addCommand("off", new Command("turn off intercom", offHelp), 10)
 	// Start listening to messages from the outside room script.
 	Script.listen([outside])
 	// Update the outside room with the current intercom status.
@@ -75,7 +79,7 @@ export function onCommand(addr: string, cmdAction: CmdAction): void {
 			// Store a single byte as a way to tell the intercom is active.
 			Store.setBuffer("active", new ArrayBuffer(1))
 			// Send a describe to the room to tell the intercom was activated.
-			Room.describe(`${cmdAction.char.name} turns on the intercom. The red speaker light lights up.`)
+			Room.describe(`${cmdAction.char.name} turns on the intercom. The red speaker indicator lights up.`)
 		}
 	} else if (cmdAction.keyword == "off") {
 		if (!active) {
@@ -107,7 +111,7 @@ export function onMessage(addr: string, topic: string, dta: string, sender: stri
 			// Parse the json data into a Event.Say object.
 			let ev = JSON.parse<Event.Say>(dta)
 			// Send a describe to the room with the say message.
-			Room.describe(`**${ev.char.name}** says through the speaker, "${ev.msg}"`)
+			Room.describe(`${ev.char.name} says through the speaker, "${ev.msg}"`)
 		}
 	}
 

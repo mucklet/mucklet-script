@@ -17,6 +17,7 @@ function isActive(): boolean {
 	return Store.getBuffer("active") != null
 }
 
+// onActivate is called when the script (not the intercom) is activated.
 export function onActivate(): void {
 	// Start listening to the inside room for when intercom status changes.
 	Script.listen([inside])
@@ -42,7 +43,7 @@ export function onMessage(addr: string, topic: string, dta: string): void {
 		// Start listening to events in this room to send to the inside room.
 		Room.listen()
 		// Send a describe to the room to tell the intercom turned on.
-		Room.describe("A static sound is heard from a speaker as a red light turns on, indicating recording.")
+		Room.describe("A static sound is heard from a speaker as a red light turns on, indicating recording. ((Use `say` to speak with anyone inside.))")
 	}
 
 	// If "off" is received, and the intercom was turned on, turn it off.
@@ -55,15 +56,16 @@ export function onMessage(addr: string, topic: string, dta: string): void {
 		Room.describe("The speaker goes silent, and the red light fades out.")
 	}
 
-	// If "event" and the intercom is active, show the event message.
+	// An "event" is sent from the inside room when someone inside said something.
+	// If the intercom is active, show the event message for the room.
 	if (topic == "event" && active) {
-		// Make sure the data is a "say" event. This inside room script
+		// Make sure the data is a "say" event. The inside room script
 		// shouldn't send any other event, but just to make sure.
 		if (Event.getType(dta) == "say") {
 			// Parse the json data into a Event.Say object.
 			let say = JSON.parse<Event.Say>(dta)
 			// Send a describe to the room with the say message.
-			Room.describe(`**${say.char.name}** says through the speaker, "${say.msg}"`)
+			Room.describe(`${say.char.name} says through the speaker, "${say.msg}"`)
 		}
 	}
 }
