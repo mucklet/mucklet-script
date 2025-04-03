@@ -19,7 +19,7 @@ const options = [
 ];
 
 function help() {
-	printHelp("Set up and manage a mucklet script project.", {
+	printHelp("Mucklet Script v" + version + "\nSet up and manage a mucklet script project.", {
 		syntax: [
 			stdoutColors.cyan("mucklet-script") + " COMMAND [OPTIONS]",
 			stdoutColors.cyan("mucklet-script help") + " COMMAND",
