@@ -57,11 +57,11 @@ declare namespace ExitIcon {
 }
 type ExitIcon = i32;
 /**
- * ExitIntercept is an intercepted use of an exit.
+ * ExitAction is an action representing an intercepted use of an exit.
  */
-declare class ExitIntercept {
-	/** Intercept ID */
-	interceptId: i32;
+declare class ExitAction {
+	/** Action ID */
+	actionId: i32;
 	/** Character ID */
 	charId: ID;
 	/** Exit ID */
@@ -81,6 +81,29 @@ declare class ExitIntercept {
 	 * @param msg Info message to show, or default message if null.
 	 */
 	cancel(msg?: string | null): void;
+}
+/**
+ * CmdAction is a command action triggered by a character.
+ */
+declare class CmdAction {
+	/** Action ID */
+	actionId: i32;
+	/** Character performing the action */
+	char: Event.Char;
+	/** Command keyword */
+	keyword: string;
+	/** Command data in JSON format. */
+	data: JSON.Raw;
+	/**
+	 * Responds to the command action with an info message.
+	 * @param msg Info message.
+	 */
+	info(msg: string): void;
+	/**
+	 * Responds to the command action with an error message.
+	 * @param msg Error message.
+	 */
+	error(msg: string): void;
 }
 /**
  * BaseIterator is an iterator over items with an ID.
@@ -118,6 +141,239 @@ declare class BaseIterator {
 	 * error. May be called multiple times.
 	 */
 	close(): void;
+}
+/** Command field type input values. */
+declare namespace FieldValue {
+	class Text {
+		value: string;
+	}
+	class Keyword {
+		value: string;
+	}
+	class Integer {
+		value: i64;
+	}
+	class Float {
+		value: f64;
+	}
+	class Bool {
+		value: bool;
+	}
+	class Char {
+		/** Character ID. */
+		id: string;
+		/** Character name. */
+		name: string;
+		/** Character surname. */
+		surname: string;
+	}
+	class List {
+		value: string;
+	}
+}
+/** Command field types. */
+declare namespace Field {
+	/**
+	 * A text field is used for arbitrary text, such as messages, descriptions, or titles.
+	 */
+	class Text implements CommandField {
+		private desc;
+		spanLines: boolean;
+		spellCheck: boolean;
+		formatText: boolean;
+		minLength: u32;
+		maxLength: u32;
+		constructor(desc?: string);
+		getType(): string;
+		getDesc(): string;
+		getOpts(): string | null;
+		/**
+		 * Sets span lines flag. Is false by default.
+		 * @param spanLines - Flag telling if the text can be spanned across multiple lines.
+		 */
+		setSpanLines(spanLines: boolean): this;
+		/**
+		 * Sets flag to spellCheck text. Is true by default.
+		 * @param spellCheck - Flag telling if the text should be checked for spelling errors.
+		 */
+		setSpellCheck(spellCheck: boolean): this;
+		/**
+		 * Sets flag to format text while typing. Is false by default.
+		 * @param formatText - Flag telling the text should be formatted while typing.
+		 */
+		setFormatText(formatText: boolean): this;
+		/**
+		 * Sets text min length. Must be smaller or equal to max length unless
+		 * max length is set to zero (0).. Is 0 by default.
+		 * @param minLength - Min length of text.
+		 */
+		setMinLength(minLength: u32): this;
+		/**
+		 * Sets text maximum length. Zero (0) means server max length. Is 0 by default.
+		 * @param maxLength - Max length of text.
+		 */
+		setMaxLength(maxLength: u32): this;
+	}
+	/**
+	 * A keyword field is used for keyword names using a limited set of
+	 * characters that will be transformed to lower case. By default, a keyword
+	 * allows Letters, Numbers, Spaces, apostrophes ('), and dash/minus (-).
+	 */
+	class Keyword implements CommandField {
+		private desc;
+		removeDiacritics: boolean;
+		minLength: u32;
+		maxLength: u32;
+		constructor(desc?: string);
+		getType(): string;
+		getDesc(): string;
+		getOpts(): string | null;
+		/**
+		 * Sets flag to remove diacritics from the keyword by decomposing the
+		 * characters and removing any non-print characters and marker in the Mn
+		 * Unicode category. Is false by default.
+		 * @param removeDiacritics - Flag telling if diacritics should be removed.
+		 */
+		setRemoveDiacritics(removeDiacritics: boolean): this;
+		/**
+		 * Sets text min length. Must be smaller or equal to max length unless
+		 * max length is set to zero (0).. Is 0 by default.
+		 * @param minLength - Min length of text.
+		 */
+		setMinLength(minLength: u32): this;
+		/**
+		 * Sets text maximum length. Zero (0) means server max length. Is 0 by default.
+		 * @param maxLength - Max length of text.
+		 */
+		setMaxLength(maxLength: u32): this;
+	}
+	/** An integer field is used for whole numbers. */
+	class Integer implements CommandField {
+		private desc;
+		min: i64;
+		max: i64;
+		private hasMin;
+		private hasMax;
+		constructor(desc?: string);
+		getType(): string;
+		getDesc(): string;
+		getOpts(): string | null;
+		/**
+		 * Sets integer min value. Must be smaller or equal to max value.
+		 * @param min - Min value of integer.
+		 */
+		setMin(min: i64): this;
+		/**
+		 * Sets integer max value. Must be greater or equal to min value.
+		 * @param max - Max value of integer
+		 */
+		setMax(max: i64): this;
+	}
+	/** A float field is used for decimal numbers. */
+	class Float implements CommandField {
+		private desc;
+		min: f64;
+		max: f64;
+		private gtprop;
+		private ltprop;
+		constructor(desc?: string);
+		getType(): string;
+		getDesc(): string;
+		getOpts(): string | null;
+		/**
+		 * Sets float min value. Must be smaller than (or equal if both are inclusive) to max value.
+		 * @param min - Min value of float.
+		 * @param inclusive - Flag to tell if min value is inclusive (>=) on true, or exclusive (>) on false.
+		 */
+		setMin(min: f64, inclusive: bool): this;
+		/**
+		 * Sets float max value. Must be greater than (or equal if both are inclusive) to min value.
+		 * @param max - Max value of float.
+		 * @param inclusive - Flag to tell if max value is inclusive (<=) on true, or exclusive (<) on false.
+		 */
+		setMax(max: f64, inclusive: bool): this;
+	}
+	/** An bool field is used for boolean values. */
+	class Bool implements CommandField {
+		private desc;
+		constructor(desc?: string);
+		getType(): string;
+		getDesc(): string;
+		getOpts(): string | null;
+	}
+	/** A char field is used to enter the name of a character. */
+	class Char implements CommandField {
+		private desc;
+		inRoom: boolean;
+		state: CharState;
+		constructor(desc?: string);
+		getType(): string;
+		getDesc(): string;
+		getOpts(): string | null;
+		/**
+		 * Sets inRoom flag, requiring the character to be in the room.
+		 */
+		setInRoom(): this;
+		/**
+		 * Sets state that the character must be in. Default is CharState.Any.
+		 */
+		setState(state: CharState): this;
+	}
+	/**
+	 * A list field is used to select between a list of items. Items must be
+	 * unique, not containing non-printable or newline characters, and be
+	 * trimmed of leading, trailing, and consecutive spaces.
+	 *
+	 * Items should not contain characters used as delimiters to continue the
+	 * command.
+	 */
+	class List implements CommandField {
+		private desc;
+		items: Array<string>;
+		constructor(desc?: string);
+		getType(): string;
+		getDesc(): string;
+		getOpts(): string | null;
+		/**
+		 * Adds a single item to the list.
+		 */
+		addItem(item: string): this;
+		/**
+		 * Sets an array of list items, replacing any previously set items.
+		 * @param items Array of list items.
+		 */
+		setItems(items: Array<string>): this;
+	}
+}
+interface CommandField {
+	/** Returns the type of the command field. */
+	getType(): string;
+	/** Returns the help description of the command field. */
+	getDesc(): string;
+	/** Returns the options of the command field as a JSOn encoded string. */
+	getOpts(): string | null;
+}
+/**
+ * Command is an object that represents a custom command.
+ */
+declare class Command {
+	pattern: string;
+	desc: string;
+	private fieldDefs;
+	/**
+	 * Constructor of the Command instance.
+	 */
+	constructor(pattern: string, desc?: string);
+	/**
+	 * Sets the definition for a command field.
+	 * @param key - Field <key> as found in command pattern.
+	 * @param def - Field definition.
+	 */
+	field(key: string, def: CommandField): Command;
+	/**
+	 * Converts the command into a JSON structure.
+	 */
+	json(): string;
 }
 /**
  * Room API functions and types.
@@ -310,10 +566,10 @@ declare namespace Room {
 	function setRoom<T>(fields: T): void;
 	/**
 	 * Switches to a stored room profile by profile key.
-	 * @param key - Keyword for the stored profile.
+	 * @param keyword - Keyword for the stored profile.
 	 * @param safe - Flag to prevent the room's current profile to be overwritten by the stored profile, if it contains unstored changes.
 	 */
-	function useProfile(key: string, safe?: boolean): void;
+	function useProfile(keyword: string, safe?: boolean): void;
 	/**
 	 * Sweep a single character from the room by sending them home.
 	 * @param charId - Character ID.
@@ -382,6 +638,24 @@ declare namespace Room {
 	 * @param {i32|i32u|i64|i64u} [fields.order] Sort order of the exit with 0 being the first listed. Ignored if the exit is hidden or inactive.
 	 */
 	function setExit<T>(exitId: ID, fields: T): void;
+	/**
+	 * Adds a custom command to the room.
+	 *
+	 * Pattern is a string describing the general command structure, and may
+	 * contain <Fields> and [optional] parts.
+	 *
+	 * Any field defined in the pattern must have a corresponding field entry.
+	 *
+	 * @param keyword - Keyword for the command.
+	 * @param cmd - Command to add.
+	 * @param priority - Priority for sort order (descending) and when two or more commands match the same input. Higher priority is selected first.
+	 */
+	function addCommand(keyword: string, cmd: Command, priority?: u32): void;
+	/**
+	 * Removes a custom command, added by the script, from the room.
+	 * @param keyword - Keyword for the command.
+	 */
+	function removeCommand(keyword: string): boolean;
 	class CharIterator extends BaseIterator {
 		/**
 		 * Returns the current char. It will abort if the cursor has reached the

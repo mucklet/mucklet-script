@@ -1,9 +1,10 @@
 {
   "name": "mucklet-script",
-  "version": "1.64.3",
+  "version": "1.65.0",
   "scripts": {
     "test": "node tests",
-    "build": "asc script/index.ts --runtime minimal --exportRuntime --lib ./lib/host.ts --lib ./lib/env.ts"
+    "build": "asc script/index.ts --runtime minimal --exportRuntime --lib ./lib/host.ts --lib ./lib/env.ts",
+    "build:types": "node devbin/buildtypes.js"
   },
   "author": "Accipiter Nisus <accipiter@gmail.com>",
   "license": "Apache-2.0",

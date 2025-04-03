@@ -2,7 +2,7 @@ import { parse } from "tinyargs";
 import { stdoutColors } from "./utils/terminal.js";
 import { printHelp, printError } from "./utils/options.js";
 import { getToken, loadConfig, errToString, formatTime } from "./utils/tools.js";
-import { createClient, getRoomScriptByName } from "./utils/client.js";
+import { createClient, getRoomScriptByName, isResError } from "./utils/client.js";
 
 const options = [
 	{ name: "config", flags: [ "c" ], type: String, default: "mucklet.config.js", value: "file", desc: "Mucklet script project config file" },
@@ -20,7 +20,7 @@ const options = [
 		"Overrides the MUCKLET_TOKEN_FILE environment variable",
 	] },
 	{ name: "help", flags: [ "h" ], type: Boolean, stop: true, desc: "Show this message" },
-	{ name: "scriptIds", type: String, positional: true, multiple: true, optionalValue: true },
+	{ name: "scriptids", type: String, positional: true, multiple: true, optionalValue: true },
 ];
 
 const logLvl = {
@@ -48,14 +48,14 @@ export default async function(version, args) {
 	const cfg = await loadConfig(version, cli.config || 'mucklet.config.js', {});
 
 	// File uses room and name from cli flags
-	if (cli.scriptIds) {
+	if (cli.scriptids) {
 		if (cli.name) {
 			printError("cannot filter by name when fetching logs by script ID", help);
 		}
 		if (cli.room) {
 			printError("cannot filter by room ID when fetching logs by script ID", help);
 		}
-		cfg.scripts = cli.scriptIds.map(scriptId => ({
+		cfg.scripts = cli.scriptids.map(scriptId => ({
 			id: scriptId.trim().replace(/^#/, ''),
 		}));
 	}
@@ -117,6 +117,14 @@ function hasDuplicateKey(roomScripts) {
 	return false;
 }
 
+function validateLog(prefix, log) {
+	if (isResError(log)) {
+		console.log(prefix + stdoutColors.red("Error getting entry " + log.getResourceId() + ": " + errToString(log)));
+		return false;
+	}
+	return true;
+}
+
 async function showLogs(cfg, token, follow, tail) {
 	if (!cfg.scripts?.length) {
 		printError("no scripts to show logs for", help);
@@ -170,7 +178,8 @@ async function showLogs(cfg, token, follow, tail) {
 				? stdoutColors[colors[i]](name + (" ".repeat(maxLen - name.length)) + "  | ")
 				: '';
 			i = (i + 1) % colors.length;
-			let rslogs = rs.logs.toArray();
+			// Validate log entries and output errors.
+			let rslogs = rs.logs.toArray().filter(log => validateLog(prefix, log));
 			if (tail != "all" && rslogs.length > tail) {
 				rslogs.sort((a, b) => a.time - b.time || a.id.localeCompare(b.id));
 				rslogs = rslogs.slice(rslogs.length - tail);
@@ -186,7 +195,7 @@ async function showLogs(cfg, token, follow, tail) {
 		console.log();
 
 		// Sort all log entries and display them.
-		logs.sort((a, b) => a.log.time - b.log.time || a.log.id.localeCompare(b.log.id));
+		logs.sort((a, b) => a.log.time - b.log.time || a.log?.id?.localeCompare(b.log?.id));
 		for (let l of logs) {
 			onLogAdd(l.prefix, l.log);
 		}
@@ -200,8 +209,10 @@ async function showLogs(cfg, token, follow, tail) {
 }
 
 function onLogAdd(prefix, log) {
-	const lvl = logLvl[log.lvl] || { color: s => s, tag: "[???]" };
-	console.log(prefix + stdoutColors.white(formatTime(log.time)) + " " + lvl.color(lvl.tag + " " + log.msg));
+	if (validateLog(prefix, log)) {
+		const lvl = logLvl[log.lvl] || { color: s => s, tag: "[???]" };
+		console.log(prefix + stdoutColors.white(formatTime(log.time)) + " " + lvl.color(lvl.tag + " " + log.msg));
+	}
 }
 
 /**

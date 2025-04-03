@@ -3,8 +3,9 @@ import { errToString } from './tools.js';
 const require = createRequire(import.meta.url);
 const resclient = require('resclient');
 const ResClient = resclient.default;
-const isResError = resclient.isResError;
 const WebSocket = require('isomorphic-ws');
+
+export const isResError = resclient.isResError;
 
 class ApiClient extends ResClient {
 	constructor(apiUrl, token) {
@@ -80,4 +81,3 @@ export async function getRoomScriptByName(client, room, name) {
 	}
 	return null;
 }
-

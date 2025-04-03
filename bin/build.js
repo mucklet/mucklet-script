@@ -1,18 +1,21 @@
 import path from "path";
 import { parse } from "tinyargs";
+import { stat } from "fs/promises";
 import { stdoutColors } from "./utils/terminal.js";
 import { printHelp, printError } from "./utils/options.js";
-import { loadConfig, compileScript } from "./utils/tools.js";
+import { loadConfig, compileScript, formatByteSize } from "./utils/tools.js";
 
 const defaultOutputDir = ".";
 const defaultOutFile = "[name].wasm";
 const defaultTextFile = "[name].wat";
+const defaultMaxPages = 8;
 
 const defaultMuckletConfig = {
 	output: {
 		"path": defaultOutputDir,
 		"outFile": defaultOutFile,
 		"textFile": defaultTextFile,
+		"maxPages": defaultMaxPages,
 	},
 };
 
@@ -23,6 +26,8 @@ const options = [
 	{ name: "outdir", type: String, desc: "Output directory for build files", value: "directory" },
 	{ name: "outfile", type: String, desc: "Output wasm file name", value: "file name" },
 	{ name: "textfile", type: String, desc: "Output wasm text file name", value: "file name" },
+	{ name: "maxpages", type: Number, desc: "Maximum memory pages", value: 8},
+	{ name: "rawoutput", type: Boolean, desc: "Show raw asc output only", value: false },
 	{ name: "help", flags: [ "h" ], type: Boolean, stop: true, desc: "Show this message" },
 	{ name: "files", type: String, positional: true, multiple: true, optionalValue: true },
 ];
@@ -56,15 +61,22 @@ export default async function(version, args) {
 		}));
 	}
 
+
 	// Output configuration
-	if (cli.outDir) {
-		cfg.output = Object.assign({}, cfg.output, { dir: cli.outDir });
+	if (cli.outdir) {
+		cfg.output = Object.assign({}, cfg.output, { dir: cli.outdir });
 	}
-	if (cli.outFile) {
-		cfg.output = Object.assign({}, cfg.output, { outFile: cli.outFile });
+	if (cli.outfile) {
+		cfg.output = Object.assign({}, cfg.output, { outFile: cli.outfile });
 	}
-	if (cli.textFile) {
-		cfg.output = Object.assign({}, cfg.output, { textFile: cli.textFile });
+	if (cli.textfile) {
+		cfg.output = Object.assign({}, cfg.output, { textFile: cli.textfile });
+	}
+	if (cli.maxpages) {
+		cfg.output = Object.assign({}, cfg.output, { maxPages: cli.maxpages });
+	}
+	if (cli.rawoutput) {
+		cfg.output = Object.assign({}, cfg.output, { rawOutput: cli.rawoutput });
 	}
 
 	// Filter by name
@@ -116,15 +128,20 @@ async function buildScript(cfg, script) {
 	try {
 		compileScript(script.path, outFile, textFile);
 	} catch (err) {
-		console.log();
-		console.log(err?.stderr?.toString
+		let errMsg = err?.stderr?.toString
 			? stdoutColors.red(err.stderr.toString())
-			: err,
-		);
+			: err;
+		if (cfg.output?.rawOutput) {
+			process.stderr.write(errMsg);
+			process.exit(err?.status || 1);
+		}
+		console.log();
+		console.log(errMsg);
 		return false;
 	}
-
-	console.log("Outfile: " + stdoutColors.cyan(outFile));
-	console.log("TextFile: " + stdoutColors.cyan(textFile));
+	var outfileSize = (await stat(outFile)).size;
+	var textfileSize = (await stat(textFile)).size;
+	console.log("Outfile: " + stdoutColors.cyan(outFile) + stdoutColors.gray(" (" + formatByteSize(outfileSize) + ")"));
+	console.log("TextFile: " + stdoutColors.cyan(textFile) + stdoutColors.gray(" (" + formatByteSize(textfileSize) + ")"));
 	return true;
 }
