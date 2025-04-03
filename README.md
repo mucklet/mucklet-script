@@ -24,6 +24,7 @@ npx mucklet-script
 ## Documentation
 
 * [Configuration](docs/configuration.md)
+* [Writing scripts - Custom commands](docs/writingscripts-customcommands.md)
 
 ## Script examples
 

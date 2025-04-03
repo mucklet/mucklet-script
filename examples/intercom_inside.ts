@@ -21,47 +21,80 @@
 // To get a room script's address, type: roomscript <KEYWORD>
 const outside = "room.aaaaaaaaaaaaaaaaaaaa#bbbbbbbbbbbbbbbbbbbb"
 
+const onHelp = "Turns on the intercom to let you speak with characters outside.\nThe intercom only relays `say` messages."
+const offHelp = "Turns off the intercom."
+
+// Checks if the intercom is active (turned on).
+function isActive(): boolean {
+	// Get the stored "active" value to tell if the intercom is active.
+	// Null means inactive while anything else means turned active
+	return Store.getBuffer("active") != null
+}
+
+// Updates the outside room by sending an "on" or "off" message.
+function updateOutside(): void {
+	Script.post(outside, isActive() ? "on" : "off")
+}
+
+// onActivate is called when the script (not the intercom) is activated.
 export function onActivate(): void {
-	// Start listening to any room events to catch "on" or "off" commands.
-	Room.listen()
+	// Add the "turn on intercom" and "turn off intercom" commands.
+	// Priority (20 and 10) is used to sort "on" before "off".
+	Room.addCommand("on", new Command("turn on intercom", onHelp), 20)
+	Room.addCommand("off", new Command("turn off intercom", offHelp), 10)
 	// Start listening to messages from the outside room script.
 	Script.listen([outside])
+	// Update the outside room with the current intercom status.
+	updateOutside()
+	// If intercom is active, start listening to room events.
+	if (isActive()) {
+		Room.listen()
+	}
 }
 
 // onRoomEvent is called when an event occurs in this room.
 export function onRoomEvent(addr: string, ev: string): void {
-	// Quick exit if it isn't a "say" event
-	if (Event.getType(ev) != "say") {
-		return
-	}
-
-	// Get the stored "active" value to tell if the intercom is turned on.
-	// Null means turned off while anything else means turned on.
-	const active = Store.getBuffer("active") != null;
-	// Parse the say event.
-	const say = JSON.parse<Event.Say>(ev)
-
-	if (say.msg.toLowerCase() == "on" && !active) {
-		// If someone said "on" and the intercom was not active, turn it on.
-
-		// Post an "on" message to the room script outside.
-		Script.post(outside, "on")
-		// Store a single byte as a way to tell the intercom is on.
-		Store.setBuffer("active", new ArrayBuffer(1))
-		// Send a describe to the room to tell the intercom turned on.
-		Room.describe("The intercom speaker light turns on.")
-	} else if (say.msg.toLowerCase() == "off" && active) {
-		// If someone said "off" and the intercom was active, turn it off.
-
-		// Post an "off" message to the room script outside.
-		Script.post(outside, "off")
-		// Delete the stored byte to tell the intercom is turned off.
-		Store.deleteKey("active")
-		// Send a describe to the room to tell the intercom turned off.
-		Room.describe("The intercom turns off.")
-	} else if (active) {
-		// If the intercom is active, send the event to the outside room script.
+	// Post "say" events to the outside room. We only listen to room events when
+	// the intercom is active.
+	if (Event.getType(ev) == "say") {
 		Script.post(outside, "event", ev)
+	}
+}
+
+// onCommand is called when a characters uses a script command.
+export function onCommand(addr: string, cmdAction: CmdAction): void {
+	// Get the current active state of the intercom.
+	const active = isActive()
+
+	// Check which command was used
+	if (cmdAction.keyword == "on") {
+		if (active) {
+			// If the intercom is already activated, respond with a message.
+			cmdAction.info("The intercom is already turned on.")
+		} else {
+			// Start listening to the room.
+			Room.listen()
+			// Post an "on" message to the room script outside.
+			Script.post(outside, "on")
+			// Store a single byte as a way to tell the intercom is active.
+			Store.setBuffer("active", new ArrayBuffer(1))
+			// Send a describe to the room to tell the intercom was activated.
+			Room.describe(`${cmdAction.char.name} turns on the intercom. The red speaker indicator lights up.`)
+		}
+	} else if (cmdAction.keyword == "off") {
+		if (!active) {
+			// If the intercom is already deactivated, respond with a message.
+			cmdAction.info("The intercom is already turned off.")
+		} else {
+			// Stop listening to the room.
+			Room.unlisten()
+			// Post an "off" message to the room script outside.
+			Script.post(outside, "off")
+			// Delete the stored byte to tell the intercom is not active.
+			Store.deleteKey("active")
+			// Send a describe to the room to tell the intercom was deactivated.
+			Room.describe(`${cmdAction.char.name} turns off the intercom and the red light fades out.`)
+		}
 	}
 }
 
@@ -74,11 +107,17 @@ export function onMessage(addr: string, topic: string, dta: string, sender: stri
 		// outside room may send event other too, but we are currently just
 		// handling "say". But it can be extended to show a different message on
 		// "pose" or similar.
-		if (Event.getType(dta) == "say" && Store.getBuffer("active") != null) {
+		if (Event.getType(dta) == "say" && isActive()) {
 			// Parse the json data into a Event.Say object.
 			let ev = JSON.parse<Event.Say>(dta)
 			// Send a describe to the room with the say message.
-			Room.describe(`**${ev.char.name}** says through the speaker, "${ev.msg}"`)
+			Room.describe(`${ev.char.name} says through the speaker, "${ev.msg}"`)
 		}
+	}
+
+	// Check if it is the "update" message from the outside room.
+	if (topic == "update") {
+		// Update the outside room with the current intercom status.
+		updateOutside()
 	}
 }

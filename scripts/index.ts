@@ -111,27 +111,58 @@ export function onCharEvent(
 /**
  * onExitUse is called when a character tries to use an exit. It requires that
  * `Room.listenExit()` has been called earlier, usually in the `onActivate()`
- * function. The script should call either `exitIntercept.cancel` or
- * `exitIntercept.useExit` to determine what should happen. If neither method is
- * called, the intercept will timeout after 1 second, automatically canceling
- * the exit use with a default message.
+ * function. The script should call either `exitAction.cancel` or
+ * `exitAction.useExit` to determine what should happen. If neither method is
+ * called, the action will timeout after 1 second, automatically canceling the
+ * exit use with a default message.
  *
  * Not required. Can be remove if not used.
  *
  * @example
  * Prevent anyone from using an exit:
  * ```
- * export function onExitUse(addr: string, exitIntercept: ExitIntercept): void {
- *     exitIntercept.cancel("The door seems to be locked.");
+ * export function onExitUse(addr: string, exitAction: ExitAction): void {
+ *     exitAction.cancel("The door seems to be locked.");
  * }
  * ```
  *
  * @param addr - Address of this script instance receiving the event.
- * @param exitIntercept - Exit intercept object.
+ * @param exitAction - Exit action object.
  */
 export function onExitUse(
 	addr: string,
-	exitIntercept: ExitIntercept,
+	exitAction: ExitAction,
 ): void {
-	// Handle the intercepted exit use
+	// Handle the intercepted exit action
+}
+
+/**
+ * onCommand is called when a character uses a custom command. It requires that
+ * `Room.addCommand` has been called earlier to register the command, usually in
+ * the `onActivate()` function. The script may send a response to the caller
+ * using either `cmdAction.info` or `cmdAction.error`, but it is not
+ * required. The response must be sent within 1 second from the call.
+ *
+ * Not required. Can be remove if not used.
+ *
+ * @example
+ * Adds a "send ping" command that responds with an info message:
+ * ```
+ * export function onActivate(): void {
+ *     Room.addCommand("ping", new Command("send ping", "Sends a ping to the script.");
+ * }
+ *
+ * export function onCommand(addr: string, cmdAction: CmdAction): void {
+ *     cmdAction.info("Pong!");
+ * }
+ * ```
+ *
+ * @param addr - Address of this script instance receiving the action.
+ * @param cmdAction - Command action object.
+ */
+export function onCommand(
+	addr: string,
+	cmdAction: CmdAction,
+): void {
+	// Handle the command
 }

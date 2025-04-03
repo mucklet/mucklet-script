@@ -3,7 +3,8 @@ import {
 	Script as script_binding,
 	Store as store_binding,
 	Iterator as iterator_binding,
-	ExitIntercept as exitintercept_binding,
+	ExitAction as exitaction_binding,
+	CmdAction as cmdaction_binding,
 } from "./env";
 import { JSON } from 'json-as'
 export { JSON };
@@ -80,11 +81,11 @@ function keyToBuffer<T>(key: T): ArrayBuffer {
 }
 
 /**
- * ExitIntercept is an intercepted use of an exit.
+ * ExitAction is an action representing an intercepted use of an exit.
  */
-export class ExitIntercept {
-	/** Intercept ID */
-	interceptId: i32 = 0;
+export class ExitAction {
+	/** Action ID */
+	actionId: i32 = 0;
 	/** Character ID */
 	charId: ID = "";
 	/** Exit ID */
@@ -98,7 +99,7 @@ export class ExitIntercept {
 	 * @param exitId Exit ID or null for the originally used exit.
 	 */
 	useExit(exitId: ID | null = null): void {
-		exitintercept_binding.useExit(this.interceptId, exitId);
+		exitaction_binding.useExit(this.actionId, exitId);
 	}
 
 	/**
@@ -108,7 +109,37 @@ export class ExitIntercept {
 	 * @param msg Info message to show, or default message if null.
 	 */
 	cancel(msg: string | null = null): void {
-		exitintercept_binding.cancel(this.interceptId, msg);
+		exitaction_binding.cancel(this.actionId, msg);
+	}
+}
+
+/**
+ * CmdAction is a command action triggered by a character.
+ */
+export class CmdAction {
+	/** Action ID */
+	actionId: i32 = 0;
+	/** Character performing the action */
+	char: Event.Char = new Event.Char();
+	/** Command keyword */
+	keyword: string = "";
+	/** Command data in JSON format. */
+	data: JSON.Raw = "";
+
+	/**
+	 * Responds to the command action with an info message.
+	 * @param msg Info message.
+	 */
+	info(msg: string): void {
+		cmdaction_binding.info(this.actionId, msg);
+	}
+
+	/**
+	 * Responds to the command action with an error message.
+	 * @param msg Error message.
+	 */
+	error(msg: string): void {
+		cmdaction_binding.error(this.actionId, msg);
 	}
 }
 
@@ -169,6 +200,480 @@ class BaseIterator {
 		this.iterator = -2;
 	}
 }
+
+/** Command field type input values. */
+export namespace FieldValue {
+
+	@json
+	export class Text {
+		public value: string = "";
+	}
+
+	@json
+	export class Keyword {
+		public value: string = "";
+	}
+
+	@json
+	export class Integer {
+		public value: i64 = 0;
+	}
+
+	@json
+	export class Float {
+		public value: f64 = 0;
+	}
+
+	@json
+	export class Bool {
+		public value: bool = 0;
+	}
+
+	@json
+	export class Char {
+		/** Character ID. */
+		id: string = "";
+		/** Character name. */
+		name: string = "";
+		/** Character surname. */
+		surname: string = "";
+	}
+
+	@json
+	export class List {
+		public value: string = "";
+	}
+}
+
+/** Command field types. */
+export namespace Field {
+
+	/**
+	 * A text field is used for arbitrary text, such as messages, descriptions, or titles.
+	 */
+	@json
+	export class Text implements CommandField {
+
+		public spanLines: boolean = false;
+		public spellCheck: boolean = true;
+		public formatText: boolean = false;
+		public minLength: u32 = 0;
+		public maxLength: u32 = 0;
+
+		constructor(private desc: string = "") {}
+
+		getType(): string {
+			return "text";
+		}
+
+		getDesc(): string {
+			return this.desc;
+		}
+
+		getOpts(): string | null {
+			return ("{" +
+				`"spanLines":` + JSON.stringify(this.spanLines) +
+				`,"spellCheck":` + JSON.stringify(this.spellCheck) +
+				`,"formatText":` + JSON.stringify(this.formatText) +
+				`,"minLength":` + JSON.stringify(this.minLength) +
+				`,"maxLength":` + JSON.stringify(this.maxLength) +
+			"}");
+		}
+
+		/**
+		 * Sets span lines flag. Is false by default.
+		 * @param spanLines - Flag telling if the text can be spanned across multiple lines.
+		 */
+		setSpanLines(spanLines: boolean): this {
+			this.spanLines = spanLines;
+			return this;
+		}
+
+		/**
+		 * Sets flag to spellCheck text. Is true by default.
+		 * @param spellCheck - Flag telling if the text should be checked for spelling errors.
+		 */
+		setSpellCheck(spellCheck: boolean): this {
+			this.spellCheck = spellCheck;
+			return this;
+		}
+
+		/**
+		 * Sets flag to format text while typing. Is false by default.
+		 * @param formatText - Flag telling the text should be formatted while typing.
+		 */
+		setFormatText(formatText: boolean): this {
+			this.formatText = formatText;
+			return this;
+		}
+
+		/**
+		 * Sets text min length. Must be smaller or equal to max length unless
+		 * max length is set to zero (0).. Is 0 by default.
+		 * @param minLength - Min length of text.
+		 */
+		setMinLength(minLength: u32): this {
+			this.minLength = minLength;
+			return this;
+		}
+
+		/**
+		 * Sets text maximum length. Zero (0) means server max length. Is 0 by default.
+		 * @param maxLength - Max length of text.
+		 */
+		setMaxLength(maxLength: u32): this {
+			this.maxLength = maxLength;
+			return this;
+		}
+	}
+
+	/**
+	 * A keyword field is used for keyword names using a limited set of
+	 * characters that will be transformed to lower case. By default, a keyword
+	 * allows Letters, Numbers, Spaces, apostrophes ('), and dash/minus (-).
+	 */
+	@json
+	export class Keyword implements CommandField {
+		public removeDiacritics: boolean = false;
+		public minLength: u32 = 0;
+		public maxLength: u32 = 0;
+
+		constructor(private desc: string = "") {}
+
+		getType(): string {
+			return "keyword";
+		}
+
+		getDesc(): string {
+			return this.desc;
+		}
+
+		getOpts(): string | null {
+			return ("{" +
+				`"removeDiacritics":` + JSON.stringify(this.removeDiacritics) +
+				// `,"excludeSpace":` + JSON.stringify(this.excludeSpace) +
+				`,"minLength":` + JSON.stringify(this.minLength) +
+				`,"maxLength":` + JSON.stringify(this.maxLength) +
+			"}");
+		}
+
+		/**
+		 * Sets flag to remove diacritics from the keyword by decomposing the
+		 * characters and removing any non-print characters and marker in the Mn
+		 * Unicode category. Is false by default.
+		 * @param removeDiacritics - Flag telling if diacritics should be removed.
+		 */
+		setRemoveDiacritics(removeDiacritics: boolean): this {
+			this.removeDiacritics = removeDiacritics;
+			return this;
+		}
+
+		/**
+		 * Sets text min length. Must be smaller or equal to max length unless
+		 * max length is set to zero (0).. Is 0 by default.
+		 * @param minLength - Min length of text.
+		 */
+		setMinLength(minLength: u32): this {
+			this.minLength = minLength;
+			return this;
+		}
+
+		/**
+		 * Sets text maximum length. Zero (0) means server max length. Is 0 by default.
+		 * @param maxLength - Max length of text.
+		 */
+		setMaxLength(maxLength: u32): this {
+			this.maxLength = maxLength;
+			return this;
+		}
+	}
+
+	/** An integer field is used for whole numbers. */
+	@json
+	export class Integer implements CommandField {
+		public min: i64 = 0;
+		public max: i64 = 0;
+		private hasMin: boolean = false;
+		private hasMax: boolean = false;
+
+		constructor(private desc: string = "") {}
+
+		getType(): string {
+			return "integer";
+		}
+
+		getDesc(): string {
+			return this.desc;
+		}
+
+		getOpts(): string | null {
+			let s = "{";
+			if (this.hasMin) {
+				s += `"min":` + JSON.stringify(this.min)
+			}
+			if (this.hasMax) {
+				if (s.length > 1) {
+					s = s + ","
+				}
+				s += `"max":` + JSON.stringify(this.max)
+			}
+			return s + "}";
+		}
+
+		/**
+		 * Sets integer min value. Must be smaller or equal to max value.
+		 * @param min - Min value of integer.
+		 */
+		setMin(min: i64): this {
+			this.min = min;
+			this.hasMin = true;
+			return this;
+		}
+
+		/**
+		 * Sets integer max value. Must be greater or equal to min value.
+		 * @param max - Max value of integer
+		 */
+		setMax(max: i64): this {
+			this.max = max;
+			this.hasMax = true;
+			return this;
+		}
+	}
+
+	/** A float field is used for decimal numbers. */
+	@json
+	export class Float implements CommandField {
+		public min: f64 = 0;
+		public max: f64 = 0;
+		private gtprop: string | null = null;
+		private ltprop: string | null = null;
+
+		constructor(private desc: string = "") {}
+
+		getType(): string {
+			return "float";
+		}
+
+		getDesc(): string {
+			return this.desc;
+		}
+
+		getOpts(): string | null {
+			let s = "{";
+			if (this.gtprop != null) {
+				s += `"${this.gtprop!}":` + JSON.stringify(this.min)
+			}
+			if (this.ltprop != null) {
+				if (s.length > 1) {
+					s = s + ","
+				}
+				s += `"${this.ltprop!}":` + JSON.stringify(this.max)
+			}
+			return s + "}";
+		}
+
+		/**
+		 * Sets float min value. Must be smaller than (or equal if both are inclusive) to max value.
+		 * @param min - Min value of float.
+		 * @param inclusive - Flag to tell if min value is inclusive (>=) on true, or exclusive (>) on false.
+		 */
+		setMin(min: f64, inclusive: bool): this {
+			this.min = min;
+			this.gtprop = inclusive ? "gte" : "gt";
+			return this;
+		}
+
+		/**
+		 * Sets float max value. Must be greater than (or equal if both are inclusive) to min value.
+		 * @param max - Max value of float.
+		 * @param inclusive - Flag to tell if max value is inclusive (<=) on true, or exclusive (<) on false.
+		 */
+		setMax(max: f64, inclusive: bool): this {
+			this.max = max;
+			this.ltprop = inclusive ? "lte" : "lt";
+			return this;
+		}
+	}
+
+	/** An bool field is used for boolean values. */
+	@json
+	export class Bool implements CommandField {
+		constructor(private desc: string = "") {}
+
+		getType(): string {
+			return "bool";
+		}
+
+		getDesc(): string {
+			return this.desc;
+		}
+
+		getOpts(): string | null {
+			return null;
+		}
+	}
+
+	/** A char field is used to enter the name of a character. */
+	@json
+	export class Char implements CommandField {
+		public inRoom: boolean = false;
+		public state: CharState = CharState.Any;
+
+		constructor(private desc: string = "") {}
+
+		getType(): string {
+			return "char";
+		}
+
+		getDesc(): string {
+			return this.desc;
+		}
+
+		getOpts(): string | null {
+			let state = "";
+			switch (this.state) {
+				case CharState.Asleep:
+					state = `"asleep"`;
+					break;
+				case CharState.Awake:
+					state = `"awake"`;
+					break;
+				case CharState.Dazed:
+					state = `"dazed"`;
+					break;
+			}
+			return "{" +
+				`"inRoom":` + JSON.stringify(this.inRoom) +
+				(state == "" ? "" : (`,"state":` + state)) +
+			"}";
+		}
+
+		/**
+		 * Sets inRoom flag, requiring the character to be in the room.
+		 */
+		setInRoom(): this {
+			this.inRoom = true;
+			return this;
+		}
+
+		/**
+		 * Sets state that the character must be in. Default is CharState.Any.
+		 */
+		setState(state: CharState): this {
+			this.state = state;
+			return this;
+		}
+	}
+
+	/**
+	 * A list field is used to select between a list of items. Items must be
+	 * unique, not containing non-printable or newline characters, and be
+	 * trimmed of leading, trailing, and consecutive spaces.
+	 *
+	 * Items should not contain characters used as delimiters to continue the
+	 * command.
+	 */
+	@json
+	export class List implements CommandField {
+		public items: Array<string> = new Array<string>();
+
+		constructor(private desc: string = "") {}
+
+		getType(): string {
+			return "list";
+		}
+
+		getDesc(): string {
+			return this.desc;
+		}
+
+		getOpts(): string | null {
+			return "{" +
+				`"items":` + JSON.stringify(this.items) +
+			"}";
+		}
+
+		/**
+		 * Adds a single item to the list.
+		 */
+		addItem(item: string): this {
+			this.items.push(item);
+			return this;
+		}
+
+		/**
+		 * Sets an array of list items, replacing any previously set items.
+		 * @param items Array of list items.
+		 */
+		setItems(items: Array<string>): this {
+			this.items = items;
+			return this;
+		}
+	}
+}
+
+export interface CommandField {
+	/** Returns the type of the command field. */
+	getType(): string;
+
+	/** Returns the help description of the command field. */
+	getDesc(): string;
+
+	/** Returns the options of the command field as a JSOn encoded string. */
+	getOpts(): string | null;
+}
+
+/**
+ * Command is an object that represents a custom command.
+ */
+export class Command {
+	private fieldDefs: Map<string, string> = new Map<string, string>();
+	/**
+	 * Constructor of the Command instance.
+	 */
+	constructor(public pattern: string, public desc: string = "") {}
+
+	/**
+	 * Sets the definition for a command field.
+	 * @param key - Field <key> as found in command pattern.
+	 * @param def - Field definition.
+	 */
+	field(key: string, def: CommandField): Command {
+		assert(!this.fieldDefs.has(key), `command already has definition for field "${key}"`);
+		let type = def.getType();
+		let desc = def.getDesc();
+		let opts = def.getOpts();
+		const fieldDef = ("{" +
+			`"type":` + JSON.stringify(type) +
+			`,"desc":` + JSON.stringify(desc) +
+			(opts != null ? `,"opts":` + opts : "") +
+		"}");
+		this.fieldDefs.set(key, fieldDef);
+		return this;
+	}
+
+	/**
+	 * Converts the command into a JSON structure.
+	 */
+	json(): string {
+		const keys = this.fieldDefs.keys();
+		let s = `{"pattern":${JSON.stringify(this.pattern)},"desc":${JSON.stringify(this.desc)}`;
+		if (keys.length > 0) {
+			s += `,"fields":{`
+			for (let i = 0; i < keys.length; i++) {
+				let key = keys[i];
+				if (i > 0) {
+					s += ","
+				}
+				s += JSON.stringify(key) + ":" + this.fieldDefs.get(key);
+			}
+			s += `}`;
+		}
+		return s + `}`;
+	}
+}
+
 
 /**
  * Room API functions and types.
@@ -399,11 +904,11 @@ export namespace Room {
 
 	/**
 	 * Switches to a stored room profile by profile key.
-	 * @param key - Keyword for the stored profile.
+	 * @param keyword - Keyword for the stored profile.
 	 * @param safe - Flag to prevent the room's current profile to be overwritten by the stored profile, if it contains unstored changes.
 	 */
-	export function useProfile(key: string, safe: boolean = false): void  {
-		return room_binding.useProfile(key, safe);
+	export function useProfile(keyword: string, safe: boolean = false): void  {
+		return room_binding.useProfile(keyword, safe);
 	}
 
 	/**
@@ -513,6 +1018,30 @@ export namespace Room {
 	export function setExit<T>(exitId: ID, fields: T): void {
 		let dta = JSON.stringify(fields);
 		room_binding.setExit(exitId, dta);
+	}
+
+	/**
+	 * Adds a custom command to the room.
+	 *
+	 * Pattern is a string describing the general command structure, and may
+	 * contain <Fields> and [optional] parts.
+	 *
+	 * Any field defined in the pattern must have a corresponding field entry.
+	 *
+	 * @param keyword - Keyword for the command.
+	 * @param cmd - Command to add.
+	 * @param priority - Priority for sort order (descending) and when two or more commands match the same input. Higher priority is selected first.
+	 */
+	export function addCommand(keyword: string, cmd: Command, priority: u32 = 0): void {
+		return room_binding.addCommand(keyword, cmd.json(), priority);
+	}
+
+	/**
+	 * Removes a custom command, added by the script, from the room.
+	 * @param keyword - Keyword for the command.
+	 */
+	export function removeCommand(keyword: string): boolean {
+		return room_binding.removeCommand(keyword);
 	}
 
 	class CharIterator extends BaseIterator {
