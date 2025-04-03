@@ -20,7 +20,7 @@ const options = [
 		"Overrides the MUCKLET_TOKEN_FILE environment variable",
 	] },
 	{ name: "help", flags: [ "h" ], type: Boolean, stop: true, desc: "Show this message" },
-	{ name: "scriptIds", type: String, positional: true, multiple: true, optionalValue: true },
+	{ name: "scriptids", type: String, positional: true, multiple: true, optionalValue: true },
 ];
 
 const logLvl = {
@@ -48,14 +48,14 @@ export default async function(version, args) {
 	const cfg = await loadConfig(version, cli.config || 'mucklet.config.js', {});
 
 	// File uses room and name from cli flags
-	if (cli.scriptIds) {
+	if (cli.scriptids) {
 		if (cli.name) {
 			printError("cannot filter by name when fetching logs by script ID", help);
 		}
 		if (cli.room) {
 			printError("cannot filter by room ID when fetching logs by script ID", help);
 		}
-		cfg.scripts = cli.scriptIds.map(scriptId => ({
+		cfg.scripts = cli.scriptids.map(scriptId => ({
 			id: scriptId.trim().replace(/^#/, ''),
 		}));
 	}

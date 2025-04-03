@@ -54,11 +54,11 @@ export default async function(version, args) {
 	}
 
 	// Output configuration
-	if (cli.outDir) {
-		cfg.output = Object.assign({}, cfg.output, { dir: cli.outDir });
+	if (cli.outdir) {
+		cfg.output = Object.assign({}, cfg.output, { dir: cli.outdir });
 	}
-	if (cli.outFile) {
-		cfg.output = Object.assign({}, cfg.output, { outFile: cli.outFile });
+	if (cli.outfile) {
+		cfg.output = Object.assign({}, cfg.output, { outFile: cli.outfile });
 	}
 
 	// Realm configuration
