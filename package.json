@@ -1,6 +1,6 @@
 {
   "name": "mucklet-script",
-  "version": "1.65.0",
+  "version": "1.65.1",
   "scripts": {
     "test": "node tests",
     "build": "asc scripts/index.ts --runtime minimal --exportRuntime --lib ./lib/host.ts --lib ./lib/env.ts",
