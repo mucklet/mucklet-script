@@ -4,13 +4,9 @@
  * door so that the exit leading from the "outside" room to the "inside" room
  * may not be used while locked.
  *
- * To lock the door:
+ * The script adds two commands to the room:
  * ```
  * lock door
- * ```
- *
- * To unlock the door:
- * ```
  * unlock door
  * ```
  *
@@ -75,8 +71,6 @@ export function onActivate(): void {
 export function onCommand(addr: string, cmdAction: CmdAction): void {
 	// Get the stored "locked" value to tell if the door is locked.
 	const locked = isLocked()
-	// Get the character sending the command (the ! assumes it is not null)
-	const char = Room.getChar(cmdAction.charId)!
 
 	// Check which command was used
 	if (cmdAction.keyword == "lock") {
@@ -87,7 +81,7 @@ export function onCommand(addr: string, cmdAction: CmdAction): void {
 			// If the door is not locked, lock the door.
 			lock()
 			// Send a describe to the room to tell the door was locked.
-			Room.describe(`${char.name} locks the door.`)
+			Room.describe(`${cmdAction.char.name} locks the door.`)
 		}
 	} else if (cmdAction.keyword == "unlock") {
 		if (!locked) {
@@ -97,7 +91,7 @@ export function onCommand(addr: string, cmdAction: CmdAction): void {
 			// If the door is locked, unlock the door.
 			unlock()
 			// Send a describe to the room to tell the door is unlocked.
-			Room.describe(`${char.name} unlocks the door.`)
+			Room.describe(`${cmdAction.char.name} unlocks the door.`)
 		}
 	}
 }

@@ -3,14 +3,10 @@
  * intercom_outside.ts, to allow someone in the "inside" room to turn on the
  * intercom and let the characters speak with one another between the two rooms.
  *
- * To turn on the intercom:
+ * The script adds two commands to the room:
  * ```
- * say on
- * ```
- *
- * To turn off the intercom:
- * ```
- * say off
+ * turn on intercom
+ * turn off intercom
  * ```
  *
  * Only "say" events are passed to the outside room. Other events, such as pose

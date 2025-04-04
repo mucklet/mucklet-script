@@ -8,6 +8,7 @@
 // Post address to the inside room script. Replace this.
 // To get a room script's address, type: roomscript <KEYWORD>
 const inside = "room.aaaaaaaaaaaaaaaaaaaa#bbbbbbbbbbbbbbbbbbbb"
+
 // ID of the exit to lock/unlock. Replace this.
 // To get a room script's address, type: get exit <KEYWORD>
 // The leading # should not be included.
