@@ -93,7 +93,7 @@ declare class CmdAction {
 	/** Command keyword */
 	keyword: string;
 	/** Command data in JSON format. */
-	data: JSON.Raw;
+	data: string;
 	/**
 	 * Responds to the command action with an info message.
 	 * @param msg Info message.
