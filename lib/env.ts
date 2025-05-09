@@ -121,4 +121,7 @@ export declare namespace CmdAction {
 
 	@external("env", "cmdAction.error")
 	export function error(actionId: i32, msg: string): void
+
+	@external("env", "cmdAction.useExit")
+	export function useExit(actionId: i32, exitId: string): void
 }

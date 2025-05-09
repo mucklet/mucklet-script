@@ -104,6 +104,14 @@ declare class CmdAction {
 	 * @param msg Error message.
 	 */
 	error(msg: string): void;
+	/**
+	 * Responds to the command action by making the character use an exit.
+	 *
+	 * The exit may be hidden or inactive. May not be used in combination with
+	 * info or error.
+	 * @param exitId Exit ID.
+	 */
+	useExit(exitId: ID): void;
 }
 /**
  * BaseIterator is an iterator over items with an ID.

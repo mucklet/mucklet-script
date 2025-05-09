@@ -141,6 +141,17 @@ export class CmdAction {
 	error(msg: string): void {
 		cmdaction_binding.error(this.actionId, msg);
 	}
+
+	/**
+	 * Responds to the command action by making the character use an exit.
+	 *
+	 * The exit may be hidden or inactive. May not be used in combination with
+	 * info or error.
+	 * @param exitId Exit ID.
+	 */
+	useExit(exitId: ID): void {
+		cmdaction_binding.useExit(this.actionId, exitId);
+	}
 }
 
 /**
