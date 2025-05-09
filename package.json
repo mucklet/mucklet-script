@@ -1,6 +1,6 @@
 {
   "name": "mucklet-script",
-  "version": "1.65.2",
+  "version": "1.65.3",
   "scripts": {
     "test": "node tests",
     "build": "asc scripts/index.ts --runtime minimal --exportRuntime --lib ./lib/host.ts --lib ./lib/env.ts",
@@ -35,7 +35,7 @@
   "dependencies": {
     "assemblyscript": "^0.27.35",
     "isomorphic-ws": "^5.0.0",
-    "json-as": "^1.0.4",
+    "json-as": "github:anisus/json-as#7eb5b4bd5eef77f1f63704aabfaf07547d7cddf1",
     "resclient": "^2.5.0",
     "tinyargs": "^0.1.4",
     "visitor-as": "^0.11.4"
