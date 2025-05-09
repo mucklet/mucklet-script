@@ -959,7 +959,6 @@ export namespace Room {
 		return new ExitIterator(room_binding.exitIterator());
 	}
 
-
 	/**
 	 * Gets a character in the room by ID.
 	 * @param charId - Character ID.
@@ -1084,6 +1083,31 @@ export namespace Room {
 export namespace Script {
 
 	/**
+	 * Realm character.
+	 */
+	@json
+	export class Char {
+		/** Character ID. */
+		id: string = "";
+		/** Character name. */
+		name: string = "";
+		/** Character surname. */
+		surname: string = "";
+		/** Character avatar. */
+		avatar: ID = "";
+		/** Character species. */
+		species: string = "";
+		/** Character gender. */
+		gender: string = "";
+		/** Character state. */
+		state: CharState = CharState.Asleep;
+		/** Character idle status. */
+		idle: IdleLevel = IdleLevel.Asleep;
+		/** Character RP state. */
+		rp: RPState = RPState.None;
+	}
+
+	/**
 	 * Starts listening for posted messages from any of the given `addr`
 	 * addresses. If an address is a non-instance room, it will also listen to
 	 * posted messages from any instance of that room.
@@ -1155,6 +1179,21 @@ export namespace Script {
 			return false;
 		}
 		return script_binding.cancelPost(scheduleId);
+	}
+
+	/**
+	 * Gets info on an existing character.
+	 *
+	 * To get character description or image info use Room.getChar instead.
+	 * @param charId - Character ID.
+	 * @returns Char object or null if the character is not found.
+	 */
+	export function getChar(charId: ID): Char | null {
+		const dta = script_binding.getChar(charId)
+		if (dta == null) {
+			return null
+		}
+		return JSON.parse<Char>(dta);
 	}
 }
 

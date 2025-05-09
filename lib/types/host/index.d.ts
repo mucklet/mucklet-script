@@ -684,6 +684,29 @@ declare namespace Room {
  */
 declare namespace Script {
 	/**
+	 * Realm character.
+	 */
+	class Char {
+		/** Character ID. */
+		id: string;
+		/** Character name. */
+		name: string;
+		/** Character surname. */
+		surname: string;
+		/** Character avatar. */
+		avatar: ID;
+		/** Character species. */
+		species: string;
+		/** Character gender. */
+		gender: string;
+		/** Character state. */
+		state: CharState;
+		/** Character idle status. */
+		idle: IdleLevel;
+		/** Character RP state. */
+		rp: RPState;
+	}
+	/**
 	 * Starts listening for posted messages from any of the given `addr`
 	 * addresses. If an address is a non-instance room, it will also listen to
 	 * posted messages from any instance of that room.
@@ -742,6 +765,14 @@ declare namespace Script {
 	 * @returns True if the post was successfully canceled, otherwise false.
 	 */
 	function cancelPost(scheduleId: ID | null): boolean;
+	/**
+	 * Gets info on an existing character.
+	 *
+	 * To get character description or image info use Room.getChar instead.
+	 * @param charId - Character ID.
+	 * @returns Char object or null if the character is not found.
+	 */
+	function getChar(charId: ID): Char | null;
 }
 /**
  * Event classes used with JSON.parse to decode room events.

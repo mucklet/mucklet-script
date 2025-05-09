@@ -68,6 +68,9 @@ export declare namespace Script {
 
 	@external("env", "script.cancelPost")
 	export function cancelPost(scheduleId: string): boolean
+
+	@external("env", "script.getChar")
+	export function getChar(charId: string): string | null
 }
 
 export declare namespace Store {
