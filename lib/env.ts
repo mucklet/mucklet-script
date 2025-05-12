@@ -10,6 +10,9 @@ export declare namespace Room {
 	@external("env", "room.describe")
 	export function describe(msg: string): void
 
+	@external("env", "room.privateDescribe")
+	export function privateDescribe(msg: string, targetCharIds: string[]): void
+
 	@external("env", "room.getRoom")
 	export function getRoom(): string
 

@@ -547,6 +547,12 @@ declare namespace Room {
 	 */
 	function describe(msg: string): void;
 	/**
+	 * Sends a "privateDescribe" event to one or more target characters in the
+	 * current room instance. A private describe can only be seen by the
+	 * targeted characters.
+	 */
+	function privateDescribe(msg: string, targetCharIds: ID[]): void;
+	/**
 	 * Get detailed room information, such as description and settings.
 	 */
 	function getDetails(): RoomDetails;

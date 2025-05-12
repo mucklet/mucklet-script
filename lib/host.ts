@@ -881,6 +881,17 @@ export namespace Room {
 	}
 
 	/**
+	 * Sends a "privateDescribe" event to one or more target characters in the
+	 * current room instance. A private describe can only be seen by the
+	 * targeted characters.
+	 */
+	export function privateDescribe(msg: string, targetCharIds: ID[]): void {
+		if (targetCharIds.length > 0) {
+			room_binding.privateDescribe(msg, targetCharIds);
+		}
+	}
+
+	/**
 	 * Get detailed room information, such as description and settings.
 	 */
 	export function getDetails(): RoomDetails  {
