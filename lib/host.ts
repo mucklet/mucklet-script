@@ -1,3 +1,159 @@
+/**
+ * Mucklet scripts are written in AssemblyScript, a strictly typed
+ * TypeScript-like language. For more info on AssemblyScript, its types, and
+ * standard library, see:
+ *
+ * &nbsp;&nbsp;&nbsp;&nbsp;🔗 [AssemblyScript
+ * Concepts](https://www.assemblyscript.org/concepts.html)
+ *
+ * The standard library of AssemblyScript has been extended with classes and
+ * functions to interact with Mucklet realms. This documentation covers those
+ * extensions.
+ *
+ * # Entry points
+ *
+ * The script entry points are exported functions that are called on different
+ * types of events, such as the script activating, someone entering a room, or a
+ * command being called.
+ *
+ * The only entry point that is required is [onActivate](#onactivate).
+ *
+ *
+ * ## onActivate
+ *
+ * _onActivate_ is called each time a script is activated or updated. It is
+ * primarily used to call {@link Script.listen}, {@link Room.listen}, or
+ * {@link Room.addCommand}, to have the script listening for events, messages,
+ * or commands.
+ *
+ * When a script is updated, previous listeners, (e.g. {@link Room.listen}),
+ * commands ({@link Room.addCommand}), or scheduled posts ({@link Script.post}
+ * with delay), will be removed, and [onActivate](#onactivate) will be called
+ * again on the new script version.
+ *
+ * ```ts
+ * // Send a describe to the room and log a message to the console on activation.
+ * export function onActivate(): void {
+ *     Room.describe("Hello, world!");
+ *     console.log("Hello, console!");
+ * }
+ * ```
+ *
+ * ## onRoomEvent
+ *
+ * _onRoomEvent_ is called when an event occurs in the room, such as a _say_,
+ * _arrive_, or _sleep_. It requires that {@link Room.listen} has been called
+ * earlier, usually in the [onActivate](#onactivate) function.
+ *
+ * ```ts
+ * // Check the event type and decode the event.
+ * export function onRoomEvent(
+ *     addr: string, // Address of this script instance receiving the event.
+ *     ev: string,   // Event encoded as a json string.
+ * ): void {
+ *     const eventType = Event.getType(ev);
+ *     if (eventType == 'say') {
+ *         const say = JSON.parse<Event.Say>(ev);
+ *         // Handle the say event
+ *     }
+ * }
+ * ```
+ *
+ * ## onMessage
+ *
+ * _onMessage_ is called when another script sends a message to this script,
+ * using {@link Script.post}. It requires that {@link Script.listen} has been
+ * called earlier, usually in the [onActivate](#onactivate) function.
+ *
+ * ```ts
+ * // Receive a message from another script to change room profile
+ * export function onMessage(
+ *     addr: string,        // Address of this script instance receiving the message.
+ *     topic: string,       // Topic of the message. Determined by the sender.
+ *     data: string | null, // JSON encoded data of the message or null. Determined by the sender.
+ *     sender: string,      // Address of the sending script instance.
+ * ): void {
+ *     if (topic == "changeProfile") {
+ *         Room.setProfile(JSON.parse<string>(data))
+ *     }
+ * }
+ * ```
+ *
+ * ## onCharEvent
+ *
+ * _onCharEvent_ is called when a character enters a room, leaves a room, or
+ * changes any of its properties while inside the room. It requires that
+ * {@link Room.listenCharEvent} has been called earlier, usually in the
+ * [onActivate](#onactivate) function.
+ *
+ * ```ts
+ * // Output to log when a character arrives or leaves
+ * export function onCharEvent(
+ *     addr: string,          // Address of this script instance receiving the event.
+ *     charId: string,        // ID of character.
+ *     after: string | null,  // Character state after the event encoded as a json string, or null if the character left the room.
+ *     before: string | null, // Character state before the event encoded as a json string, or null if the character entered the room.
+ * ): void {
+ *     if (after == null && before != null) {
+ *         // If after is null, the character left
+ *         const char = JSON.parse<Room.Char>(before);
+ *         console.log(`${char.name} left.`)
+ *     }
+ *     if (before == null && after != null) {
+ *         // If before is null, the character arrived
+ *         const char = JSON.parse<Room.Char>(after);
+ *         console.log(`${char.name} arrived.`)
+ *     }
+ * }
+ * ```
+ *
+ * ## onExitUse
+ *
+ * _onExitUse_ is called when a character tries to use an exit. It requires that
+ * {@link Room.listenExit} has been called earlier, usually in the
+ * [onActivate](#onactivate) function. The script should call either
+ * {@link ExitAction.cancel} or {@link ExitAction.useExit} to determine what
+ * should happen. If neither method is called, the action will timeout after 1
+ * second, automatically canceling the exit use with a default message.
+ *
+ * ```ts
+ * // Prevent anyone from using an exit
+ * export function onExitUse(
+ *     addr: string,           // Address of this script instance receiving the event.
+ *     exitAction: ExitAction, // Exit action object.
+ * ): void {
+ *     exitAction.cancel("The door seems to be locked.");
+ * }
+ * ```
+ *
+ * ## onCommand
+ *
+ * _onCommand_ is called when a character uses a custom command. It requires
+ * that {@link Room.addCommand} has been called earlier to register the command,
+ * usually in the [onActivate](#onactivate) function. The script may send a
+ * response to the caller using either {@link CmdAction.info},
+ * {@link CmdAction.error}, or {@link CmdAction.useExit}, but it is not
+ * required. The response must be sent within 1 second from the call.
+ *
+ * ```ts
+ * // Adding a ping command on activation
+ * export function onActivate(): void {
+ *     Room.addCommand("ping", new Command("send ping", "Sends a ping to the script.");
+ * }
+ *
+ * // Adds a "send ping" command that responds with an info message
+ * export function onCommand(
+ *     addr: string,         // Address of this script instance receiving the action.
+ *     cmdAction: CmdAction, // Command action object.
+ * ): void {
+ *     cmdAction.info("Pong!");
+ * }
+ * ```
+ *
+ * @packageDocumentation
+ */
+
+
 import {
 	Room as room_binding,
 	Script as script_binding,
@@ -15,56 +171,56 @@ export type ID = string;
 export type Timestamp = i64;
 /** Duration in milliseconds. */
 export type Duration = i64;
-/** Char state */
+/** States that a character may have. */
 export namespace CharState {
-	export const Asleep = i32(0);
-	export const Awake = i32(1)
-	export const Dazed = i32(2);
-	export const Any = i32(255);
+	export const Asleep: CharState = 0;
+	export const Awake: CharState = 1;
+	export const Dazed: CharState = 2;
+	export const Any: CharState = 255;
 }
 export type CharState = i32;
-/** Char idle level */
+/** Idle levels that a character may have. */
 export namespace IdleLevel {
-	export const Asleep = i32(0);
-	export const Active = i32(1);
-	export const Idle = i32(2);
-	export const Inactive = i32(3);
+	export const Asleep: CharState = 0;
+	export const Active: CharState = 1;
+	export const Idle: CharState = 2;
+	export const Inactive: CharState = 3;
 }
 export type IdleLevel = i32;
-/** RP state */
+/** Roleplaying state that a character may have. */
 export namespace RPState {
-	export const None = i32(0);
-	export const LFRP = i32(1);
+	export const None: RPState = 0;
+	export const LFRP: RPState = 1;
 }
 export type RPState = i32;
-/** Exit navigation direction */
+/** Exit navigation directions. */
 export namespace ExitNav {
-	export const None = i32(0)
-	export const North = i32(1)
-	export const NorthEast = i32(2)
-	export const East = i32(3)
-	export const SouthEast = i32(4)
-	export const South = i32(5)
-	export const SouthWest = i32(6)
-	export const West = i32(7)
-	export const NorthWest = i32(8)
+	export const None: ExitNav = 0;
+	export const North: ExitNav = 1;
+	export const NorthEast: ExitNav = 2;
+	export const East: ExitNav = 3;
+	export const SouthEast: ExitNav = 4;
+	export const South: ExitNav = 5;
+	export const SouthWest: ExitNav = 6;
+	export const West: ExitNav = 7;
+	export const NorthWest: ExitNav = 8;
 }
 export type ExitNav = i32;
-/** Exit navigation icon */
+/** Exit navigation icon. */
 export namespace ExitIcon {
-	export const None = i32(0)
-	export const North = i32(1)
-	export const NorthEast = i32(2)
-	export const East = i32(3)
-	export const SouthEast = i32(4)
-	export const South = i32(5)
-	export const SouthWest = i32(6)
-	export const West = i32(7)
-	export const NorthWest = i32(8)
-	export const Up = i32(9)
-	export const Down = i32(10)
-	export const In = i32(11)
-	export const Out = i32(12)
+	export const None: ExitIcon = 0;
+	export const North: ExitIcon = 1;
+	export const NorthEast: ExitIcon = 2;
+	export const East: ExitIcon = 3;
+	export const SouthEast: ExitIcon = 4;
+	export const South: ExitIcon = 5;
+	export const SouthWest: ExitIcon = 6;
+	export const West: ExitIcon = 7;
+	export const NorthWest: ExitIcon = 8;
+	export const Up: ExitIcon = 9;
+	export const Down: ExitIcon = 10;
+	export const In: ExitIcon = 11;
+	export const Out: ExitIcon = 12;
 }
 export type ExitIcon = i32;
 
@@ -636,12 +792,13 @@ export interface CommandField {
 }
 
 /**
- * Command is an object that represents a custom command.
+ * Command class is a representation of a custom command, and is used when calling
+ * argument to {@link Room.addCommand}.
  */
 export class Command {
 	private fieldDefs: Map<string, string> = new Map<string, string>();
 	/**
-	 * Constructor of the Command instance.
+	 * Creates a new instance of the {@link Command} class.
 	 */
 	constructor(public pattern: string, public desc: string = "") {}
 
