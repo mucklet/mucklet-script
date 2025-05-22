@@ -238,6 +238,9 @@ function keyToBuffer<T>(key: T): ArrayBuffer {
 
 /**
  * ExitAction is an action representing an intercepted use of an exit.
+ *
+ * It is passed to [onExitUse](#onexituse) entry point when a character tries to
+ * use an exit that is being listen to with {@link Room.listenExit}.
  */
 export class ExitAction {
 	/** Action ID */
@@ -450,6 +453,7 @@ export namespace Field {
 		/**
 		 * Sets span lines flag. Is false by default.
 		 * @param spanLines - Flag telling if the text can be spanned across multiple lines.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setSpanLines(spanLines: boolean): this {
 			this.spanLines = spanLines;
@@ -459,6 +463,7 @@ export namespace Field {
 		/**
 		 * Sets flag to spellCheck text. Is true by default.
 		 * @param spellCheck - Flag telling if the text should be checked for spelling errors.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setSpellCheck(spellCheck: boolean): this {
 			this.spellCheck = spellCheck;
@@ -468,6 +473,7 @@ export namespace Field {
 		/**
 		 * Sets flag to format text while typing. Is false by default.
 		 * @param formatText - Flag telling the text should be formatted while typing.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setFormatText(formatText: boolean): this {
 			this.formatText = formatText;
@@ -478,6 +484,7 @@ export namespace Field {
 		 * Sets text min length. Must be smaller or equal to max length unless
 		 * max length is set to zero (0).. Is 0 by default.
 		 * @param minLength - Min length of text.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setMinLength(minLength: u32): this {
 			this.minLength = minLength;
@@ -487,6 +494,7 @@ export namespace Field {
 		/**
 		 * Sets text maximum length. Zero (0) means server max length. Is 0 by default.
 		 * @param maxLength - Max length of text.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setMaxLength(maxLength: u32): this {
 			this.maxLength = maxLength;
@@ -590,6 +598,7 @@ export namespace Field {
 		/**
 		 * Sets integer min value. Must be smaller or equal to max value.
 		 * @param min - Min value of integer.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setMin(min: i64): this {
 			this.min = min;
@@ -600,6 +609,7 @@ export namespace Field {
 		/**
 		 * Sets integer max value. Must be greater or equal to min value.
 		 * @param max - Max value of integer
+		 * @returns This instance, allowing method chaining.
 		 */
 		setMax(max: i64): this {
 			this.max = max;
@@ -644,6 +654,7 @@ export namespace Field {
 		 * Sets float min value. Must be smaller than (or equal if both are inclusive) to max value.
 		 * @param min - Min value of float.
 		 * @param inclusive - Flag to tell if min value is inclusive (>=) on true, or exclusive (>) on false.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setMin(min: f64, inclusive: bool): this {
 			this.min = min;
@@ -655,6 +666,7 @@ export namespace Field {
 		 * Sets float max value. Must be greater than (or equal if both are inclusive) to min value.
 		 * @param max - Max value of float.
 		 * @param inclusive - Flag to tell if max value is inclusive (<=) on true, or exclusive (<) on false.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setMax(max: f64, inclusive: bool): this {
 			this.max = max;
@@ -718,6 +730,7 @@ export namespace Field {
 
 		/**
 		 * Sets inRoom flag, requiring the character to be in the room.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setInRoom(): this {
 			this.inRoom = true;
@@ -726,6 +739,7 @@ export namespace Field {
 
 		/**
 		 * Sets state that the character must be in. Default is CharState.Any.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setState(state: CharState): this {
 			this.state = state;
@@ -763,6 +777,7 @@ export namespace Field {
 
 		/**
 		 * Adds a single item to the list.
+		 * @returns This instance, allowing method chaining.
 		 */
 		addItem(item: string): this {
 			this.items.push(item);
@@ -772,6 +787,7 @@ export namespace Field {
 		/**
 		 * Sets an array of list items, replacing any previously set items.
 		 * @param items Array of list items.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setItems(items: Array<string>): this {
 			this.items = items;
@@ -806,6 +822,7 @@ export class Command {
 	 * Sets the definition for a command field.
 	 * @param key - Field <key> as found in command pattern.
 	 * @param def - Field definition.
+	 * @returns This instance, allowing method chaining.
 	 */
 	field(key: string, def: CommandField): Command {
 		assert(!this.fieldDefs.has(key), `command already has definition for field "${key}"`);
@@ -964,7 +981,7 @@ export namespace Room {
 	 * for any room instance. Room events will be sent to `onRoomEvent` for the
 	 * instance.
 	 * @param instance - Instance or null for the non-instance.
-	 * @returns True if a new listener was added, otherwise false.
+	 * @returns Returns true if a new listener was added, otherwise false.
 	 */
 	export function listen(instance: string | null = null): boolean {
 		return room_binding.listen(0 /** room event **/, instance);
@@ -1113,7 +1130,6 @@ export namespace Room {
 	 * character most recently entering the room.
 	 * @param state - State of the characters to iterate over.
 	 * @param reverse - Flag to reverse the iteration direction, starting with the character that has been in the room the longest.
-	 * @returns Character iterator.
 	 */
 	export function charIterator(state: CharState = CharState.Any, reverse: boolean = false): CharIterator {
 		return new CharIterator(room_binding.charIterator(state, reverse));
@@ -1121,7 +1137,6 @@ export namespace Room {
 
 	/**
 	 * Gets an iterator for the exits in the room. Order is undefined.
-	 * @returns Exit iterator.
 	 */
 	export function exitIterator(): ExitIterator {
 		return new ExitIterator(room_binding.exitIterator());
@@ -1130,7 +1145,7 @@ export namespace Room {
 	/**
 	 * Gets a character in the room by ID.
 	 * @param charId - Character ID.
-	 * @returns Char object or null if the character is not found in the room.
+	 * @returns {@link Char} object or null if the character is not found in the room.
 	 */
 	export function getChar(charId: ID): Char | null {
 		const dta = room_binding.getChar(charId)
@@ -1143,7 +1158,7 @@ export namespace Room {
 	/**
 	 * Gets an exit in the room by keyword.
 	 * @param exitId - Exit ID.
-	 * @returns Exit object or null if the exit is not found in the room.
+	 * @returns {@link Exit} object or null if the exit is not found in the room.
 	 */
 	export function getExit(keyword: string): Exit | null {
 		const dta = room_binding.getExit(keyword, true)
@@ -1156,7 +1171,7 @@ export namespace Room {
 	/**
 	 * Gets an exit in the room by ID.
 	 * @param exitId - Exit ID.
-	 * @returns Exit object or null if the exit is not found in the room.
+	 * @returns {@link Exit} object or null if the exit is not found in the room.
 	 */
 	export function getExitById(exitId: ID): Exit | null {
 		const dta = room_binding.getExit(exitId, false)
@@ -1167,8 +1182,7 @@ export namespace Room {
 	}
 
 	/**
-	 * Gets the exit order of visible exits in the room as an array of IDs.
-	 * @returns Exit object or null if the exit is not found in the room.
+	 * Gets the exit order of visible exits in the room as an array of {@link ID} values.
 	 */
 	export function getExitOrder(): ID[] {
 		return room_binding.getExitOrder();
@@ -1326,7 +1340,7 @@ export namespace Script {
 	 * @param topic - Message topic. May be any kind of string.
 	 * @param data - Additional data. Must be valid JSON.
 	 * @param delay - Delay in milliseconds.
-	 * @returns Schedule ID or null if the message was posted without delay of if the receiving script was not listening.
+	 * @returns Schedule {@link ID} or null if the message was posted without delay of if the receiving script was not listening.
 	 */
 	export function post(addr: string, topic: string, data: string | null = null, delay: i64 = 0): ID | null {
 		return script_binding.post(addr, topic, data, delay);
@@ -1354,7 +1368,7 @@ export namespace Script {
 	 *
 	 * To get character description or image info use Room.getChar instead.
 	 * @param charId - Character ID.
-	 * @returns Char object or null if the character is not found.
+	 * @returns {@link Char} object or null if the character is not found.
 	 */
 	export function getChar(charId: ID): Char | null {
 		const dta = script_binding.getChar(charId)
@@ -1642,7 +1656,7 @@ export namespace Store {
 		 *
 		 * Must be called before using the iterator.
 		 * @param {string | ArrayBuffer} prefix - Key prefix used in seek, rewind, and isValid.
-		 * @returns This instance.
+		 * @returns This instance, allowing method chaining.
 		 */
 		withPrefix<T>(prefix: T): Iterator {
 			assert(this.iterator < 0, "withPrefix must be called before using the iterator");
@@ -1655,7 +1669,7 @@ export namespace Store {
 		 * Sets direction of iteration to be in lexiographcially reversed order.
 		 *
 		 * Must be called before using the iterator.
-		 * @returns This instance.
+		 * @returns This instance, allowing method chaining.
 		 */
 		inReverse(): Iterator {
 			assert(this.iterator < 0, "withReverseIteration must be called before using the iterator");

@@ -165,6 +165,9 @@ export function onCommand(
 <h1 id="index">Index</h1>
 
 [Type aliases](#type-aliases)  
+&nbsp;&nbsp;&nbsp;&nbsp;[type Duration](#duration)  
+&nbsp;&nbsp;&nbsp;&nbsp;[type ID](#id)  
+&nbsp;&nbsp;&nbsp;&nbsp;[type Timestamp](#timestamp)  
 [Enums](#enums)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum CharState](#charstate)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum ExitIcon](#exiticon)  
@@ -188,11 +191,33 @@ export function onCommand(
 
 <h2 id="type-aliases">Type aliases</h2>
 
+<h3 id="duration">type Duration</h3>
+
 ```ts
-type Duration = i64  // Duration in milliseconds.
-type ID = string     // ID for in game entities such as characters, rooms, and areas.
-type Timestamp = i64 // Timestamp as a UTC timestamp in milliseconds.
+type Duration = i64
 ```
+
+Duration in milliseconds.
+
+---
+
+<h3 id="id">type ID</h3>
+
+```ts
+type ID = string
+```
+
+ID for in game entities such as characters, rooms, and areas.
+
+---
+
+<h3 id="timestamp">type Timestamp</h3>
+
+```ts
+type Timestamp = i64
+```
+
+Timestamp as a UTC timestamp in milliseconds.
 
 <h2 id="enums">Enums</h2>
 
@@ -294,12 +319,10 @@ CmdAction is a command action triggered by a character.
 
 <h4 id="cmdaction-properties">class CmdAction properties</h4>
 
-```ts
-public actionId: number // Action ID
-public char: Char       // Character performing the action
-public data: string     // Command data in JSON format.
-public keyword: string  // Command keyword
-```
+* `actionId` <i>(i32)</i>: Action ID
+* `char` <i>([Char](#event-char))</i>: Character performing the action
+* `data` <i>(string)</i>: Command data in JSON format.
+* `keyword` <i>(string)</i>: Command keyword
 
 
 ---
@@ -307,39 +330,48 @@ public keyword: string  // Command keyword
 <h3 id="cmdaction-error">method CmdAction.error</h3>
 
 ```ts
-error(
-    msg: string, // Error message.
-): void
+error(msg: string): void
 ```
 
 Responds to the command action with an error message.
+
+<h4>Parameters</h4>
+
+* `msg` <i>(string)</i>: Error message.
+
 
 ---
 
 <h3 id="cmdaction-info">method CmdAction.info</h3>
 
 ```ts
-info(
-    msg: string, // Info message.
-): void
+info(msg: string): void
 ```
 
 Responds to the command action with an info message.
+
+<h4>Parameters</h4>
+
+* `msg` <i>(string)</i>: Info message.
+
 
 ---
 
 <h3 id="cmdaction-useexit">method CmdAction.useExit</h3>
 
 ```ts
-useExit(
-    exitId: string, // Exit ID.
-): void
+useExit(exitId: ID): void
 ```
 
 Responds to the command action by making the character use an exit.
 
 The exit may be hidden or inactive. May not be used in combination with
 info or error.
+
+<h4>Parameters</h4>
+
+* `exitId` <i>([ID](#id))</i>: Exit ID.
+
 
 ---
 
@@ -354,12 +386,11 @@ new Command(pattern: string, desc: string = "")
 
 Creates a new instance of the [Command](#command) class.
 
+
 <h4 id="command-properties">class Command properties</h4>
 
-```ts
-public desc: string
-public pattern: string
-```
+* `desc` <i>(string)</i>
+* `pattern` <i>(string)</i>
 
 
 ---
@@ -367,13 +398,20 @@ public pattern: string
 <h3 id="command-field">method Command.field</h3>
 
 ```ts
-field(
-    key: string,       // Field <key> as found in command pattern.
-    def: CommandField, // Field definition.
-): Command
+field(key: string, def: CommandField): Command
 ```
 
 Sets the definition for a command field.
+
+<h4>Parameters</h4>
+
+* `key` <i>(string)</i>: Field <key> as found in command pattern.
+* `def` <i>([CommandField](#commandfield))</i>: Field definition.
+
+<h4>Returns</h4>
+
+* This instance, allowing method chaining.
+
 
 ---
 
@@ -385,19 +423,21 @@ json(): string
 
 Converts the command into a JSON structure.
 
+
 ---
 
 <h3 id="exitaction">class ExitAction</h3>
 
 ExitAction is an action representing an intercepted use of an exit.
 
+It is passed to [onExitUse](#onexituse) entry point when a character tries to
+use an exit that is being listen to with [Room.listenExit](#room-listenexit).
+
 <h4 id="exitaction-properties">class ExitAction properties</h4>
 
-```ts
-public actionId: number // Action ID
-public charId: string   // Character ID
-public exitId: string   // Exit ID
-```
+* `actionId` <i>(i32)</i>: Action ID
+* `charId` <i>([ID](#id))</i>: Character ID
+* `exitId` <i>([ID](#id))</i>: Exit ID
 
 
 ---
@@ -405,27 +445,33 @@ public exitId: string   // Exit ID
 <h3 id="exitaction-cancel">method ExitAction.cancel</h3>
 
 ```ts
-cancel(
-    msg: undefined = null, // Info message to show, or default message if null.
-): void
+cancel(msg: string = null): void
 ```
 
 Cancels a character's attempt to use an exit and shows them an info
 message instead. If msg is null, the default exit timeout message will be
 shown.
 
+<h4>Parameters</h4>
+
+* `msg` <i>(string)</i>: Info message to show, or default message if null.
+
+
 ---
 
 <h3 id="exitaction-useexit">method ExitAction.useExit</h3>
 
 ```ts
-useExit(
-    exitId: undefined = null, // Exit ID or null for the originally used exit.
-): void
+useExit(exitId: ID = null): void
 ```
 
 Makes the character use an exit. If exitId is null, the character is sent
 through the exit that they originally tried to use.
 
 The exit may be hidden or inactive.
+
+<h4>Parameters</h4>
+
+* `exitId` <i>([ID](#id))</i>: Exit ID or null for the originally used exit.
+
 

@@ -17,11 +17,12 @@ export default class DocsConverter {
 	/**
 	 * Exports json data to markdown.
 	 * @param {string} data JSON data
+	 * @param {Record<string, string} typeAliases A map of type aliases and what type they represent.
 	 * @returns {string} Markdown output
 	 */
-	constructor(data) {
+	constructor(data, typeAliases) {
 		this.data = data;
-		this.visited = null;
+		this.typeAliases = typeAliases;
 	}
 
 	/**
@@ -148,24 +149,40 @@ export default class DocsConverter {
 	 * @returns {[Array<string>, Array<string>]} Result.
 	 */
 	formatTypeAliases(visited) {
-		let longestAlias = 0;
-		const aliasSymbols = this._getGroupSymbols("Type Aliases").filter(o => {
-			if (visited[o.id]) return false;
-			visited[o.id] = true;
-			longestAlias = Math.max(longestAlias, o.name.length + o.type.name.length);
-			return true;
-		});
-		return aliasSymbols.length
-			? [
-				[
-					"```ts" + LF +
-						aliasSymbols.map(o => `type ${o.name} = ${o.type.name} ${" ".repeat(longestAlias - o.name.length - o.type.name.length )}// ${this._formatComment(o.comment)}`)
-							.join("\n") + LF +
-						"```",
-				],
-				[],
-			]
-			: [ [], [] ];
+		const contents = [];
+		const links = [];
+		for (let o of this._getGroupSymbols("Type Aliases")) {
+			let result = this.formatTypeAlias(o, visited);
+			if (result) {
+				contents.push(result[0]);
+				links.push(result[1]);
+			}
+		}
+		return [ contents, links ];
+	}
+
+	/**
+	 * Formats an type alias.
+	 * @param {object} typeSymbol Type symbol object
+	 * @param {Record<string,boolean>} visited Record of all previously visited symbols
+	 * @returns {[string, string]} Result or null if symbol is not an enum
+	 */
+	formatTypeAlias(typeSymbol, visited) {
+		if (visited[typeSymbol.id]) return null;
+
+		// Set enum namespace and type as visited
+		visited[typeSymbol.id] = true;
+
+		let id = this._getSymbolId(typeSymbol.id);
+		let s = `<h3 id="${id}">type ${escapeHtml(typeSymbol.name)}</h3>` + LF +
+			LF +
+			"```ts" + LF +
+			`type ${typeSymbol.name} = ${this.typeAliases?.[typeSymbol.name] || this._formatType(typeSymbol.type)}` + LF +
+			"```" + LF +
+			LF +
+			this._formatComment(typeSymbol.comment);
+
+		return [s, indent + `[type ${typeSymbol.name}](#${id})`];
 	}
 
 	/**
@@ -251,8 +268,6 @@ export default class DocsConverter {
 		return [ contents, links ];
 	}
 
-	formatConstructor
-
 	/**
 	 * Formats a single comment section.
 	 * @param {*} comment Comment
@@ -262,7 +277,7 @@ export default class DocsConverter {
 	 * @returns
 	 */
 	_formatComment(comment, level, prefix, headerCallback) {
-		if (!comment) {
+		if (!comment?.summary) {
 			return '';
 		}
 
@@ -273,8 +288,17 @@ export default class DocsConverter {
 		return this._convertToNamedHeaders(this._formatText(comment.summary), level, prefix, headerCallback);
 	}
 
-	_ifNotVisited(id, cb) {
-
+	/**
+	 * Formats a returns comment section.
+	 * @param {*} comment Comment
+	 * @returns string
+	 */
+	_formatReturnsComment(comment) {
+		let returns = comment?.blockTags?.find(o => o.tag == "@returns");
+		if (!returns) {
+			return '';
+		}
+		return this._formatText(returns.content);
 	}
 
 	/**
@@ -289,11 +313,7 @@ export default class DocsConverter {
 		return textArray.map(o => {
 			switch (o.kind) {
 				case "inline-tag":
-					let id = this._getSymbolId(o.target);
-					if (!id) {
-						throw new Error("@link to unknown symbol: " + o.text);
-					}
-					return `[${o.text}](#${id})`;
+					return this._formatType(o);
 
 				default:
 					return o.text;
@@ -433,55 +453,67 @@ export default class DocsConverter {
 		let longestParam = 0;
 		let hasComment = false;
 		const signature = symbol.signatures?.[0];
-		const params = signature?.parameters?.map(p => {
-			let field = `${p.name}: ${p.type.name}${p.defaultValue ? ' = ' + p.defaultValue : ''}`;
+		const params = signature?.parameters || [];
+			// .map(p => {
+			// 	let field = `${p.name}: ${p.type.name}${p.defaultValue ? ' = ' + p.defaultValue : ''}`;
+			// 	let comment = this._formatText(p.comment?.summary) || '';
+			// 	hasComment = hasComment || !!comment;
+			// 	longestParam = Math.max(longestParam, field.length);
+			// 	return { field, comment };
+			// });
+
+		const summary = this._formatComment(signature.comment);
+		const returns = this._formatReturnsComment(signature.comment);
+
+		const syntax = "```ts" + LF +
+			name + "(" + params.map(p => {
+				return `${p.name}: ${p.type.name}${p.defaultValue ? ' = ' + p.defaultValue : ''}`;
+			}).join(", ") + ")" + (
+				!noReturnType && signature.type
+					? `: ${signature.type.name}`
+					: ''
+			) + LF +
+		"```"
+
+		const parameters = params.map(p => {
 			let comment = this._formatText(p.comment?.summary) || '';
 			hasComment = hasComment || !!comment;
-			longestParam = Math.max(longestParam, field.length);
-			return { field, comment };
-		});
-
-		let summary = this._formatComment(signature.comment);
-
-		return "```ts" + LF +
-			name + "(" + (
-				params?.length
-					? hasComment
-						? LF + params.map(p => spaceIndent + p.field + "," + (
-							p.comment
-								? " ".repeat(longestParam - p.field.length + 1) + "// " + p.comment
-								: ''
-						) + LF).join("")
-						: params.map(p => p.field).join(", ")
+			return "* `" + p.name + "` <i>(" + this._formatType(p.type) + ")</i>" + (
+				comment
+					? ": " + comment
 					: ''
-				) + ")" + (
-					!noReturnType && signature.type
-						? `: ${signature.type.name}`
-						: ''
-				) + LF +
-			"```" + (
-				summary ? "\n\n" + summary : ''
 			);
+		}).join(LF);
+
+		return  syntax + (
+			summary ? "\n\n" + summary : ''
+		) + (
+		// 	returns
+		// 		? "  \n" + returns
+		// 		: ''
+		// ) + (
+			parameters && hasComment
+				? "\n\n" +
+					`<h4>Parameters</h4>` + LF +
+					LF +
+					parameters
+				: ''
+		) + (
+			returns
+				? "\n\n" +
+					`<h4>Returns</h4>` + LF +
+					LF +
+					"* " + returns
+				: ''
+		) + LF;
 	}
 
 	_formatProperties(symbols) {
-		let longestProp = 0;
-		const props = symbols.map(p => {
-			let field = `public ${p.name}: ${p.type.name}`;
-			let comment = this._formatText(p.comment?.summary) || '';
-			longestProp = Math.max(longestProp, field.length);
-			return { field, comment };
-		});
-
-		return "```ts" + LF +
-			props.map(p => p.field +
-				(
-					p.comment
-						? " ".repeat(longestProp - p.field.length + 1) + "// " + p.comment
-						: ''
-				)
-			).join(LF) + LF +
-			"```";
+		return symbols.map(p => "* `" + p.name + "` <i>(" + this._formatType(p.type) + ")</i>" + (
+			p.comment?.summary
+				? ": " + this._formatText(p.comment.summary)
+				: ''
+		)).join(LF);
 	}
 
 	/**
@@ -492,5 +524,16 @@ export default class DocsConverter {
 	 */
 	_hasSourceCodeSignature(symbol) {
 		return !!symbol.signatures?.[0].sources?.length;
+	}
+
+	_formatType(o) {
+		if (typeof o.target != 'number' ) {
+			return escapeHtml(o.name || o.text);
+		}
+		let id = this._getSymbolId(o.target);
+		if (!id) {
+			throw new Error("unknown symbol: " + (o.name || o.text));
+		}
+		return `[${escapeHtml(o.name || o.text)}](#${id})`;
 	}
 }
