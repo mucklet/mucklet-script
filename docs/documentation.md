@@ -474,4 +474,3 @@ The exit may be hidden or inactive.
 
 * `exitId` <i>([ID](#id))</i>: Exit ID or null for the originally used exit.
 
-

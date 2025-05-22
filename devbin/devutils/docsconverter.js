@@ -41,14 +41,8 @@ export default class DocsConverter {
 		});
 		overviewLinks.push(`[Index](#index)`);
 
-		// Enums
-		let [ enums, enumLinks ] = this.formatEnums(visitedSymbolIds);
-
-		// Type aliases
-		let [ aliases, aliasLinks ] = this.formatTypeAliases(visitedSymbolIds);
-
-		// Classes
-		let [ classes, classLinks ] = this.formatClasses(visitedSymbolIds);
+		// Convert root namespace
+		let [ content, links ] = this.formatNamespace(visitedSymbolIds);
 
 		// Output
 		return `# ${title}` + LF +
@@ -61,38 +55,87 @@ export default class DocsConverter {
 			LF +
 			this._convertToNamedHeaders("# Index") + LF +
 			LF +
+			links.join("  \n") + LF +
+			LF +
+			content.join("\n\n") + LF;
+	}
+
+	formatNamespace(visited, root) {
+		let rootName = root && root != this.data
+			? this._getSymbolName(root.id)
+			: '';
+		let rootIdPrefix = rootName ? this._stringToId(rootName) + '-' : '';
+
+		// Enums
+		let enumsName = rootName ? `${rootName} enums` : "Enums";
+		let [ enums, enumLinks ] = this.formatEnums(visited);
+
+		// Type aliases
+		let aliasesName = rootName ? `${rootName} type aliases` : "Type aliases";
+		let [ aliases, aliasLinks ] = this.formatTypeAliases(visited);
+
+		// Functions
+		let functionsName = rootName ? `${rootName} functions` : "Functions";
+		let [ functions, functionLinks ] = this.formatFunctions(visited);
+
+		// Classes
+		let classesName = rootName ? `${rootName} classes` : "Classes";
+		let [ classes, classLinks ] = this.formatClasses(visited);
+
+		// Namespaces
+		let namespacesName = rootName ? `${rootName} namespaces` : "Namespaces";
+		let [ namespaces, namespaceLinks ] = this.formatNamespaces(visited);
+
+		return [
 			[
-				`[Type aliases](#type-aliases)`,
+				[
+					...(aliases.length ? [
+						this._convertToNamedHeaders(`## ${aliasesName}`),
+						aliases.join("\n\n---\n\n"),
+					] : []),
+					...(enums.length ? [
+						this._convertToNamedHeaders(`## ${enumsName}`),
+						enums.join("\n\n---\n\n"),
+					] : []),
+					...(functions.length ? [
+						this._convertToNamedHeaders(`## ${functionsName}`),
+						functions.join("\n\n---\n\n"),
+					] : []),
+					...(classes.length ? [
+						this._convertToNamedHeaders(`## ${classesName}`),
+						classes.join("\n\n---\n\n"),
+					] : []),
+					...(namespaces.length ? [
+						this._convertToNamedHeaders(`## ${namespacesName}`),
+						namespaces.join("\n\n---\n\n"),
+					] : []),
+				].join("\n\n"),
+			],
+			[
+				...(aliasLinks.length ? [ `[${aliasesName}](#${rootIdPrefix}type-aliases)` ] : []),
 				...aliasLinks,
-				`[Enums](#enums)`,
+				...(enumLinks.length ? [ `[${enumsName}](#${rootIdPrefix}enums)` ] : []),
 				...enumLinks,
-				`[Classes](#classes)`,
+				...(functionLinks.length ? [ `[${functionsName}](#${rootIdPrefix}functions)` ] : []),
+				...functionLinks,
+				...(classLinks.length ? [ `[${classesName}](#${rootIdPrefix}classes)` ] : []),
 				...classLinks,
-			].join("  \n") + LF +
-			LF +
-			this._convertToNamedHeaders("## Type aliases") + LF +
-			LF +
-			aliases.join("\n\n---\n\n") + LF +
-			LF +
-			this._convertToNamedHeaders("## Enums") + LF +
-			LF +
-			enums.join("\n\n---\n\n") + LF +
-			LF +
-			this._convertToNamedHeaders("## Classes") + LF +
-			LF +
-			classes.join("\n\n---\n\n") + LF +
-			LF;
+				...(namespaceLinks.length ? [ `[${namespacesName}](#${rootIdPrefix}namespaces)` ] : []),
+				...namespaceLinks,
+			],
+		];
 	}
 
 	/**
-	 * Formats enums namespaces.
+	 * Formats enums in a namespace.
 	 * @param {Record<string,boolean>} visited Record of all previously visited symbols
+	 * @param {object} [root] Root symbol object to look in. Defaults to this.data.
 	 * @returns {[Array<string>, Array<string>]} Result.
 	 */
-	formatEnums(visited) {
+	formatEnums(visited, root) {
 		const contents = [];
 		const links = [];
-		for (let o of this._getGroupSymbols("Namespaces", visited)) {
+		for (let o of this._getGroupSymbols("Namespaces", visited, root || this.data)) {
 			// Enums has a type named the same as the namespace
 			let t = this._getTypeAliasbyName(o.name);
 			if (!t) {
@@ -105,6 +148,18 @@ export default class DocsConverter {
 				links.push(result[1]);
 			}
 		}
+		return [ contents, links ];
+	}
+
+	/**
+	 * Formats functions in a namespace.
+	 * @param {Record<string,boolean>} visited Record of all previously visited symbols
+	 * @param {object} [root] Root symbol object to look in. Defaults to this.data.
+	 * @returns {[Array<string>, Array<string>]} Result.
+	 */
+	formatFunctions(visited, root) {
+		const contents = [];
+		const links = [];
 		return [ contents, links ];
 	}
 
@@ -146,12 +201,13 @@ export default class DocsConverter {
 	/**
 	 * Formats type aliases.
 	 * @param {Record<string,boolean>} visited Record of all previously visited symbols
+	 * @param {object} [root] Root symbol object to look in. Defaults to this.data.
 	 * @returns {[Array<string>, Array<string>]} Result.
 	 */
-	formatTypeAliases(visited) {
+	formatTypeAliases(visited, root) {
 		const contents = [];
 		const links = [];
-		for (let o of this._getGroupSymbols("Type Aliases")) {
+		for (let o of this._getGroupSymbols("Type Aliases", visited, root || this.data)) {
 			let result = this.formatTypeAlias(o, visited);
 			if (result) {
 				contents.push(result[0]);
@@ -188,12 +244,13 @@ export default class DocsConverter {
 	/**
 	 * Formats class namespaces.
 	 * @param {Record<string,boolean>} visited Record of all previously visited symbols
+	 * @param {object} [root] Root symbol object to look in. Defaults to this.data.
 	 * @returns {[Array<string>, Array<string>]} Result.
 	 */
-	formatClasses(visited) {
+	formatClasses(visited, root) {
 		let contents = [];
 		let links = [];
-		for (let o of this._getGroupSymbols("Classes", visited)) {
+		for (let o of this._getGroupSymbols("Classes", visited, root || this.data)) {
 			let result = this.formatClass(o, visited);
 			if (result) {
 				contents = contents.concat(result[0]);
@@ -264,6 +321,13 @@ export default class DocsConverter {
 			);
 			links.push(indent + indent + `[method ${methodSymbol.name}](#${methodId})`);
 		}
+
+		return [ contents, links ];
+	}
+
+	formatNamespaces(visited, root) {
+		let contents = [];
+		let links = [];
 
 		return [ contents, links ];
 	}
