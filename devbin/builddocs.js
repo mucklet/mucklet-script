@@ -35,6 +35,7 @@ await writeFile(resolve(process.cwd(), tempTsconfigFile), `{
 const app = await TypeDocApplication.bootstrap({
     tsconfig: tempTsconfigFile,
     entryPoints: [ tempEntryFile ],
+	sort: ["source-order"],
 }, [
 	new TSConfigReader(),
 ]);

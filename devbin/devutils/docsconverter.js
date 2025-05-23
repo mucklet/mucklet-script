@@ -65,6 +65,10 @@ const childKinds = {
 	[kind.constructorSignatur]: (parentId) => parentId,
 }
 
+function compareSymbolName(a, b) {
+	return a.name.localeCompare(b.name);
+}
+
 
 export default class DocsConverter {
 	/**
@@ -232,7 +236,7 @@ export default class DocsConverter {
 	formatEnums(visited, root) {
 		const contents = [];
 		const links = [];
-		for (let o of this._getGroupSymbols("Enumerations", visited, root || this.data)) {
+		for (let o of this._getGroupSymbols("Enumerations", visited, root || this.data).sort(compareSymbolName)) {
 			let result = this.formatEnum(o, visited);
 			if (result) {
 				contents.push(result[0]);
@@ -287,7 +291,7 @@ export default class DocsConverter {
 	formatFunctions(visited, root) {
 		const contents = [];
 		const links = [];
-		for (let o of this._getGroupSymbols("Functions", visited, root || this.data)) {
+		for (let o of this._getGroupSymbols("Functions", visited, root || this.data).sort(compareSymbolName)) {
 			let result = this.formatFunction(o, visited);
 			if (result) {
 				contents.push(result[0]);
@@ -328,7 +332,7 @@ export default class DocsConverter {
 	formatTypeAliases(visited, root) {
 		const contents = [];
 		const links = [];
-		for (let o of this._getGroupSymbols("Type Aliases", visited, root || this.data)) {
+		for (let o of this._getGroupSymbols("Type Aliases", visited, root || this.data).sort(compareSymbolName)) {
 			let result = this.formatTypeAlias(o, visited);
 			if (result) {
 				contents.push(result[0]);
@@ -372,7 +376,7 @@ export default class DocsConverter {
 	formatClasses(visited, root) {
 		let contents = [];
 		let links = [];
-		for (let o of this._getGroupSymbols("Classes", visited, root || this.data)) {
+		for (let o of this._getGroupSymbols("Classes", visited, root || this.data).sort(compareSymbolName)) {
 			let result = this.formatClass(o, visited);
 			if (result) {
 				contents = contents.concat(result[0]);
@@ -451,7 +455,7 @@ export default class DocsConverter {
 	formatNamespaces(visited, root) {
 		let contents = [];
 		let links = [];
-		for (let namespace of this._getGroupSymbols("Namespaces", visited, root || this.data)) {
+		for (let namespace of this._getGroupSymbols("Namespaces", visited, root || this.data).sort(compareSymbolName)) {
 			// Convert root namespace
 			let [ namespaceContents, namespaceLinks ] = this.formatNamespace(visited, namespace);
 			contents = contents.concat(namespaceContents);
@@ -565,7 +569,8 @@ export default class DocsConverter {
 	 */
 	_getGroupSymbols(title, exclude, root) {
 		return this._getGroupIds(title, exclude, root)
-			.map(id => this._getSymbol(id, this.data.children));
+			.map(id => this._getSymbol(id, this.data.children))
+			.filter(o => !o.name.startsWith("_")); // Exclude symbols starting with underscore.
 	}
 
 	/**

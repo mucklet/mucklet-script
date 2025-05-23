@@ -176,15 +176,15 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;[enum RPState](#enum-rpstate)  
 [Classes](#classes)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class CmdAction](#class-cmdaction)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method error](#method-cmdaction-error)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method info](#method-cmdaction-info)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method error](#method-cmdaction-error)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method useExit](#method-cmdaction-useexit)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Command](#class-command)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method field](#method-command-field)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method json](#method-command-json)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class ExitAction](#class-exitaction)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method cancel](#method-exitaction-cancel)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method useExit](#method-exitaction-useexit)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method cancel](#method-exitaction-cancel)  
 [Namespaces](#namespaces)  
 [Event functions](#event-functions)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Event.getType](#function-event-gettype)  
@@ -207,49 +207,49 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;[class Event.Wakeup](#class-event-wakeup)  
 [Field classes](#field-classes)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Field.Bool](#class-field-bool)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-field-bool-gettype)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getDesc](#method-field-bool-getdesc)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getOpts](#method-field-bool-getopts)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-field-bool-gettype)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Field.Char](#class-field-char)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-field-char-gettype)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getDesc](#method-field-char-getdesc)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getOpts](#method-field-char-getopts)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-field-char-gettype)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setInRoom](#method-field-char-setinroom)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setState](#method-field-char-setstate)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Field.Float](#class-field-float)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-field-float-gettype)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getDesc](#method-field-float-getdesc)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getOpts](#method-field-float-getopts)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-field-float-gettype)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMax](#method-field-float-setmax)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMin](#method-field-float-setmin)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMax](#method-field-float-setmax)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Field.Integer](#class-field-integer)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-field-integer-gettype)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getDesc](#method-field-integer-getdesc)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getOpts](#method-field-integer-getopts)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-field-integer-gettype)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMax](#method-field-integer-setmax)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMin](#method-field-integer-setmin)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMax](#method-field-integer-setmax)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Field.Keyword](#class-field-keyword)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-field-keyword-gettype)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getDesc](#method-field-keyword-getdesc)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getOpts](#method-field-keyword-getopts)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-field-keyword-gettype)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMaxLength](#method-field-keyword-setmaxlength)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMinLength](#method-field-keyword-setminlength)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setRemoveDiacritics](#method-field-keyword-setremovediacritics)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMinLength](#method-field-keyword-setminlength)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMaxLength](#method-field-keyword-setmaxlength)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Field.List](#class-field-list)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method addItem](#method-field-list-additem)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-field-list-gettype)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getDesc](#method-field-list-getdesc)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getOpts](#method-field-list-getopts)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-field-list-gettype)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method addItem](#method-field-list-additem)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setItems](#method-field-list-setitems)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Field.Text](#class-field-text)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-field-text-gettype)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getDesc](#method-field-text-getdesc)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getOpts](#method-field-text-getopts)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-field-text-gettype)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setFormatText](#method-field-text-setformattext)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMaxLength](#method-field-text-setmaxlength)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMinLength](#method-field-text-setminlength)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setSpanLines](#method-field-text-setspanlines)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setSpellCheck](#method-field-text-setspellcheck)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setFormatText](#method-field-text-setformattext)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMinLength](#method-field-text-setminlength)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMaxLength](#method-field-text-setmaxlength)  
 [FieldValue classes](#fieldvalue-classes)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class FieldValue.Bool](#class-fieldvalue-bool)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class FieldValue.Char](#class-fieldvalue-char)  
@@ -261,34 +261,32 @@ export function onCommand(
 [JSON enums](#json-enums)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum JSON.Types](#enum-json-types)  
 [JSON functions](#json-functions)  
-&nbsp;&nbsp;&nbsp;&nbsp;[function JSON.__deserialize](#function-json-deserialize)  
-&nbsp;&nbsp;&nbsp;&nbsp;[function JSON.__serialize](#function-json-serialize)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function JSON.parse](#function-json-parse)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function JSON.stringify](#function-json-stringify)  
 [JSON classes](#json-classes)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class JSON.Box](#class-json-box)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method set](#method-json-box-set)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method toString](#method-json-box-tostring)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method from](#method-json-box-from)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method toString](#method-json-box-tostring)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class JSON.Obj](#class-json-obj)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method delete](#method-json-obj-delete)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method set](#method-json-obj-set)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method get](#method-json-obj-get)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method has](#method-json-obj-has)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method delete](#method-json-obj-delete)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method keys](#method-json-obj-keys)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method set](#method-json-obj-set)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method toString](#method-json-obj-tostring)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method values](#method-json-obj-values)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method toString](#method-json-obj-tostring)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method from](#method-json-obj-from)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class JSON.Raw](#class-json-raw)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method set](#method-json-raw-set)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method toString](#method-json-raw-tostring)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method from](#method-json-raw-from)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class JSON.Value](#class-json-value)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method get](#method-json-value-get)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method set](#method-json-value-set)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method toString](#method-json-value-tostring)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method empty](#method-json-value-empty)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method from](#method-json-value-from)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method set](#method-json-value-set)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method get](#method-json-value-get)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method toString](#method-json-value-tostring)  
 [JSON namespaces](#json-namespaces)  
 [JSON.Memory functions](#json-memory-functions)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function JSON.Memory.shrink](#function-json-memory-shrink)  
@@ -318,20 +316,20 @@ export function onCommand(
 [Room classes](#room-classes)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.Char](#class-room-char)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.CharIterator](#class-room-chariterator)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method close](#method-room-chariterator-close)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getChar](#method-room-chariterator-getchar)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getID](#method-room-chariterator-getid)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method isValid](#method-room-chariterator-isvalid)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method next](#method-room-chariterator-next)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method rewind](#method-room-chariterator-rewind)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getID](#method-room-chariterator-getid)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method isValid](#method-room-chariterator-isvalid)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method close](#method-room-chariterator-close)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getChar](#method-room-chariterator-getchar)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.Exit](#class-room-exit)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.ExitIterator](#class-room-exititerator)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method close](#method-room-exititerator-close)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getExit](#method-room-exititerator-getexit)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getID](#method-room-exititerator-getid)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method isValid](#method-room-exititerator-isvalid)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method next](#method-room-exititerator-next)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method rewind](#method-room-exititerator-rewind)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getID](#method-room-exititerator-getid)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method isValid](#method-room-exititerator-isvalid)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method close](#method-room-exititerator-close)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getExit](#method-room-exititerator-getexit)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.MoveMsgs](#class-room-movemsgs)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.RoomDetails](#class-room-roomdetails)  
 [Script functions](#script-functions)  
@@ -352,18 +350,18 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;[function Store.totalBytes](#function-store-totalbytes)  
 [Store classes](#store-classes)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Store.Iterator](#class-store-iterator)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method close](#method-store-iterator-close)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getKeyBuffer](#method-store-iterator-getkeybuffer)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getKeyString](#method-store-iterator-getkeystring)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getValueBuffer](#method-store-iterator-getvaluebuffer)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getValueString](#method-store-iterator-getvaluestring)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method withPrefix](#method-store-iterator-withprefix)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method inReverse](#method-store-iterator-inreverse)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method next](#method-store-iterator-next)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method seek](#method-store-iterator-seek)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method rewind](#method-store-iterator-rewind)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getKeyString](#method-store-iterator-getkeystring)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getKeyBuffer](#method-store-iterator-getkeybuffer)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getValueString](#method-store-iterator-getvaluestring)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getValueBuffer](#method-store-iterator-getvaluebuffer)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method isValid](#method-store-iterator-isvalid)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method isValidForPrefix](#method-store-iterator-isvalidforprefix)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method next](#method-store-iterator-next)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method rewind](#method-store-iterator-rewind)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method seek](#method-store-iterator-seek)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method withPrefix](#method-store-iterator-withprefix)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method close](#method-store-iterator-close)
 
 <h2 id="type-aliases">Type aliases</h2>
 
@@ -492,23 +490,8 @@ CmdAction is a command action triggered by a character.
 
 * `actionId` <i>(i32)</i>: Action ID
 * `char` <i>([Event.Char](#class-event-char))</i>: Character performing the action
-* `data` <i>(string)</i>: Command data in JSON format.
 * `keyword` <i>(string)</i>: Command keyword
-
-
----
-
-<h3 id="method-cmdaction-error">method CmdAction.error</h3>
-
-```ts
-error(msg: string): void
-```
-
-Responds to the command action with an error message.
-
-<h4>Parameters</h4>
-
-* `msg` <i>(string)</i>: Error message.
+* `data` <i>(string)</i>: Command data in JSON format.
 
 
 ---
@@ -524,6 +507,21 @@ Responds to the command action with an info message.
 <h4>Parameters</h4>
 
 * `msg` <i>(string)</i>: Info message.
+
+
+---
+
+<h3 id="method-cmdaction-error">method CmdAction.error</h3>
+
+```ts
+error(msg: string): void
+```
+
+Responds to the command action with an error message.
+
+<h4>Parameters</h4>
+
+* `msg` <i>(string)</i>: Error message.
 
 
 ---
@@ -565,8 +563,8 @@ Creates a new instance of the [Command](#class-command) class.
 
 <h4 id="class-command-properties">class Command properties</h4>
 
-* `desc` <i>(string)</i>
 * `pattern` <i>(string)</i>
+* `desc` <i>(string)</i>
 
 
 ---
@@ -622,23 +620,6 @@ use an exit that is being listen to with [Room.listenExit](#function-room-listen
 
 ---
 
-<h3 id="method-exitaction-cancel">method ExitAction.cancel</h3>
-
-```ts
-cancel(msg: string | null = null): void
-```
-
-Cancels a character's attempt to use an exit and shows them an info
-message instead. If msg is null, the default exit timeout message will be
-shown.
-
-<h4>Parameters</h4>
-
-* `msg` <i>(string | null)</i>: Info message to show, or default message if null.
-
-
----
-
 <h3 id="method-exitaction-useexit">method ExitAction.useExit</h3>
 
 ```ts
@@ -653,6 +634,23 @@ The exit may be hidden or inactive.
 <h4>Parameters</h4>
 
 * `exitId` <i>([ID](#type-id) | null)</i>: Exit ID or null for the originally used exit.
+
+
+---
+
+<h3 id="method-exitaction-cancel">method ExitAction.cancel</h3>
+
+```ts
+cancel(msg: string | null = null): void
+```
+
+Cancels a character's attempt to use an exit and shows them an info
+message instead. If msg is null, the default exit timeout message will be
+shown.
+
+<h4>Parameters</h4>
+
+* `msg` <i>(string | null)</i>: Info message to show, or default message if null.
 
 
 <h2 id="namespaces">Namespaces</h2>
@@ -684,13 +682,13 @@ Action event.
 
 <h4 id="class-event-action-properties">class Event.Action properties</h4>
 
-* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
-* `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
-* `sig` <i>(string)</i>: Signature.
-* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
+* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
+* `sig` <i>(string)</i>: Signature.
+* `msg` <i>(string)</i>: Message.
+* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 
 
 ---
@@ -701,14 +699,14 @@ Arrive event.
 
 <h4 id="class-event-arrive-properties">class Event.Arrive properties</h4>
 
-* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
-* `method` <i>(string)</i>: Method
-* `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
-* `sig` <i>(string)</i>: Signature.
-* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
+* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
+* `sig` <i>(string)</i>: Signature.
+* `msg` <i>(string)</i>: Message.
+* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
+* `method` <i>(string)</i>: Method
 
 
 ---
@@ -720,9 +718,9 @@ Base event shared by all events.
 <h4 id="class-event-base-properties">class Event.Base properties</h4>
 
 * `id` <i>(string)</i>: Event ID.
-* `sig` <i>(string)</i>: Signature.
-* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
+* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
+* `sig` <i>(string)</i>: Signature.
 
 
 ---
@@ -734,14 +732,14 @@ such as leave and arrive.
 
 <h4 id="class-event-basecharmethodmsg-properties">class Event.BaseCharMethodMsg properties</h4>
 
-* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
-* `method` <i>(string)</i>: Method
-* `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
-* `sig` <i>(string)</i>: Signature.
-* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
+* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
+* `sig` <i>(string)</i>: Signature.
+* `msg` <i>(string)</i>: Message.
+* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
+* `method` <i>(string)</i>: Method
 
 
 ---
@@ -753,13 +751,13 @@ pose, etc.
 
 <h4 id="class-event-basecharmsg-properties">class Event.BaseCharMsg properties</h4>
 
-* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
-* `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
-* `sig` <i>(string)</i>: Signature.
-* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
+* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
+* `sig` <i>(string)</i>: Signature.
+* `msg` <i>(string)</i>: Message.
+* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 
 
 ---
@@ -771,14 +769,14 @@ marked as a pose, such as OOC events.
 
 <h4 id="class-event-basecharposemsg-properties">class Event.BaseCharPoseMsg properties</h4>
 
-* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
-* `msg` <i>(string)</i>: Message.
-* `pose` <i>(boolean)</i>: Message is a pose.
-* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
-* `sig` <i>(string)</i>: Signature.
-* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
+* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
+* `sig` <i>(string)</i>: Signature.
+* `msg` <i>(string)</i>: Message.
+* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
+* `pose` <i>(boolean)</i>: Message is a pose.
 
 
 ---
@@ -802,13 +800,13 @@ Describe event.
 
 <h4 id="class-event-describe-properties">class Event.Describe properties</h4>
 
-* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
-* `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
-* `sig` <i>(string)</i>: Signature.
-* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
+* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
+* `sig` <i>(string)</i>: Signature.
+* `msg` <i>(string)</i>: Message.
+* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 
 
 ---
@@ -819,14 +817,14 @@ Leave event.
 
 <h4 id="class-event-leave-properties">class Event.Leave properties</h4>
 
-* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
-* `method` <i>(string)</i>: Method
-* `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
-* `sig` <i>(string)</i>: Signature.
-* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
+* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
+* `sig` <i>(string)</i>: Signature.
+* `msg` <i>(string)</i>: Message.
+* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
+* `method` <i>(string)</i>: Method
 
 
 ---
@@ -837,14 +835,14 @@ OOC event.
 
 <h4 id="class-event-ooc-properties">class Event.OOC properties</h4>
 
-* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
-* `msg` <i>(string)</i>: Message.
-* `pose` <i>(boolean)</i>: Message is a pose.
-* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
-* `sig` <i>(string)</i>: Signature.
-* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
+* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
+* `sig` <i>(string)</i>: Signature.
+* `msg` <i>(string)</i>: Message.
+* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
+* `pose` <i>(boolean)</i>: Message is a pose.
 
 
 ---
@@ -855,13 +853,13 @@ Pose event.
 
 <h4 id="class-event-pose-properties">class Event.Pose properties</h4>
 
-* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
-* `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
-* `sig` <i>(string)</i>: Signature.
-* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
+* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
+* `sig` <i>(string)</i>: Signature.
+* `msg` <i>(string)</i>: Message.
+* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 
 
 ---
@@ -872,15 +870,15 @@ Roll event.
 
 <h4 id="class-event-roll-properties">class Event.Roll properties</h4>
 
-* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
-* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
-* `quiet` <i>(boolean)</i>: Quiet roll.
-* `result` <i>(Array<[Event.RollResult](#class-event-rollresult)>)</i>: Roll result.
-* `sig` <i>(string)</i>: Signature.
-* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
-* `total` <i>(i32)</i>: Roll total.
 * `type` <i>(string)</i>: Event type.
+* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
+* `sig` <i>(string)</i>: Signature.
+* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
+* `total` <i>(i32)</i>: Roll total.
+* `result` <i>(Array<[Event.RollResult](#class-event-rollresult)>)</i>: Roll result.
+* `quiet` <i>(boolean)</i>: Quiet roll.
 
 
 ---
@@ -891,11 +889,11 @@ Results in a roll event.
 
 <h4 id="class-event-rollresult-properties">class Event.RollResult properties</h4>
 
-* `count` <i>(i32)</i>: Dice count. Always 0 on type "mod".
-* `dice` <i>(Array<i32>)</i>: Roll value for each die. Always empty slice on type "mod"
-* `op` <i>(string)</i>: Modifier operator. Either "+" or "-".
-* `sides` <i>(i32)</i>: Sides on dice. Always 0 on type "mod"
 * `type` <i>(string)</i>
+* `op` <i>(string)</i>: Modifier operator. Either "+" or "-".
+* `count` <i>(i32)</i>: Dice count. Always 0 on type "mod".
+* `sides` <i>(i32)</i>: Sides on dice. Always 0 on type "mod"
+* `dice` <i>(Array<i32>)</i>: Roll value for each die. Always empty slice on type "mod"
 * `value` <i>(i32)</i>: Modifier value. Always 0 on type "std".
 
 
@@ -907,13 +905,13 @@ Say event.
 
 <h4 id="class-event-say-properties">class Event.Say properties</h4>
 
-* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
-* `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
-* `sig` <i>(string)</i>: Signature.
-* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
+* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
+* `sig` <i>(string)</i>: Signature.
+* `msg` <i>(string)</i>: Message.
+* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 
 
 ---
@@ -924,13 +922,13 @@ Sleep event.
 
 <h4 id="class-event-sleep-properties">class Event.Sleep properties</h4>
 
-* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
-* `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
-* `sig` <i>(string)</i>: Signature.
-* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
+* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
+* `sig` <i>(string)</i>: Signature.
+* `msg` <i>(string)</i>: Message.
+* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 
 
 ---
@@ -941,13 +939,13 @@ Wakeup event.
 
 <h4 id="class-event-wakeup-properties">class Event.Wakeup properties</h4>
 
-* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
-* `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
-* `sig` <i>(string)</i>: Signature.
-* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
+* `time` <i>(i64)</i>: Unix timestamp (milliseconds).
+* `sig` <i>(string)</i>: Signature.
+* `msg` <i>(string)</i>: Message.
+* `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 
 
 ---
@@ -966,6 +964,21 @@ new Field.Bool(desc: string = "")
 
 * `desc` <i>(string)</i>
 
+
+
+---
+
+<h3 id="method-field-bool-gettype">method Field.Bool.getType</h3>
+
+```ts
+getType(): string
+```
+
+Returns the type of the command field.
+
+<h4>Returns</h4>
+
+* <i>(string)</i>
 
 
 ---
@@ -1000,21 +1013,6 @@ Returns the options of the command field as a JSON encoded string.
 
 ---
 
-<h3 id="method-field-bool-gettype">method Field.Bool.getType</h3>
-
-```ts
-getType(): string
-```
-
-Returns the type of the command field.
-
-<h4>Returns</h4>
-
-* <i>(string)</i>
-
-
----
-
 <h3 id="class-field-char">class Field.Char</h3>
 
 A char field is used to enter the name of a character.
@@ -1032,6 +1030,21 @@ new Field.Char(desc: string = "")
 
 * `inRoom` <i>(boolean)</i>
 * `state` <i>([CharState](#enum-charstate))</i>
+
+
+---
+
+<h3 id="method-field-char-gettype">method Field.Char.getType</h3>
+
+```ts
+getType(): string
+```
+
+Returns the type of the command field.
+
+<h4>Returns</h4>
+
+* <i>(string)</i>
 
 
 ---
@@ -1062,21 +1075,6 @@ Returns the options of the command field as a JSON encoded string.
 <h4>Returns</h4>
 
 * <i>(string | null)</i>
-
-
----
-
-<h3 id="method-field-char-gettype">method Field.Char.getType</h3>
-
-```ts
-getType(): string
-```
-
-Returns the type of the command field.
-
-<h4>Returns</h4>
-
-* <i>(string)</i>
 
 
 ---
@@ -1130,8 +1128,23 @@ new Field.Float(desc: string = "")
 
 <h4 id="class-field-float-properties">class Field.Float properties</h4>
 
-* `max` <i>(f64)</i>
 * `min` <i>(f64)</i>
+* `max` <i>(f64)</i>
+
+
+---
+
+<h3 id="method-field-float-gettype">method Field.Float.getType</h3>
+
+```ts
+getType(): string
+```
+
+Returns the type of the command field.
+
+<h4>Returns</h4>
+
+* <i>(string)</i>
 
 
 ---
@@ -1166,17 +1179,22 @@ Returns the options of the command field as a JSON encoded string.
 
 ---
 
-<h3 id="method-field-float-gettype">method Field.Float.getType</h3>
+<h3 id="method-field-float-setmin">method Field.Float.setMin</h3>
 
 ```ts
-getType(): string
+setMin(min: f64, inclusive: bool): this
 ```
 
-Returns the type of the command field.
+Sets float min value. Must be smaller than (or equal if both are inclusive) to max value.
+
+<h4>Parameters</h4>
+
+* `min` <i>(f64)</i>: Min value of float.
+* `inclusive` <i>(bool)</i>: Flag to tell if min value is inclusive (>=) on true, or exclusive (>) on false.
 
 <h4>Returns</h4>
 
-* <i>(string)</i>
+* <i>(this)</i>: This instance, allowing method chaining.
 
 
 ---
@@ -1201,26 +1219,6 @@ Sets float max value. Must be greater than (or equal if both are inclusive) to m
 
 ---
 
-<h3 id="method-field-float-setmin">method Field.Float.setMin</h3>
-
-```ts
-setMin(min: f64, inclusive: bool): this
-```
-
-Sets float min value. Must be smaller than (or equal if both are inclusive) to max value.
-
-<h4>Parameters</h4>
-
-* `min` <i>(f64)</i>: Min value of float.
-* `inclusive` <i>(bool)</i>: Flag to tell if min value is inclusive (>=) on true, or exclusive (>) on false.
-
-<h4>Returns</h4>
-
-* <i>(this)</i>: This instance, allowing method chaining.
-
-
----
-
 <h3 id="class-field-integer">class Field.Integer</h3>
 
 An integer field is used for whole numbers.
@@ -1236,8 +1234,23 @@ new Field.Integer(desc: string = "")
 
 <h4 id="class-field-integer-properties">class Field.Integer properties</h4>
 
-* `max` <i>(i64)</i>
 * `min` <i>(i64)</i>
+* `max` <i>(i64)</i>
+
+
+---
+
+<h3 id="method-field-integer-gettype">method Field.Integer.getType</h3>
+
+```ts
+getType(): string
+```
+
+Returns the type of the command field.
+
+<h4>Returns</h4>
+
+* <i>(string)</i>
 
 
 ---
@@ -1272,17 +1285,21 @@ Returns the options of the command field as a JSON encoded string.
 
 ---
 
-<h3 id="method-field-integer-gettype">method Field.Integer.getType</h3>
+<h3 id="method-field-integer-setmin">method Field.Integer.setMin</h3>
 
 ```ts
-getType(): string
+setMin(min: i64): this
 ```
 
-Returns the type of the command field.
+Sets integer min value. Must be smaller or equal to max value.
+
+<h4>Parameters</h4>
+
+* `min` <i>(i64)</i>: Min value of integer.
 
 <h4>Returns</h4>
 
-* <i>(string)</i>
+* <i>(this)</i>: This instance, allowing method chaining.
 
 
 ---
@@ -1298,25 +1315,6 @@ Sets integer max value. Must be greater or equal to min value.
 <h4>Parameters</h4>
 
 * `max` <i>(i64)</i>: Max value of integer
-
-<h4>Returns</h4>
-
-* <i>(this)</i>: This instance, allowing method chaining.
-
-
----
-
-<h3 id="method-field-integer-setmin">method Field.Integer.setMin</h3>
-
-```ts
-setMin(min: i64): this
-```
-
-Sets integer min value. Must be smaller or equal to max value.
-
-<h4>Parameters</h4>
-
-* `min` <i>(i64)</i>: Min value of integer.
 
 <h4>Returns</h4>
 
@@ -1342,9 +1340,24 @@ new Field.Keyword(desc: string = "")
 
 <h4 id="class-field-keyword-properties">class Field.Keyword properties</h4>
 
-* `maxLength` <i>(u32)</i>
-* `minLength` <i>(u32)</i>
 * `removeDiacritics` <i>(boolean)</i>
+* `minLength` <i>(u32)</i>
+* `maxLength` <i>(u32)</i>
+
+
+---
+
+<h3 id="method-field-keyword-gettype">method Field.Keyword.getType</h3>
+
+```ts
+getType(): string
+```
+
+Returns the type of the command field.
+
+<h4>Returns</h4>
+
+* <i>(string)</i>
 
 
 ---
@@ -1379,32 +1392,19 @@ Returns the options of the command field as a JSON encoded string.
 
 ---
 
-<h3 id="method-field-keyword-gettype">method Field.Keyword.getType</h3>
+<h3 id="method-field-keyword-setremovediacritics">method Field.Keyword.setRemoveDiacritics</h3>
 
 ```ts
-getType(): string
+setRemoveDiacritics(removeDiacritics: boolean): this
 ```
 
-Returns the type of the command field.
-
-<h4>Returns</h4>
-
-* <i>(string)</i>
-
-
----
-
-<h3 id="method-field-keyword-setmaxlength">method Field.Keyword.setMaxLength</h3>
-
-```ts
-setMaxLength(maxLength: u32): this
-```
-
-Sets text maximum length. Zero (0) means server max length. Is 0 by default.
+Sets flag to remove diacritics from the keyword by decomposing the
+characters and removing any non-print characters and marker in the Mn
+Unicode category. Is false by default.
 
 <h4>Parameters</h4>
 
-* `maxLength` <i>(u32)</i>: Max length of text.
+* `removeDiacritics` <i>(boolean)</i>: Flag telling if diacritics should be removed.
 
 <h4>Returns</h4>
 
@@ -1433,19 +1433,17 @@ max length is set to zero (0).. Is 0 by default.
 
 ---
 
-<h3 id="method-field-keyword-setremovediacritics">method Field.Keyword.setRemoveDiacritics</h3>
+<h3 id="method-field-keyword-setmaxlength">method Field.Keyword.setMaxLength</h3>
 
 ```ts
-setRemoveDiacritics(removeDiacritics: boolean): this
+setMaxLength(maxLength: u32): this
 ```
 
-Sets flag to remove diacritics from the keyword by decomposing the
-characters and removing any non-print characters and marker in the Mn
-Unicode category. Is false by default.
+Sets text maximum length. Zero (0) means server max length. Is 0 by default.
 
 <h4>Parameters</h4>
 
-* `removeDiacritics` <i>(boolean)</i>: Flag telling if diacritics should be removed.
+* `maxLength` <i>(u32)</i>: Max length of text.
 
 <h4>Returns</h4>
 
@@ -1479,21 +1477,17 @@ new Field.List(desc: string = "")
 
 ---
 
-<h3 id="method-field-list-additem">method Field.List.addItem</h3>
+<h3 id="method-field-list-gettype">method Field.List.getType</h3>
 
 ```ts
-addItem(item: string): this
+getType(): string
 ```
 
-Adds a single item to the list.
-
-<h4>Parameters</h4>
-
-* `item` <i>(string)</i>
+Returns the type of the command field.
 
 <h4>Returns</h4>
 
-* <i>(this)</i>: This instance, allowing method chaining.
+* <i>(string)</i>
 
 
 ---
@@ -1528,17 +1522,21 @@ Returns the options of the command field as a JSON encoded string.
 
 ---
 
-<h3 id="method-field-list-gettype">method Field.List.getType</h3>
+<h3 id="method-field-list-additem">method Field.List.addItem</h3>
 
 ```ts
-getType(): string
+addItem(item: string): this
 ```
 
-Returns the type of the command field.
+Adds a single item to the list.
+
+<h4>Parameters</h4>
+
+* `item` <i>(string)</i>
 
 <h4>Returns</h4>
 
-* <i>(string)</i>
+* <i>(this)</i>: This instance, allowing method chaining.
 
 
 ---
@@ -1577,11 +1575,26 @@ new Field.Text(desc: string = "")
 
 <h4 id="class-field-text-properties">class Field.Text properties</h4>
 
-* `formatText` <i>(boolean)</i>
-* `maxLength` <i>(u32)</i>
-* `minLength` <i>(u32)</i>
 * `spanLines` <i>(boolean)</i>
 * `spellCheck` <i>(boolean)</i>
+* `formatText` <i>(boolean)</i>
+* `minLength` <i>(u32)</i>
+* `maxLength` <i>(u32)</i>
+
+
+---
+
+<h3 id="method-field-text-gettype">method Field.Text.getType</h3>
+
+```ts
+getType(): string
+```
+
+Returns the type of the command field.
+
+<h4>Returns</h4>
+
+* <i>(string)</i>
 
 
 ---
@@ -1616,79 +1629,6 @@ Returns the options of the command field as a JSON encoded string.
 
 ---
 
-<h3 id="method-field-text-gettype">method Field.Text.getType</h3>
-
-```ts
-getType(): string
-```
-
-Returns the type of the command field.
-
-<h4>Returns</h4>
-
-* <i>(string)</i>
-
-
----
-
-<h3 id="method-field-text-setformattext">method Field.Text.setFormatText</h3>
-
-```ts
-setFormatText(formatText: boolean): this
-```
-
-Sets flag to format text while typing. Is false by default.
-
-<h4>Parameters</h4>
-
-* `formatText` <i>(boolean)</i>: Flag telling the text should be formatted while typing.
-
-<h4>Returns</h4>
-
-* <i>(this)</i>: This instance, allowing method chaining.
-
-
----
-
-<h3 id="method-field-text-setmaxlength">method Field.Text.setMaxLength</h3>
-
-```ts
-setMaxLength(maxLength: u32): this
-```
-
-Sets text maximum length. Zero (0) means server max length. Is 0 by default.
-
-<h4>Parameters</h4>
-
-* `maxLength` <i>(u32)</i>: Max length of text.
-
-<h4>Returns</h4>
-
-* <i>(this)</i>: This instance, allowing method chaining.
-
-
----
-
-<h3 id="method-field-text-setminlength">method Field.Text.setMinLength</h3>
-
-```ts
-setMinLength(minLength: u32): this
-```
-
-Sets text min length. Must be smaller or equal to max length unless
-max length is set to zero (0).. Is 0 by default.
-
-<h4>Parameters</h4>
-
-* `minLength` <i>(u32)</i>: Min length of text.
-
-<h4>Returns</h4>
-
-* <i>(this)</i>: This instance, allowing method chaining.
-
-
----
-
 <h3 id="method-field-text-setspanlines">method Field.Text.setSpanLines</h3>
 
 ```ts
@@ -1719,6 +1659,64 @@ Sets flag to spellCheck text. Is true by default.
 <h4>Parameters</h4>
 
 * `spellCheck` <i>(boolean)</i>: Flag telling if the text should be checked for spelling errors.
+
+<h4>Returns</h4>
+
+* <i>(this)</i>: This instance, allowing method chaining.
+
+
+---
+
+<h3 id="method-field-text-setformattext">method Field.Text.setFormatText</h3>
+
+```ts
+setFormatText(formatText: boolean): this
+```
+
+Sets flag to format text while typing. Is false by default.
+
+<h4>Parameters</h4>
+
+* `formatText` <i>(boolean)</i>: Flag telling the text should be formatted while typing.
+
+<h4>Returns</h4>
+
+* <i>(this)</i>: This instance, allowing method chaining.
+
+
+---
+
+<h3 id="method-field-text-setminlength">method Field.Text.setMinLength</h3>
+
+```ts
+setMinLength(minLength: u32): this
+```
+
+Sets text min length. Must be smaller or equal to max length unless
+max length is set to zero (0).. Is 0 by default.
+
+<h4>Parameters</h4>
+
+* `minLength` <i>(u32)</i>: Min length of text.
+
+<h4>Returns</h4>
+
+* <i>(this)</i>: This instance, allowing method chaining.
+
+
+---
+
+<h3 id="method-field-text-setmaxlength">method Field.Text.setMaxLength</h3>
+
+```ts
+setMaxLength(maxLength: u32): this
+```
+
+Sets text maximum length. Zero (0) means server max length. Is 0 by default.
+
+<h4>Parameters</h4>
+
+* `maxLength` <i>(u32)</i>: Max length of text.
 
 <h4>Returns</h4>
 
@@ -1834,38 +1832,6 @@ Enum representing the different types supported by JSON.
 
 <h2 id="json-functions">JSON functions</h2>
 
-<h3 id="function-json-deserialize">function JSON.__deserialize</h3>
-
-```ts
-JSON.__deserialize(srcStart: usize, srcEnd: usize, dst: usize = 0): T
-```
-
-<h4>Parameters</h4>
-
-* `srcStart` <i>(usize)</i>
-* `srcEnd` <i>(usize)</i>
-* `dst` <i>(usize)</i>
-
-<h4>Returns</h4>
-
-* <i>(T)</i>
-
-
----
-
-<h3 id="function-json-serialize">function JSON.__serialize</h3>
-
-```ts
-JSON.__serialize(src: T): void
-```
-
-<h4>Parameters</h4>
-
-* `src` <i>(T)</i>
-
-
----
-
 <h3 id="function-json-parse">function JSON.parse</h3>
 
 ```ts
@@ -1950,19 +1916,6 @@ Set the internal value of Box to new value
 
 ---
 
-<h3 id="method-json-box-tostring">method JSON.Box.toString</h3>
-
-```ts
-toString(): string
-```
-
-<h4>Returns</h4>
-
-* <i>(string)</i>
-
-
----
-
 <h3 id="method-json-box-from">method JSON.Box.from</h3>
 
 ```ts
@@ -1987,6 +1940,19 @@ JSON.stringify<Box<i32> | null>(null);
 
 ---
 
+<h3 id="method-json-box-tostring">method JSON.Box.toString</h3>
+
+```ts
+toString(): string
+```
+
+<h4>Returns</h4>
+
+* <i>(string)</i>
+
+
+---
+
 <h3 id="class-json-obj">class JSON.Obj</h3>
 
 
@@ -1999,19 +1965,16 @@ new JSON.Obj()
 
 ---
 
-<h3 id="method-json-obj-delete">method JSON.Obj.delete</h3>
+<h3 id="method-json-obj-set">method JSON.Obj.set</h3>
 
 ```ts
-delete(key: string): bool
+set(key: string, value: T): void
 ```
 
 <h4>Parameters</h4>
 
 * `key` <i>(string)</i>
-
-<h4>Returns</h4>
-
-* <i>(bool)</i>
+* `value` <i>(T)</i>
 
 
 ---
@@ -2050,6 +2013,23 @@ has(key: string): bool
 
 ---
 
+<h3 id="method-json-obj-delete">method JSON.Obj.delete</h3>
+
+```ts
+delete(key: string): bool
+```
+
+<h4>Parameters</h4>
+
+* `key` <i>(string)</i>
+
+<h4>Returns</h4>
+
+* <i>(bool)</i>
+
+
+---
+
 <h3 id="method-json-obj-keys">method JSON.Obj.keys</h3>
 
 ```ts
@@ -2063,16 +2043,15 @@ keys(): Array<string>
 
 ---
 
-<h3 id="method-json-obj-set">method JSON.Obj.set</h3>
+<h3 id="method-json-obj-values">method JSON.Obj.values</h3>
 
 ```ts
-set(key: string, value: T): void
+values(): Array<Value>
 ```
 
-<h4>Parameters</h4>
+<h4>Returns</h4>
 
-* `key` <i>(string)</i>
-* `value` <i>(T)</i>
+* <i>(Array<[JSON.Value](#class-json-value)>)</i>
 
 
 ---
@@ -2086,19 +2065,6 @@ toString(): string
 <h4>Returns</h4>
 
 * <i>(string)</i>
-
-
----
-
-<h3 id="method-json-obj-values">method JSON.Obj.values</h3>
-
-```ts
-values(): Array<Value>
-```
-
-<h4>Returns</h4>
-
-* <i>(Array<[JSON.Value](#class-json-value)>)</i>
 
 
 ---
@@ -2189,53 +2155,8 @@ from(data: string): Raw
 
 <h4 id="class-json-value-properties">class JSON.Value properties</h4>
 
-* `type` <i>(i32)</i>
 * `METHODS` <i>(Map)</i>
-
-
----
-
-<h3 id="method-json-value-get">method JSON.Value.get</h3>
-
-```ts
-get(): T
-```
-
-Gets the value of the JSON.Value instance.
-
-<h4>Returns</h4>
-
-* <i>(T)</i>: The encapsulated value.
-
-
----
-
-<h3 id="method-json-value-set">method JSON.Value.set</h3>
-
-```ts
-set(value: T): void
-```
-
-Sets the value of the JSON.Value instance.
-
-<h4>Parameters</h4>
-
-* `value` <i>(T)</i>: The value to be set.
-
-
----
-
-<h3 id="method-json-value-tostring">method JSON.Value.toString</h3>
-
-```ts
-toString(): string
-```
-
-Converts the JSON.Value to a string representation.
-
-<h4>Returns</h4>
-
-* <i>(string)</i>: The string representation of the JSON.Value.
+* `type` <i>(i32)</i>
 
 
 ---
@@ -2270,6 +2191,51 @@ Creates an JSON.Value instance from a given value.
 <h4>Returns</h4>
 
 * <i>([JSON.Value](#class-json-value))</i>: An instance of JSON.Value.
+
+
+---
+
+<h3 id="method-json-value-set">method JSON.Value.set</h3>
+
+```ts
+set(value: T): void
+```
+
+Sets the value of the JSON.Value instance.
+
+<h4>Parameters</h4>
+
+* `value` <i>(T)</i>: The value to be set.
+
+
+---
+
+<h3 id="method-json-value-get">method JSON.Value.get</h3>
+
+```ts
+get(): T
+```
+
+Gets the value of the JSON.Value instance.
+
+<h4>Returns</h4>
+
+* <i>(T)</i>: The encapsulated value.
+
+
+---
+
+<h3 id="method-json-value-tostring">method JSON.Value.toString</h3>
+
+```ts
+toString(): string
+```
+
+Converts the JSON.Value to a string representation.
+
+<h4>Returns</h4>
+
+* <i>(string)</i>: The string representation of the JSON.Value.
 
 
 <h2 id="json-namespaces">JSON namespaces</h2>
@@ -2711,17 +2677,17 @@ Room character.
 
 <h4 id="class-room-char-properties">class Room.Char properties</h4>
 
-* `avatar` <i>([ID](#type-id))</i>: Character avatar.
-* `desc` <i>(string)</i>: Character description.
-* `gender` <i>(string)</i>: Character gender.
 * `id` <i>(string)</i>: Character ID.
-* `idle` <i>([IdleLevel](#enum-idlelevel))</i>: Character idle status.
-* `image` <i>([ID](#type-id))</i>: Character image.
 * `name` <i>(string)</i>: Character name.
-* `rp` <i>([RPState](#enum-rpstate))</i>: Character RP state.
-* `species` <i>(string)</i>: Character species.
-* `state` <i>([CharState](#enum-charstate))</i>: Character state.
 * `surname` <i>(string)</i>: Character surname.
+* `avatar` <i>([ID](#type-id))</i>: Character avatar.
+* `species` <i>(string)</i>: Character species.
+* `gender` <i>(string)</i>: Character gender.
+* `desc` <i>(string)</i>: Character description.
+* `image` <i>([ID](#type-id))</i>: Character image.
+* `state` <i>([CharState](#enum-charstate))</i>: Character state.
+* `idle` <i>([IdleLevel](#enum-idlelevel))</i>: Character idle status.
+* `rp` <i>([RPState](#enum-rpstate))</i>: Character RP state.
 
 
 ---
@@ -2748,30 +2714,29 @@ Constructor of the Iterator instance.
 
 ---
 
-<h3 id="method-room-chariterator-close">method Room.CharIterator.close</h3>
+<h3 id="method-room-chariterator-next">method Room.CharIterator.next</h3>
 
 ```ts
-close(): void
+next(): void
 ```
 
-Closes the iterator. Any further calls to the iterator will cause an
-error. May be called multiple times.
+Advances the iterator by one. Always check isValid() after a next()
+to ensure have not reached the end of the iterator.
 
 
 ---
 
-<h3 id="method-room-chariterator-getchar">method Room.CharIterator.getChar</h3>
+<h3 id="method-room-chariterator-rewind">method Room.CharIterator.rewind</h3>
 
 ```ts
-getChar(): Char
+rewind(): void
 ```
 
-Returns the current char. It will abort if the cursor has reached the
-end of the iterator.
+Rewinds the iterator cursor all the way back to first position, which
+would be the smallest key, or greatest key if inReverse() was called.
 
-<h4>Returns</h4>
-
-* <i>([Room.Char](#class-room-char))</i>
+Any iterator prefix passed to withPrefix() will be used on rewind.
+The iterator is rewound by default.
 
 
 ---
@@ -2807,29 +2772,30 @@ Returns false when the cursor is at the end of the iterator.
 
 ---
 
-<h3 id="method-room-chariterator-next">method Room.CharIterator.next</h3>
+<h3 id="method-room-chariterator-close">method Room.CharIterator.close</h3>
 
 ```ts
-next(): void
+close(): void
 ```
 
-Advances the iterator by one. Always check isValid() after a next()
-to ensure have not reached the end of the iterator.
+Closes the iterator. Any further calls to the iterator will cause an
+error. May be called multiple times.
 
 
 ---
 
-<h3 id="method-room-chariterator-rewind">method Room.CharIterator.rewind</h3>
+<h3 id="method-room-chariterator-getchar">method Room.CharIterator.getChar</h3>
 
 ```ts
-rewind(): void
+getChar(): Char
 ```
 
-Rewinds the iterator cursor all the way back to first position, which
-would be the smallest key, or greatest key if inReverse() was called.
+Returns the current char. It will abort if the cursor has reached the
+end of the iterator.
 
-Any iterator prefix passed to withPrefix() will be used on rewind.
-The iterator is rewound by default.
+<h4>Returns</h4>
+
+* <i>([Room.Char](#class-room-char))</i>
 
 
 ---
@@ -2840,19 +2806,19 @@ Room exit.
 
 <h4 id="class-room-exit-properties">class Room.Exit properties</h4>
 
+* `id` <i>(string)</i>: Exit ID.
+* `keys` <i>(Array<string>)</i>: Exit keys.
+* `name` <i>(string)</i>: Exit name.
+* `icon` <i>([ExitIcon](#enum-exiticon))</i>: Exit icon.
+* `nav` <i>([ExitNav](#enum-exitnav))</i>: Exit navigation direction.
+* `leaveMsg` <i>(string)</i>: Leave message.
 * `arriveMsg` <i>(string)</i>: Arrival message.
+* `travelMsg` <i>(string)</i>: Travel message.
+* `targetRoom` <i>([ID](#type-id))</i>: Target room.
 * `created` <i>(i64)</i>: Created timestamp.
 * `hidden` <i>(boolean)</i>: Is hidden flag.
-* `icon` <i>([ExitIcon](#enum-exiticon))</i>: Exit icon.
-* `id` <i>(string)</i>: Exit ID.
 * `inactive` <i>(boolean)</i>: Is inactive flag.
-* `keys` <i>(Array<string>)</i>: Exit keys.
-* `leaveMsg` <i>(string)</i>: Leave message.
-* `name` <i>(string)</i>: Exit name.
-* `nav` <i>([ExitNav](#enum-exitnav))</i>: Exit navigation direction.
-* `targetRoom` <i>([ID](#type-id))</i>: Target room.
 * `transparent` <i>(boolean)</i>: Is transparent flag.
-* `travelMsg` <i>(string)</i>: Travel message.
 
 
 ---
@@ -2879,30 +2845,29 @@ Constructor of the Iterator instance.
 
 ---
 
-<h3 id="method-room-exititerator-close">method Room.ExitIterator.close</h3>
+<h3 id="method-room-exititerator-next">method Room.ExitIterator.next</h3>
 
 ```ts
-close(): void
+next(): void
 ```
 
-Closes the iterator. Any further calls to the iterator will cause an
-error. May be called multiple times.
+Advances the iterator by one. Always check isValid() after a next()
+to ensure have not reached the end of the iterator.
 
 
 ---
 
-<h3 id="method-room-exititerator-getexit">method Room.ExitIterator.getExit</h3>
+<h3 id="method-room-exititerator-rewind">method Room.ExitIterator.rewind</h3>
 
 ```ts
-getExit(): Exit
+rewind(): void
 ```
 
-Returns the current char. It will abort if the cursor has reached the
-end of the iterator.
+Rewinds the iterator cursor all the way back to first position, which
+would be the smallest key, or greatest key if inReverse() was called.
 
-<h4>Returns</h4>
-
-* <i>([Room.Exit](#class-room-exit))</i>
+Any iterator prefix passed to withPrefix() will be used on rewind.
+The iterator is rewound by default.
 
 
 ---
@@ -2938,29 +2903,30 @@ Returns false when the cursor is at the end of the iterator.
 
 ---
 
-<h3 id="method-room-exititerator-next">method Room.ExitIterator.next</h3>
+<h3 id="method-room-exititerator-close">method Room.ExitIterator.close</h3>
 
 ```ts
-next(): void
+close(): void
 ```
 
-Advances the iterator by one. Always check isValid() after a next()
-to ensure have not reached the end of the iterator.
+Closes the iterator. Any further calls to the iterator will cause an
+error. May be called multiple times.
 
 
 ---
 
-<h3 id="method-room-exititerator-rewind">method Room.ExitIterator.rewind</h3>
+<h3 id="method-room-exititerator-getexit">method Room.ExitIterator.getExit</h3>
 
 ```ts
-rewind(): void
+getExit(): Exit
 ```
 
-Rewinds the iterator cursor all the way back to first position, which
-would be the smallest key, or greatest key if inReverse() was called.
+Returns the current char. It will abort if the cursor has reached the
+end of the iterator.
 
-Any iterator prefix passed to withPrefix() will be used on rewind.
-The iterator is rewound by default.
+<h4>Returns</h4>
+
+* <i>([Room.Exit](#class-room-exit))</i>
 
 
 ---
@@ -2971,8 +2937,8 @@ Move messages used when entering or leaving a room.
 
 <h4 id="class-room-movemsgs-properties">class Room.MoveMsgs properties</h4>
 
-* `arriveMsg` <i>(string)</i>
 * `leaveMsg` <i>(string)</i>
+* `arriveMsg` <i>(string)</i>
 * `travelMsg` <i>(string)</i>
 
 
@@ -2984,21 +2950,21 @@ Detailed room information.
 
 <h4 id="class-room-roomdetails-properties">class Room.RoomDetails properties</h4>
 
-* `autosweep` <i>(boolean)</i>: Autosweep flags if sleepers in the room should be sent home automatically.
-* `autosweepDelay` <i>(i64)</i>: AutosweepDelay is the time in milliseconds until a sleeper is swept.
-* `created` <i>(i64)</i>: Created time.
-* `customTeleportMsgs` <i>(boolean)</i>: CustomTeleportMsgs flags if the room uses custom teleport messages.
-* `desc` <i>(string)</i>: Room description.
 * `id` <i>([ID](#type-id))</i>: Room ID.
+* `name` <i>(string)</i>: Room name.
+* `desc` <i>(string)</i>: Room description.
 * `imageId` <i>([ID](#type-id))</i>: Room image ID;
 * `isDark` <i>(boolean)</i>: IsDark flags if other character can be seen or whispered to in the room.
-* `isHome` <i>(boolean)</i>: IsHome flags if the room can be set as home by others.
-* `isInstance` <i>(boolean)</i>: IsInstance flags if the room creates an instance.
 * `isQuiet` <i>(boolean)</i>: IsQuiet flags if a room is quiet and won't allow communication.
+* `isHome` <i>(boolean)</i>: IsHome flags if the room can be set as home by others.
 * `isTeleport` <i>(boolean)</i>: IsTeleport flags if the room can be added as a teleport node by others.
-* `name` <i>(string)</i>: Room name.
+* `isInstance` <i>(boolean)</i>: IsInstance flags if the room creates an instance.
+* `autosweep` <i>(boolean)</i>: Autosweep flags if sleepers in the room should be sent home automatically.
+* `autosweepDelay` <i>(i64)</i>: AutosweepDelay is the time in milliseconds until a sleeper is swept.
+* `customTeleportMsgs` <i>(boolean)</i>: CustomTeleportMsgs flags if the room uses custom teleport messages.
 * `overrideCharTeleportMsgs` <i>(boolean)</i>: OverrideCharTeleportMsgs flags if the custom teleport messages should override any set character teleport messages.
 * `teleport` <i>([Room.MoveMsgs](#class-room-movemsgs))</i>: Custom teleport messages.
+* `created` <i>(i64)</i>: Created time.
 
 
 ---
@@ -3139,15 +3105,15 @@ Realm character.
 
 <h4 id="class-script-char-properties">class Script.Char properties</h4>
 
-* `avatar` <i>([ID](#type-id))</i>: Character avatar.
-* `gender` <i>(string)</i>: Character gender.
 * `id` <i>(string)</i>: Character ID.
-* `idle` <i>([IdleLevel](#enum-idlelevel))</i>: Character idle status.
 * `name` <i>(string)</i>: Character name.
-* `rp` <i>([RPState](#enum-rpstate))</i>: Character RP state.
-* `species` <i>(string)</i>: Character species.
-* `state` <i>([CharState](#enum-charstate))</i>: Character state.
 * `surname` <i>(string)</i>: Character surname.
+* `avatar` <i>([ID](#type-id))</i>: Character avatar.
+* `species` <i>(string)</i>: Character species.
+* `gender` <i>(string)</i>: Character gender.
+* `state` <i>([CharState](#enum-charstate))</i>: Character state.
+* `idle` <i>([IdleLevel](#enum-idlelevel))</i>: Character idle status.
+* `rp` <i>([RPState](#enum-rpstate))</i>: Character RP state.
 
 
 ---
@@ -3288,30 +3254,88 @@ Constructor of the Iterator instance.
 
 ---
 
-<h3 id="method-store-iterator-close">method Store.Iterator.close</h3>
+<h3 id="method-store-iterator-withprefix">method Store.Iterator.withPrefix</h3>
 
 ```ts
-close(): void
+withPrefix(prefix: T): Iterator
 ```
 
-Closes the iterator. Any further calls to the iterator will cause an
-error. May be called multiple times.
+Sets a prefix to use for calls to seek, rewind, and isValid.
+
+Must be called before using the iterator.
+
+<h4>Parameters</h4>
+
+* `prefix` <i>(T)</i>: Key prefix used in seek, rewind, and isValid.
+
+<h4>Returns</h4>
+
+* <i>([Store.Iterator](#class-store-iterator))</i>: This instance, allowing method chaining.
 
 
 ---
 
-<h3 id="method-store-iterator-getkeybuffer">method Store.Iterator.getKeyBuffer</h3>
+<h3 id="method-store-iterator-inreverse">method Store.Iterator.inReverse</h3>
 
 ```ts
-getKeyBuffer(): ArrayBuffer
+inReverse(): Iterator
 ```
 
-Returns the key ArrayBuffer of the current key-value pair. It will
-abort if the cursor has reached the end of the iterator.
+Sets direction of iteration to be in lexiographcially reversed order.
+
+Must be called before using the iterator.
 
 <h4>Returns</h4>
 
-* <i>(ArrayBuffer)</i>
+* <i>([Store.Iterator](#class-store-iterator))</i>: This instance, allowing method chaining.
+
+
+---
+
+<h3 id="method-store-iterator-next">method Store.Iterator.next</h3>
+
+```ts
+next(): void
+```
+
+Advances the iterator by one. Always check isValid() after a next()
+to ensure have not reached the end of the iterator.
+
+
+---
+
+<h3 id="method-store-iterator-seek">method Store.Iterator.seek</h3>
+
+```ts
+seek(key: T): void
+```
+
+Seeks to the provided key if found. If not found, it would seek to
+the next smallest key greater than the provided key if iterating in
+the forward direction. Behavior would be reversed if iterating
+backwards.
+
+Any iterator prefix passed to withPrefix() will be prepended to
+the key.
+
+<h4>Parameters</h4>
+
+* `key` <i>(T)</i>
+
+
+---
+
+<h3 id="method-store-iterator-rewind">method Store.Iterator.rewind</h3>
+
+```ts
+rewind(): void
+```
+
+Rewinds the iterator cursor all the way back to first position, which
+would be the smallest key, or greatest key if inReverse() was called.
+
+Any iterator prefix passed to withPrefix() will be used on rewind.
+The iterator is rewound by default.
 
 
 ---
@@ -3332,13 +3356,13 @@ if the cursor has reached the end of the iterator.
 
 ---
 
-<h3 id="method-store-iterator-getvaluebuffer">method Store.Iterator.getValueBuffer</h3>
+<h3 id="method-store-iterator-getkeybuffer">method Store.Iterator.getKeyBuffer</h3>
 
 ```ts
-getValueBuffer(): ArrayBuffer
+getKeyBuffer(): ArrayBuffer
 ```
 
-Returns the ArrayBuffer value of the current key-value pair. It will
+Returns the key ArrayBuffer of the current key-value pair. It will
 abort if the cursor has reached the end of the iterator.
 
 <h4>Returns</h4>
@@ -3364,19 +3388,18 @@ if the cursor has reached the end of the iterator.
 
 ---
 
-<h3 id="method-store-iterator-inreverse">method Store.Iterator.inReverse</h3>
+<h3 id="method-store-iterator-getvaluebuffer">method Store.Iterator.getValueBuffer</h3>
 
 ```ts
-inReverse(): Iterator
+getValueBuffer(): ArrayBuffer
 ```
 
-Sets direction of iteration to be in lexiographcially reversed order.
-
-Must be called before using the iterator.
+Returns the ArrayBuffer value of the current key-value pair. It will
+abort if the cursor has reached the end of the iterator.
 
 <h4>Returns</h4>
 
-* <i>([Store.Iterator](#class-store-iterator))</i>: This instance, allowing method chaining.
+* <i>(ArrayBuffer)</i>
 
 
 ---
@@ -3421,69 +3444,12 @@ provided prefix.
 
 ---
 
-<h3 id="method-store-iterator-next">method Store.Iterator.next</h3>
+<h3 id="method-store-iterator-close">method Store.Iterator.close</h3>
 
 ```ts
-next(): void
+close(): void
 ```
 
-Advances the iterator by one. Always check isValid() after a next()
-to ensure have not reached the end of the iterator.
-
-
----
-
-<h3 id="method-store-iterator-rewind">method Store.Iterator.rewind</h3>
-
-```ts
-rewind(): void
-```
-
-Rewinds the iterator cursor all the way back to first position, which
-would be the smallest key, or greatest key if inReverse() was called.
-
-Any iterator prefix passed to withPrefix() will be used on rewind.
-The iterator is rewound by default.
-
-
----
-
-<h3 id="method-store-iterator-seek">method Store.Iterator.seek</h3>
-
-```ts
-seek(key: T): void
-```
-
-Seeks to the provided key if found. If not found, it would seek to
-the next smallest key greater than the provided key if iterating in
-the forward direction. Behavior would be reversed if iterating
-backwards.
-
-Any iterator prefix passed to withPrefix() will be prepended to
-the key.
-
-<h4>Parameters</h4>
-
-* `key` <i>(T)</i>
-
-
----
-
-<h3 id="method-store-iterator-withprefix">method Store.Iterator.withPrefix</h3>
-
-```ts
-withPrefix(prefix: T): Iterator
-```
-
-Sets a prefix to use for calls to seek, rewind, and isValid.
-
-Must be called before using the iterator.
-
-<h4>Parameters</h4>
-
-* `prefix` <i>(T)</i>: Key prefix used in seek, rewind, and isValid.
-
-<h4>Returns</h4>
-
-* <i>([Store.Iterator](#class-store-iterator))</i>: This instance, allowing method chaining.
+Closes the iterator. Any further calls to the iterator will cause an
+error. May be called multiple times.
 
