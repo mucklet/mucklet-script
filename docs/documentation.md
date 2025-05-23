@@ -169,18 +169,12 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;[type ID](#type-id)  
 &nbsp;&nbsp;&nbsp;&nbsp;[type Timestamp](#type-timestamp)  
 [Enums](#enums)  
-&nbsp;&nbsp;&nbsp;&nbsp;[enum CharState](#namespace-charstate)  
-&nbsp;&nbsp;&nbsp;&nbsp;[enum ExitIcon](#namespace-exiticon)  
-&nbsp;&nbsp;&nbsp;&nbsp;[enum ExitNav](#namespace-exitnav)  
-&nbsp;&nbsp;&nbsp;&nbsp;[enum IdleLevel](#namespace-idlelevel)  
-&nbsp;&nbsp;&nbsp;&nbsp;[enum RPState](#namespace-rpstate)  
+&nbsp;&nbsp;&nbsp;&nbsp;[enum CharState](#enum-charstate)  
+&nbsp;&nbsp;&nbsp;&nbsp;[enum ExitIcon](#enum-exiticon)  
+&nbsp;&nbsp;&nbsp;&nbsp;[enum ExitNav](#enum-exitnav)  
+&nbsp;&nbsp;&nbsp;&nbsp;[enum IdleLevel](#enum-idlelevel)  
+&nbsp;&nbsp;&nbsp;&nbsp;[enum RPState](#enum-rpstate)  
 [Classes](#classes)  
-&nbsp;&nbsp;&nbsp;&nbsp;[class BaseIterator](#class-baseiterator)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method close](#method-baseiterator-close)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getID](#method-baseiterator-getid)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method isValid](#method-baseiterator-isvalid)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method next](#method-baseiterator-next)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method rewind](#method-baseiterator-rewind)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class CmdAction](#class-cmdaction)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method error](#method-cmdaction-error)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method info](#method-cmdaction-info)  
@@ -264,6 +258,8 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;[class FieldValue.Keyword](#class-fieldvalue-keyword)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class FieldValue.List](#class-fieldvalue-list)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class FieldValue.Text](#class-fieldvalue-text)  
+[JSON enums](#json-enums)  
+&nbsp;&nbsp;&nbsp;&nbsp;[enum JSON.Types](#enum-json-types)  
 [JSON functions](#json-functions)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function JSON.__deserialize](#function-json-deserialize)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function JSON.__serialize](#function-json-serialize)  
@@ -322,20 +318,20 @@ export function onCommand(
 [Room classes](#room-classes)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.Char](#class-room-char)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.CharIterator](#class-room-chariterator)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method close](#method-baseiterator-close)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method close](#method-room-chariterator-close)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getChar](#method-room-chariterator-getchar)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getID](#method-baseiterator-getid)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method isValid](#method-baseiterator-isvalid)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method next](#method-baseiterator-next)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method rewind](#method-baseiterator-rewind)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getID](#method-room-chariterator-getid)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method isValid](#method-room-chariterator-isvalid)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method next](#method-room-chariterator-next)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method rewind](#method-room-chariterator-rewind)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.Exit](#class-room-exit)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.ExitIterator](#class-room-exititerator)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method close](#method-baseiterator-close)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method close](#method-room-exititerator-close)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getExit](#method-room-exititerator-getexit)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getID](#method-baseiterator-getid)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method isValid](#method-baseiterator-isvalid)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method next](#method-baseiterator-next)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method rewind](#method-baseiterator-rewind)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getID](#method-room-exititerator-getid)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method isValid](#method-room-exititerator-isvalid)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method next](#method-room-exititerator-next)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method rewind](#method-room-exititerator-rewind)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.MoveMsgs](#class-room-movemsgs)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.RoomDetails](#class-room-roomdetails)  
 [Script functions](#script-functions)  
@@ -401,15 +397,14 @@ Timestamp as a UTC timestamp in milliseconds.
 
 <h2 id="enums">Enums</h2>
 
-<h3 id="namespace-charstate">enum CharState</h3>
+<h3 id="enum-charstate">enum CharState</h3>
 
 ```ts
-type CharState = i32
-namespace CharState {
-    const Asleep = CharState(0)
-    const Awake  = CharState(1)
-    const Dazed  = CharState(2)
-    const Any    = CharState(255)
+const enum CharState {
+    Asleep = 0,
+    Awake  = 1,
+    Dazed  = 2,
+    Any    = 255,
 }
 ```
 
@@ -417,24 +412,23 @@ States that a character may have.
 
 ---
 
-<h3 id="namespace-exiticon">enum ExitIcon</h3>
+<h3 id="enum-exiticon">enum ExitIcon</h3>
 
 ```ts
-type ExitIcon = i32
-namespace ExitIcon {
-    const None      = ExitIcon(0)
-    const North     = ExitIcon(1)
-    const NorthEast = ExitIcon(2)
-    const East      = ExitIcon(3)
-    const SouthEast = ExitIcon(4)
-    const South     = ExitIcon(5)
-    const SouthWest = ExitIcon(6)
-    const West      = ExitIcon(7)
-    const NorthWest = ExitIcon(8)
-    const Up        = ExitIcon(9)
-    const Down      = ExitIcon(10)
-    const In        = ExitIcon(11)
-    const Out       = ExitIcon(12)
+const enum ExitIcon {
+    None      = 0,
+    North     = 1,
+    NorthEast = 2,
+    East      = 3,
+    SouthEast = 4,
+    South     = 5,
+    SouthWest = 6,
+    West      = 7,
+    NorthWest = 8,
+    Up        = 9,
+    Down      = 10,
+    In        = 11,
+    Out       = 12,
 }
 ```
 
@@ -442,20 +436,19 @@ Exit navigation icon.
 
 ---
 
-<h3 id="namespace-exitnav">enum ExitNav</h3>
+<h3 id="enum-exitnav">enum ExitNav</h3>
 
 ```ts
-type ExitNav = i32
-namespace ExitNav {
-    const None      = ExitNav(0)
-    const North     = ExitNav(1)
-    const NorthEast = ExitNav(2)
-    const East      = ExitNav(3)
-    const SouthEast = ExitNav(4)
-    const South     = ExitNav(5)
-    const SouthWest = ExitNav(6)
-    const West      = ExitNav(7)
-    const NorthWest = ExitNav(8)
+const enum ExitNav {
+    None      = 0,
+    North     = 1,
+    NorthEast = 2,
+    East      = 3,
+    SouthEast = 4,
+    South     = 5,
+    SouthWest = 6,
+    West      = 7,
+    NorthWest = 8,
 }
 ```
 
@@ -463,15 +456,14 @@ Exit navigation directions.
 
 ---
 
-<h3 id="namespace-idlelevel">enum IdleLevel</h3>
+<h3 id="enum-idlelevel">enum IdleLevel</h3>
 
 ```ts
-type IdleLevel = i32
-namespace IdleLevel {
-    const Asleep   = IdleLevel(0)
-    const Active   = IdleLevel(1)
-    const Idle     = IdleLevel(2)
-    const Inactive = IdleLevel(3)
+const enum IdleLevel {
+    Asleep   = 0,
+    Active   = 1,
+    Idle     = 2,
+    Inactive = 3,
 }
 ```
 
@@ -479,107 +471,18 @@ Idle levels that a character may have.
 
 ---
 
-<h3 id="namespace-rpstate">enum RPState</h3>
+<h3 id="enum-rpstate">enum RPState</h3>
 
 ```ts
-type RPState = i32
-namespace RPState {
-    const None = RPState(0)
-    const LFRP = RPState(1)
+const enum RPState {
+    None = 0,
+    LFRP = 1,
 }
 ```
 
 Roleplaying state that a character may have.
 
 <h2 id="classes">Classes</h2>
-
-<h3 id="class-baseiterator">class BaseIterator</h3>
-
-BaseIterator is an iterator over items with an ID.
-
-```ts
-new BaseIterator(iterator: i32)
-```
-
-Constructor of the Iterator instance.
-
-
-<h4 id="class-baseiterator-properties">class BaseIterator properties</h4>
-
-* `iterator` <i>(i32)</i>
-
-
----
-
-<h3 id="method-baseiterator-close">method BaseIterator.close</h3>
-
-```ts
-close(): void
-```
-
-Closes the iterator. Any further calls to the iterator will cause an
-error. May be called multiple times.
-
-
----
-
-<h3 id="method-baseiterator-getid">method BaseIterator.getID</h3>
-
-```ts
-getID(): ID
-```
-
-Returns the key string of the current key-value pair. It will abort
-if the cursor has reached the end of the iterator.
-
-<h4>Returns</h4>
-
-* <i>([ID](#type-id))</i>
-
-
----
-
-<h3 id="method-baseiterator-isvalid">method BaseIterator.isValid</h3>
-
-```ts
-isValid(): boolean
-```
-
-Returns false when the cursor is at the end of the iterator.
-
-<h4>Returns</h4>
-
-* <i>(boolean)</i>
-
-
----
-
-<h3 id="method-baseiterator-next">method BaseIterator.next</h3>
-
-```ts
-next(): void
-```
-
-Advances the iterator by one. Always check isValid() after a next()
-to ensure have not reached the end of the iterator.
-
-
----
-
-<h3 id="method-baseiterator-rewind">method BaseIterator.rewind</h3>
-
-```ts
-rewind(): void
-```
-
-Rewinds the iterator cursor all the way back to first position, which
-would be the smallest key, or greatest key if inReverse() was called.
-
-Any iterator prefix passed to withPrefix() will be used on rewind.
-The iterator is rewound by default.
-
-
----
 
 <h3 id="class-cmdaction">class CmdAction</h3>
 
@@ -645,14 +548,19 @@ info or error.
 
 <h3 id="class-command">class Command</h3>
 
-Command class is a representation of a custom command, and is used when calling
-argument to [Room.addCommand](#function-room-addcommand).
+Command class is a representation of a custom command, and is used as an
+argument when calling [Room.addCommand](#function-room-addcommand).
 
 ```ts
 new Command(pattern: string, desc: string = "")
 ```
 
 Creates a new instance of the [Command](#class-command) class.
+
+<h4>Parameters</h4>
+
+* `pattern` <i>(string)</i>
+* `desc` <i>(string)</i>
 
 
 <h4 id="class-command-properties">class Command properties</h4>
@@ -758,6 +666,10 @@ Event.getType(ev: string): string
 ```
 
 Get event type from a json encoded event.
+
+<h4>Parameters</h4>
+
+* `ev` <i>(string)</i>
 
 <h4>Returns</h4>
 
@@ -1050,6 +962,10 @@ An bool field is used for boolean values.
 new Field.Bool(desc: string = "")
 ```
 
+<h4>Parameters</h4>
+
+* `desc` <i>(string)</i>
+
 
 
 ---
@@ -1107,11 +1023,15 @@ A char field is used to enter the name of a character.
 new Field.Char(desc: string = "")
 ```
 
+<h4>Parameters</h4>
+
+* `desc` <i>(string)</i>
+
 
 <h4 id="class-field-char-properties">class Field.Char properties</h4>
 
 * `inRoom` <i>(boolean)</i>
-* `state` <i>(i32)</i>
+* `state` <i>([CharState](#enum-charstate))</i>
 
 
 ---
@@ -1179,10 +1099,14 @@ Sets inRoom flag, requiring the character to be in the room.
 <h3 id="method-field-char-setstate">method Field.Char.setState</h3>
 
 ```ts
-setState(state: i32): this
+setState(state: CharState): this
 ```
 
-Sets state that the character must be in. Default is CharState.Any.
+Sets state that the character must be in. Default is [CharState.Any](#enum-charstate).
+
+<h4>Parameters</h4>
+
+* `state` <i>([CharState](#enum-charstate))</i>
 
 <h4>Returns</h4>
 
@@ -1198,6 +1122,10 @@ A float field is used for decimal numbers.
 ```ts
 new Field.Float(desc: string = "")
 ```
+
+<h4>Parameters</h4>
+
+* `desc` <i>(string)</i>
 
 
 <h4 id="class-field-float-properties">class Field.Float properties</h4>
@@ -1301,6 +1229,10 @@ An integer field is used for whole numbers.
 new Field.Integer(desc: string = "")
 ```
 
+<h4>Parameters</h4>
+
+* `desc` <i>(string)</i>
+
 
 <h4 id="class-field-integer-properties">class Field.Integer properties</h4>
 
@@ -1402,6 +1334,10 @@ allows Letters, Numbers, Spaces, apostrophes ('), and dash/minus (-).
 ```ts
 new Field.Keyword(desc: string = "")
 ```
+
+<h4>Parameters</h4>
+
+* `desc` <i>(string)</i>
 
 
 <h4 id="class-field-keyword-properties">class Field.Keyword properties</h4>
@@ -1531,6 +1467,10 @@ command.
 new Field.List(desc: string = "")
 ```
 
+<h4>Parameters</h4>
+
+* `desc` <i>(string)</i>
+
 
 <h4 id="class-field-list-properties">class Field.List properties</h4>
 
@@ -1546,6 +1486,10 @@ addItem(item: string): this
 ```
 
 Adds a single item to the list.
+
+<h4>Parameters</h4>
+
+* `item` <i>(string)</i>
 
 <h4>Returns</h4>
 
@@ -1625,6 +1569,10 @@ A text field is used for arbitrary text, such as messages, descriptions, or titl
 ```ts
 new Field.Text(desc: string = "")
 ```
+
+<h4>Parameters</h4>
+
+* `desc` <i>(string)</i>
 
 
 <h4 id="class-field-text-properties">class Field.Text properties</h4>
@@ -1860,6 +1808,30 @@ Sets flag to spellCheck text. Is true by default.
 
 ---
 
+<h2 id="json-enums">JSON enums</h2>
+
+<h3 id="enum-json-types">enum JSON.Types</h3>
+
+```ts
+enum Types {
+    Raw    = 0,
+    U8     = 1,
+    U16    = 2,
+    U32    = 3,
+    U64    = 4,
+    F32    = 5,
+    F64    = 6,
+    Null   = 7,
+    Bool   = 8,
+    String = 9,
+    Object = 10,
+    Array  = 12,
+    Struct = 13,
+}
+```
+
+Enum representing the different types supported by JSON.
+
 <h2 id="json-functions">JSON functions</h2>
 
 <h3 id="function-json-deserialize">function JSON.__deserialize</h3>
@@ -1867,6 +1839,12 @@ Sets flag to spellCheck text. Is true by default.
 ```ts
 JSON.__deserialize(srcStart: usize, srcEnd: usize, dst: usize = 0): T
 ```
+
+<h4>Parameters</h4>
+
+* `srcStart` <i>(usize)</i>
+* `srcEnd` <i>(usize)</i>
+* `dst` <i>(usize)</i>
 
 <h4>Returns</h4>
 
@@ -1880,6 +1858,10 @@ JSON.__deserialize(srcStart: usize, srcEnd: usize, dst: usize = 0): T
 ```ts
 JSON.__serialize(src: T): void
 ```
+
+<h4>Parameters</h4>
+
+* `src` <i>(T)</i>
 
 
 ---
@@ -1937,6 +1919,10 @@ Box for primitive types
 new JSON.Box(value: T)
 ```
 
+<h4>Parameters</h4>
+
+* `value` <i>(T)</i>
+
 
 <h4 id="class-json-box-properties">class JSON.Box properties</h4>
 
@@ -1990,6 +1976,10 @@ JSON.stringify<Box<i32> | null>(null);
 // null
 ```
 
+<h4>Parameters</h4>
+
+* `value` <i>(T)</i>
+
 <h4>Returns</h4>
 
 * <i>([JSON.Box](#class-json-box))</i>: Box<T>
@@ -2015,6 +2005,10 @@ new JSON.Obj()
 delete(key: string): bool
 ```
 
+<h4>Parameters</h4>
+
+* `key` <i>(string)</i>
+
 <h4>Returns</h4>
 
 * <i>(bool)</i>
@@ -2028,6 +2022,10 @@ delete(key: string): bool
 get(key: string): Value | null
 ```
 
+<h4>Parameters</h4>
+
+* `key` <i>(string)</i>
+
 <h4>Returns</h4>
 
 * <i>([JSON.Value](#class-json-value) | null)</i>
@@ -2040,6 +2038,10 @@ get(key: string): Value | null
 ```ts
 has(key: string): bool
 ```
+
+<h4>Parameters</h4>
+
+* `key` <i>(string)</i>
 
 <h4>Returns</h4>
 
@@ -2066,6 +2068,11 @@ keys(): Array<string>
 ```ts
 set(key: string, value: T): void
 ```
+
+<h4>Parameters</h4>
+
+* `key` <i>(string)</i>
+* `value` <i>(T)</i>
 
 
 ---
@@ -2102,6 +2109,10 @@ values(): Array<Value>
 from(value: T): Obj
 ```
 
+<h4>Parameters</h4>
+
+* `value` <i>(T)</i>
+
 <h4>Returns</h4>
 
 * <i>([JSON.Obj](#class-json-obj))</i>
@@ -2117,6 +2128,10 @@ from(value: T): Obj
 new JSON.Raw(data: string)
 ```
 
+<h4>Parameters</h4>
+
+* `data` <i>(string)</i>
+
 
 <h4 id="class-json-raw-properties">class JSON.Raw properties</h4>
 
@@ -2130,6 +2145,10 @@ new JSON.Raw(data: string)
 ```ts
 set(data: string): void
 ```
+
+<h4>Parameters</h4>
+
+* `data` <i>(string)</i>
 
 
 ---
@@ -2152,6 +2171,10 @@ toString(): string
 ```ts
 from(data: string): Raw
 ```
+
+<h4>Parameters</h4>
+
+* `data` <i>(string)</i>
 
 <h4>Returns</h4>
 
@@ -2309,7 +2332,7 @@ the same player as the character. It does not include admins or builders.
 <h3 id="function-room-chariterator">function Room.charIterator</h3>
 
 ```ts
-Room.charIterator(state: i32 = CharState.Any, reverse: boolean = false): CharIterator
+Room.charIterator(state: CharState = CharState.Any, reverse: boolean = false): CharIterator
 ```
 
 Gets an iterator for the characters in the room that iterates from the
@@ -2317,7 +2340,7 @@ character most recently entering the room.
 
 <h4>Parameters</h4>
 
-* `state` <i>(i32)</i>: State of the characters to iterate over.
+* `state` <i>([CharState](#enum-charstate))</i>: State of the characters to iterate over.
 * `reverse` <i>(boolean)</i>: Flag to reverse the iteration direction, starting with the character that has been in the room the longest.
 
 <h4>Returns</h4>
@@ -2334,6 +2357,10 @@ Room.describe(msg: string): void
 ```
 
 Sends a "describe" event to the current room instance.
+
+<h4>Parameters</h4>
+
+* `msg` <i>(string)</i>
 
 
 ---
@@ -2394,6 +2421,10 @@ Room.getExit(keyword: string): Exit | null
 ```
 
 Gets an exit in the room by keyword.
+
+<h4>Parameters</h4>
+
+* `keyword` <i>(string)</i>
 
 <h4>Returns</h4>
 
@@ -2514,6 +2545,11 @@ Room.privateDescribe(msg: string, targetCharIds: Array<ID>): void
 Sends a "privateDescribe" event to one or more target characters in the
 current room instance. A private describe can only be seen by the
 targeted characters.
+
+<h4>Parameters</h4>
+
+* `msg` <i>(string)</i>
+* `targetCharIds` <i>(Array<[ID](#type-id)>)</i>
 
 
 ---
@@ -2679,12 +2715,12 @@ Room character.
 * `desc` <i>(string)</i>: Character description.
 * `gender` <i>(string)</i>: Character gender.
 * `id` <i>(string)</i>: Character ID.
-* `idle` <i>(i32)</i>: Character idle status.
+* `idle` <i>([IdleLevel](#enum-idlelevel))</i>: Character idle status.
 * `image` <i>([ID](#type-id))</i>: Character image.
 * `name` <i>(string)</i>: Character name.
-* `rp` <i>(i32)</i>: Character RP state.
+* `rp` <i>([RPState](#enum-rpstate))</i>: Character RP state.
 * `species` <i>(string)</i>: Character species.
-* `state` <i>(i32)</i>: Character state.
+* `state` <i>([CharState](#enum-charstate))</i>: Character state.
 * `surname` <i>(string)</i>: Character surname.
 
 
@@ -2692,13 +2728,17 @@ Room character.
 
 <h3 id="class-room-chariterator">class Room.CharIterator</h3>
 
-BaseIterator is an iterator over items with an ID.
+
 
 ```ts
 new Room.CharIterator(iterator: i32)
 ```
 
 Constructor of the Iterator instance.
+
+<h4>Parameters</h4>
+
+* `iterator` <i>(i32)</i>
 
 
 <h4 id="class-room-chariterator-properties">class Room.CharIterator properties</h4>
@@ -2708,7 +2748,7 @@ Constructor of the Iterator instance.
 
 ---
 
-<h3 id="method-baseiterator-close">method BaseIterator.close</h3>
+<h3 id="method-room-chariterator-close">method Room.CharIterator.close</h3>
 
 ```ts
 close(): void
@@ -2736,7 +2776,7 @@ end of the iterator.
 
 ---
 
-<h3 id="method-baseiterator-getid">method BaseIterator.getID</h3>
+<h3 id="method-room-chariterator-getid">method Room.CharIterator.getID</h3>
 
 ```ts
 getID(): ID
@@ -2752,7 +2792,7 @@ if the cursor has reached the end of the iterator.
 
 ---
 
-<h3 id="method-baseiterator-isvalid">method BaseIterator.isValid</h3>
+<h3 id="method-room-chariterator-isvalid">method Room.CharIterator.isValid</h3>
 
 ```ts
 isValid(): boolean
@@ -2767,7 +2807,7 @@ Returns false when the cursor is at the end of the iterator.
 
 ---
 
-<h3 id="method-baseiterator-next">method BaseIterator.next</h3>
+<h3 id="method-room-chariterator-next">method Room.CharIterator.next</h3>
 
 ```ts
 next(): void
@@ -2779,7 +2819,7 @@ to ensure have not reached the end of the iterator.
 
 ---
 
-<h3 id="method-baseiterator-rewind">method BaseIterator.rewind</h3>
+<h3 id="method-room-chariterator-rewind">method Room.CharIterator.rewind</h3>
 
 ```ts
 rewind(): void
@@ -2803,13 +2843,13 @@ Room exit.
 * `arriveMsg` <i>(string)</i>: Arrival message.
 * `created` <i>(i64)</i>: Created timestamp.
 * `hidden` <i>(boolean)</i>: Is hidden flag.
-* `icon` <i>(i32)</i>: Exit icon.
+* `icon` <i>([ExitIcon](#enum-exiticon))</i>: Exit icon.
 * `id` <i>(string)</i>: Exit ID.
 * `inactive` <i>(boolean)</i>: Is inactive flag.
 * `keys` <i>(Array<string>)</i>: Exit keys.
 * `leaveMsg` <i>(string)</i>: Leave message.
 * `name` <i>(string)</i>: Exit name.
-* `nav` <i>(i32)</i>: Exit navigation direction.
+* `nav` <i>([ExitNav](#enum-exitnav))</i>: Exit navigation direction.
 * `targetRoom` <i>([ID](#type-id))</i>: Target room.
 * `transparent` <i>(boolean)</i>: Is transparent flag.
 * `travelMsg` <i>(string)</i>: Travel message.
@@ -2819,13 +2859,17 @@ Room exit.
 
 <h3 id="class-room-exititerator">class Room.ExitIterator</h3>
 
-BaseIterator is an iterator over items with an ID.
+
 
 ```ts
 new Room.ExitIterator(iterator: i32)
 ```
 
 Constructor of the Iterator instance.
+
+<h4>Parameters</h4>
+
+* `iterator` <i>(i32)</i>
 
 
 <h4 id="class-room-exititerator-properties">class Room.ExitIterator properties</h4>
@@ -2835,7 +2879,7 @@ Constructor of the Iterator instance.
 
 ---
 
-<h3 id="method-baseiterator-close">method BaseIterator.close</h3>
+<h3 id="method-room-exititerator-close">method Room.ExitIterator.close</h3>
 
 ```ts
 close(): void
@@ -2863,7 +2907,7 @@ end of the iterator.
 
 ---
 
-<h3 id="method-baseiterator-getid">method BaseIterator.getID</h3>
+<h3 id="method-room-exititerator-getid">method Room.ExitIterator.getID</h3>
 
 ```ts
 getID(): ID
@@ -2879,7 +2923,7 @@ if the cursor has reached the end of the iterator.
 
 ---
 
-<h3 id="method-baseiterator-isvalid">method BaseIterator.isValid</h3>
+<h3 id="method-room-exititerator-isvalid">method Room.ExitIterator.isValid</h3>
 
 ```ts
 isValid(): boolean
@@ -2894,7 +2938,7 @@ Returns false when the cursor is at the end of the iterator.
 
 ---
 
-<h3 id="method-baseiterator-next">method BaseIterator.next</h3>
+<h3 id="method-room-exititerator-next">method Room.ExitIterator.next</h3>
 
 ```ts
 next(): void
@@ -2906,7 +2950,7 @@ to ensure have not reached the end of the iterator.
 
 ---
 
-<h3 id="method-baseiterator-rewind">method BaseIterator.rewind</h3>
+<h3 id="method-room-exititerator-rewind">method Room.ExitIterator.rewind</h3>
 
 ```ts
 rewind(): void
@@ -3028,6 +3072,10 @@ more info, type:
 help roomscript
 ```
 
+<h4>Parameters</h4>
+
+* `addrs` <i>(Array<string> | null)</i>
+
 
 ---
 
@@ -3078,6 +3126,10 @@ more info, type:
 help roomscript
 ```
 
+<h4>Parameters</h4>
+
+* `addrs` <i>(Array<string> | null)</i>
+
 
 <h2 id="script-classes">Script classes</h2>
 
@@ -3090,11 +3142,11 @@ Realm character.
 * `avatar` <i>([ID](#type-id))</i>: Character avatar.
 * `gender` <i>(string)</i>: Character gender.
 * `id` <i>(string)</i>: Character ID.
-* `idle` <i>(i32)</i>: Character idle status.
+* `idle` <i>([IdleLevel](#enum-idlelevel))</i>: Character idle status.
 * `name` <i>(string)</i>: Character name.
-* `rp` <i>(i32)</i>: Character RP state.
+* `rp` <i>([RPState](#enum-rpstate))</i>: Character RP state.
 * `species` <i>(string)</i>: Character species.
-* `state` <i>(i32)</i>: Character state.
+* `state` <i>([CharState](#enum-charstate))</i>: Character state.
 * `surname` <i>(string)</i>: Character surname.
 
 
@@ -3358,6 +3410,10 @@ the current key is not prefixed by the specified prefix.
 Any iterator prefix passed to withPrefix() will be prepended to the
 provided prefix.
 
+<h4>Parameters</h4>
+
+* `prefix` <i>(T | null)</i>
+
 <h4>Returns</h4>
 
 * <i>(boolean)</i>
@@ -3405,6 +3461,10 @@ backwards.
 
 Any iterator prefix passed to withPrefix() will be prepended to
 the key.
+
+<h4>Parameters</h4>
+
+* `key` <i>(T)</i>
 
 
 ---

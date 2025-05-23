@@ -6,18 +6,29 @@ const indent = "&nbsp;&nbsp;&nbsp;&nbsp;";
 const spaceIndent = "    ";
 
 const kind = {
-	project: 1,
-	namespace: 4,
-	enum: 8,
-	type: 16,
-	variable: 32,
-	function: 64,
-	class: 128,
-	interface: 256,
-	constructor: 512,
-	property: 1024,
-	method: 2048,
-	signature: 4096,
+	project: 0x1,
+	module: 0x2,
+	namespace: 0x4,
+	enum: 0x8,
+	member: 0x10,
+	variable: 0x20,
+	function: 0x40,
+	class: 0x80,
+	interface: 0x100,
+	constructor: 0x200,
+	property: 0x400,
+	method: 0x800,
+	signature: 0x1000,
+	indexSignature: 0x2000,
+	constructorSignature: 0x4000,
+	parameter: 0x8000,
+	typeLiteral: 0x10000,
+	typeParam: 0x20000,
+	accessor: 0x40000,
+	getter: 0x80000,
+	setter: 0x100000,
+	type: 0x200000,
+	reference: 0x400000,
 };
 
 const kindName = {
@@ -46,6 +57,14 @@ const kindName = {
 	0x400000: 'ref', // reference
 };
 
+const childKinds = {
+	[kind.member]: (parentId) => parentId,
+	[kind.property]: (parentId) => parentId + '-properties',
+	[kind.signature]: (parentId) => parentId,
+	[kind.constructor]: (parentId) => parentId,
+	[kind.constructorSignatur]: (parentId) => parentId,
+}
+
 
 export default class DocsConverter {
 	/**
@@ -57,19 +76,41 @@ export default class DocsConverter {
 	constructor(data, typeAliases) {
 		this.data = data;
 		this.typeAliases = typeAliases;
-		this.linkIds = this._resolveLinkIds(this.data, {});
+		this.linkIds = this._resolveLinkIds(this.data, {}, null, null);
 	}
 
-	_resolveLinkIds(symbol, ids) {
+	/**
+	 * Resolves all the link names for each symbol. If a symbol inherits from
+	 * another class, the id will be derived from the last non-inhereriting
+	 * heir.
+	 * @param {object} symbol
+	 * @param {Record<string,string>} ids Links names.
+	 * @param {string} parentId ID of parent symbol.
+	 * @param {object} heir Last symbol that is not an inheritance.
+	 * @returns {Record<string,string>} Links names.
+	 */
+	_resolveLinkIds(symbol, ids, parentId, heir) {
+		const useParent = childKinds[symbol.kind];
+
 		if (symbol.kind) {
-			let o = this.data.symbolIdMap?.[symbol.id];
-			if (o?.qualifiedName) {
-				ids[symbol.id] = kindName[symbol.kind] + '-' + this._stringToId(o.qualifiedName);
+			// Enum members uses parent id
+			if (useParent) {
+				ids[symbol.id] = useParent(ids[parentId]);
+			} else {
+				let qualifiedName = this._getSymbolName(symbol, heir);
+				if (qualifiedName) {
+					ids[symbol.id] = kindName[symbol.kind] + '-' + this._stringToId(qualifiedName);
+				}
 			}
 		}
 		if (symbol.children) {
 			for (let child of symbol.children) {
-				this._resolveLinkIds(child, ids);
+				this._resolveLinkIds(
+					child,
+					ids,
+					useParent ? parentId : symbol.id,
+					symbol.inheritedFrom ? heir : symbol,
+				);
 			}
 		}
 		return ids;
@@ -118,7 +159,7 @@ export default class DocsConverter {
 		visited[root.id] = true;
 
 		let rootName = root != this.data
-			? this._getSymbolName(root.id)
+			? this._getSymbolName(root)
 			: '';
 		let rootIdPrefix = rootName ? this._stringToId(rootName) + '-' : '';
 
@@ -191,14 +232,8 @@ export default class DocsConverter {
 	formatEnums(visited, root) {
 		const contents = [];
 		const links = [];
-		for (let o of this._getGroupSymbols("Namespaces", visited, root || this.data)) {
-			// Enums has a type named the same as the namespace
-			let t = this._getTypeAliasbyName(o.name);
-			if (!t) {
-				continue;
-			}
-
-			let result = this.formatEnum(o, t, visited);
+		for (let o of this._getGroupSymbols("Enumerations", visited, root || this.data)) {
+			let result = this.formatEnum(o, visited);
 			if (result) {
 				contents.push(result[0]);
 				links.push(result[1]);
@@ -208,21 +243,19 @@ export default class DocsConverter {
 	}
 
 	/**
-	 * Formats an enum namespace.
-	 * @param {object} namespaceSymbol Namespace symbol object
-	 * @param {object} typeSymbol Type symbol object
+	 * Formats an enum.
+	 * @param {object} enumSymbol Enum symbol object
 	 * @param {Record<string,boolean>} visited Record of all previously visited symbols
 	 * @returns {[string, string]} Result or null if symbol is not an enum
 	 */
-	formatEnum(namespaceSymbol, typeSymbol, visited) {
+	formatEnum(enumSymbol, visited) {
 		// Set enum namespace and type as visited
-		visited[namespaceSymbol.id] = true;
-		visited[typeSymbol.id] = true;
+		visited[enumSymbol.id] = true;
 
-		let qualifiedName = this._getSymbolName(namespaceSymbol.id);
-		let id = this._getLinkId(namespaceSymbol.id);
+		let qualifiedName = this._getSymbolName(enumSymbol);
+		let id = this._getLinkId(enumSymbol.id);
 		let longestName = 0;
-		namespaceSymbol.children.forEach(c => {
+		enumSymbol.children.forEach(c => {
 			// Set const as visited
 			visited[c.id] = true;
 			// Get longest child name
@@ -231,13 +264,16 @@ export default class DocsConverter {
 		let s = `<h3 id="${id}">enum ${escapeHtml(qualifiedName)}</h3>` + LF +
 			LF +
 			"```ts" + LF +
-			`type ${typeSymbol.name} = ${typeSymbol.type.name}` + LF +
-			`namespace ${namespaceSymbol.name} {` + LF +
-			namespaceSymbol.children.sort((a, b) => a.id - b.id).map(c => spaceIndent + `const ${c.name}${" ".repeat(longestName - c.name.length)} = ${typeSymbol.name}(${c.defaultValue})`).join("\n") + LF +
+			`${enumSymbol.flags?.isConst ? 'const ' : ''}enum ${enumSymbol.name} {` + LF +
+			enumSymbol.children.sort((a, b) => a.id - b.id).map(c => spaceIndent + c.name + (
+				c.type
+					? " ".repeat(longestName - c.name.length) + " = " + this._formatType(c.type, false)
+					: ''
+			) + ',').join("\n") + LF +
 			`}` + LF +
 			"```" + LF +
 			LF +
-			this._formatComment(namespaceSymbol.comment);
+			this._formatComment(enumSymbol.comment);
 
 		return [s, indent + `[enum ${qualifiedName}](#${id})`];
 	}
@@ -273,7 +309,7 @@ export default class DocsConverter {
 		// Set class namespace and type as visited
 		visited[functionSymbol.id] = true;
 
-		const qualifiedName = this._getSymbolName(functionSymbol.id);
+		const qualifiedName = this._getSymbolName(functionSymbol);
 		const id = this._getLinkId(functionSymbol.id);
 
 		const s = `<h3 id="${id}">function ${escapeHtml(qualifiedName)}</h3>` + LF +
@@ -314,7 +350,7 @@ export default class DocsConverter {
 		// Set enum namespace and type as visited
 		visited[typeSymbol.id] = true;
 
-		let qualifiedName = this._getSymbolName(typeSymbol.id);
+		let qualifiedName = this._getSymbolName(typeSymbol);
 		let id = this._getLinkId(typeSymbol.id);
 		let s = `<h3 id="${id}">type ${escapeHtml(qualifiedName)}</h3>` + LF +
 			LF +
@@ -361,7 +397,7 @@ export default class DocsConverter {
 		// Set class namespace and type as visited
 		visited[classSymbol.id] = true;
 
-		let qualifiedName = this._getSymbolName(classSymbol.id);
+		let qualifiedName = this._getSymbolName(classSymbol);
 		let id = this._getLinkId(classSymbol.id);
 		let longestName = 0;
 		classSymbol.children.forEach(c => {
@@ -390,7 +426,6 @@ export default class DocsConverter {
 			mainContent += LF + `<h4 id="${id}-properties">class ${escapeHtml(qualifiedName)} properties</h4>` + LF +
 				LF +
 				this._formatProperties(propSymbols) + LF;
-			// links.push(indent + indent + `[properties](#${id}-properties)`);
 		}
 
 		// We include properties in mainContent instead of making it a new
@@ -400,7 +435,7 @@ export default class DocsConverter {
 		// Methods
 		let methodSymbols = this._findChildrenByKind(classSymbol, kind.method);
 		for (let methodSymbol of methodSymbols) {
-			let methodQualifiedName = this._getSymbolName(methodSymbol.id);
+			let methodQualifiedName = this._getSymbolName(methodSymbol, classSymbol);
 			let methodId = this._getLinkId(methodSymbol.id)
 			contents.push(
 				`<h3 id="${methodId}">method ${escapeHtml(methodQualifiedName)}</h3>` + LF +
@@ -533,8 +568,19 @@ export default class DocsConverter {
 			.map(id => this._getSymbol(id, this.data.children));
 	}
 
-	_getSymbolName(symbolId) {
-		let o = this.data.symbolIdMap?.[symbolId];
+	/**
+	 * Returns the qualified name for a symbol. If parentSymbol is provided, any
+	 * inherited properties or methods will be prefixed with the parent
+	 * qualified name instead of the inherited name.
+	 * @param {object} symbol Symbol
+	 * @param {object} [parentSymbol] Parent symbol used to hide the inheritance if provided.
+	 * @returns {string} Qualified name.
+	 */
+	_getSymbolName(symbol, parentSymbol) {
+		if (parentSymbol && symbol.inheritedFrom) {
+			return this._getSymbolName(parentSymbol) + "." + symbol.name;
+		}
+		let o = this.data.symbolIdMap?.[symbol.id];
 		return o.qualifiedName || '';
 	}
 
@@ -627,7 +673,6 @@ export default class DocsConverter {
 
 		const parameters = params.map(p => {
 			let comment = this._formatText(p.comment?.summary) || '';
-			hasComment = hasComment || !!comment;
 			return "* `" + p.name + "` <i>(" + this._formatType(p.type) + ")</i>" + (
 				comment
 					? ": " + comment
@@ -638,7 +683,7 @@ export default class DocsConverter {
 		return  syntax + (
 			summary ? "\n\n" + summary : ''
 		) + (
-			parameters && hasComment
+			parameters.length
 				? "\n\n" +
 					`<h4>Parameters</h4>` + LF +
 					LF +
@@ -684,7 +729,7 @@ export default class DocsConverter {
 
 		// Literal
 		if (o.type == 'literal') {
-			return escapeHtml(o.value === null ? 'null' : o.value);
+			return escapeHtml(String(o.value));
 		}
 
 		// Union

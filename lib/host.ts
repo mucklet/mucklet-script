@@ -172,57 +172,52 @@ export type Timestamp = i64;
 /** Duration in milliseconds. */
 export type Duration = i64;
 /** States that a character may have. */
-export namespace CharState {
-	export const Asleep: CharState = 0;
-	export const Awake: CharState = 1;
-	export const Dazed: CharState = 2;
-	export const Any: CharState = 255;
+export const enum CharState {
+	Asleep = 0,
+	Awake = 1,
+	Dazed = 2,
+	Any = 255,
 }
-export type CharState = i32;
 /** Idle levels that a character may have. */
-export namespace IdleLevel {
-	export const Asleep: CharState = 0;
-	export const Active: CharState = 1;
-	export const Idle: CharState = 2;
-	export const Inactive: CharState = 3;
+export const enum IdleLevel {
+	Asleep = 0,
+	Active = 1,
+	Idle = 2,
+	Inactive = 3,
 }
-export type IdleLevel = i32;
 /** Roleplaying state that a character may have. */
-export namespace RPState {
-	export const None: RPState = 0;
-	export const LFRP: RPState = 1;
+export const enum RPState {
+	None = 0,
+	LFRP = 1,
 }
-export type RPState = i32;
 /** Exit navigation directions. */
-export namespace ExitNav {
-	export const None: ExitNav = 0;
-	export const North: ExitNav = 1;
-	export const NorthEast: ExitNav = 2;
-	export const East: ExitNav = 3;
-	export const SouthEast: ExitNav = 4;
-	export const South: ExitNav = 5;
-	export const SouthWest: ExitNav = 6;
-	export const West: ExitNav = 7;
-	export const NorthWest: ExitNav = 8;
+export const enum ExitNav {
+	None = 0,
+	North = 1,
+	NorthEast = 2,
+	East = 3,
+	SouthEast = 4,
+	South = 5,
+	SouthWest = 6,
+	West = 7,
+	NorthWest = 8,
 }
-export type ExitNav = i32;
 /** Exit navigation icon. */
-export namespace ExitIcon {
-	export const None: ExitIcon = 0;
-	export const North: ExitIcon = 1;
-	export const NorthEast: ExitIcon = 2;
-	export const East: ExitIcon = 3;
-	export const SouthEast: ExitIcon = 4;
-	export const South: ExitIcon = 5;
-	export const SouthWest: ExitIcon = 6;
-	export const West: ExitIcon = 7;
-	export const NorthWest: ExitIcon = 8;
-	export const Up: ExitIcon = 9;
-	export const Down: ExitIcon = 10;
-	export const In: ExitIcon = 11;
-	export const Out: ExitIcon = 12;
+export const enum ExitIcon {
+	None = 0,
+	North = 1,
+	NorthEast = 2,
+	East = 3,
+	SouthEast = 4,
+	South = 5,
+	SouthWest = 6,
+	West = 7,
+	NorthWest = 8,
+	Up = 9,
+	Down = 10,
+	In = 11,
+	Out = 12,
 }
-export type ExitIcon = i32;
 
 // @ts-expect-error
 @inline
@@ -316,7 +311,7 @@ export class CmdAction {
 /**
  * BaseIterator is an iterator over items with an ID.
  */
-export class BaseIterator {
+class BaseIterator {
 	protected iterator: i32;
 	/**
 	 * Constructor of the Iterator instance.
@@ -738,7 +733,7 @@ export namespace Field {
 		}
 
 		/**
-		 * Sets state that the character must be in. Default is CharState.Any.
+		 * Sets state that the character must be in. Default is {@link CharState.Any}.
 		 * @returns This instance, allowing method chaining.
 		 */
 		setState(state: CharState): this {
@@ -808,8 +803,8 @@ export interface CommandField {
 }
 
 /**
- * Command class is a representation of a custom command, and is used when calling
- * argument to {@link Room.addCommand}.
+ * Command class is a representation of a custom command, and is used as an
+ * argument when calling {@link Room.addCommand}.
  */
 export class Command {
 	private fieldDefs: Map<string, string> = new Map<string, string>();
