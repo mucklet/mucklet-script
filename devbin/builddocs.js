@@ -24,6 +24,9 @@ await writeFile(resolve(process.cwd(), tempEntryFile), entry, {
 	encoding: 'utf8',
 });
 await writeFile(resolve(process.cwd(), tempTsconfigFile), `{
+  "compilerOptions": {
+    "strictNullChecks": true
+  },
   "files": [ "host.modified.ts" ],
 }`, {
 	encoding: 'utf8',

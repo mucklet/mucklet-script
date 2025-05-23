@@ -803,7 +803,7 @@ export interface CommandField {
 	/** Returns the help description of the command field. */
 	getDesc(): string;
 
-	/** Returns the options of the command field as a JSOn encoded string. */
+	/** Returns the options of the command field as a JSON encoded string. */
 	getOpts(): string | null;
 }
 

@@ -165,9 +165,9 @@ export function onCommand(
 <h1 id="index">Index</h1>
 
 [Type aliases](#type-aliases)  
-&nbsp;&nbsp;&nbsp;&nbsp;[type Duration](#undefined-duration)  
-&nbsp;&nbsp;&nbsp;&nbsp;[type ID](#undefined-id)  
-&nbsp;&nbsp;&nbsp;&nbsp;[type Timestamp](#undefined-timestamp)  
+&nbsp;&nbsp;&nbsp;&nbsp;[type Duration](#type-duration)  
+&nbsp;&nbsp;&nbsp;&nbsp;[type ID](#type-id)  
+&nbsp;&nbsp;&nbsp;&nbsp;[type Timestamp](#type-timestamp)  
 [Enums](#enums)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum CharState](#namespace-charstate)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum ExitIcon](#namespace-exiticon)  
@@ -371,7 +371,7 @@ export function onCommand(
 
 <h2 id="type-aliases">Type aliases</h2>
 
-<h3 id="undefined-duration">type Duration</h3>
+<h3 id="type-duration">type Duration</h3>
 
 ```ts
 type Duration = i64
@@ -381,7 +381,7 @@ Duration in milliseconds.
 
 ---
 
-<h3 id="undefined-id">type ID</h3>
+<h3 id="type-id">type ID</h3>
 
 ```ts
 type ID = string
@@ -391,7 +391,7 @@ ID for in game entities such as characters, rooms, and areas.
 
 ---
 
-<h3 id="undefined-timestamp">type Timestamp</h3>
+<h3 id="type-timestamp">type Timestamp</h3>
 
 ```ts
 type Timestamp = i64
@@ -534,7 +534,7 @@ if the cursor has reached the end of the iterator.
 
 <h4>Returns</h4>
 
-* <i>([ID](#undefined-id))</i>
+* <i>([ID](#type-id))</i>
 
 
 ---
@@ -638,7 +638,7 @@ info or error.
 
 <h4>Parameters</h4>
 
-* `exitId` <i>([ID](#undefined-id))</i>: Exit ID.
+* `exitId` <i>([ID](#type-id))</i>: Exit ID.
 
 
 ---
@@ -708,8 +708,8 @@ use an exit that is being listen to with [Room.listenExit](#function-room-listen
 <h4 id="class-exitaction-properties">class ExitAction properties</h4>
 
 * `actionId` <i>(i32)</i>: Action ID
-* `charId` <i>([ID](#undefined-id))</i>: Character ID
-* `exitId` <i>([ID](#undefined-id))</i>: Exit ID
+* `charId` <i>([ID](#type-id))</i>: Character ID
+* `exitId` <i>([ID](#type-id))</i>: Exit ID
 
 
 ---
@@ -717,7 +717,7 @@ use an exit that is being listen to with [Room.listenExit](#function-room-listen
 <h3 id="method-exitaction-cancel">method ExitAction.cancel</h3>
 
 ```ts
-cancel(msg: string = null): void
+cancel(msg: string | null = null): void
 ```
 
 Cancels a character's attempt to use an exit and shows them an info
@@ -726,7 +726,7 @@ shown.
 
 <h4>Parameters</h4>
 
-* `msg` <i>(string)</i>: Info message to show, or default message if null.
+* `msg` <i>(string | null)</i>: Info message to show, or default message if null.
 
 
 ---
@@ -734,7 +734,7 @@ shown.
 <h3 id="method-exitaction-useexit">method ExitAction.useExit</h3>
 
 ```ts
-useExit(exitId: ID = null): void
+useExit(exitId: ID | null = null): void
 ```
 
 Makes the character use an exit. If exitId is null, the character is sent
@@ -744,7 +744,7 @@ The exit may be hidden or inactive.
 
 <h4>Parameters</h4>
 
-* `exitId` <i>([ID](#undefined-id))</i>: Exit ID or null for the originally used exit.
+* `exitId` <i>([ID](#type-id) | null)</i>: Exit ID or null for the originally used exit.
 
 
 <h2 id="namespaces">Namespaces</h2>
@@ -775,7 +775,7 @@ Action event.
 * `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
 * `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char))</i>: Acting puppeteer.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 * `sig` <i>(string)</i>: Signature.
 * `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
@@ -793,7 +793,7 @@ Arrive event.
 * `id` <i>(string)</i>: Event ID.
 * `method` <i>(string)</i>: Method
 * `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char))</i>: Acting puppeteer.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 * `sig` <i>(string)</i>: Signature.
 * `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
@@ -826,7 +826,7 @@ such as leave and arrive.
 * `id` <i>(string)</i>: Event ID.
 * `method` <i>(string)</i>: Method
 * `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char))</i>: Acting puppeteer.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 * `sig` <i>(string)</i>: Signature.
 * `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
@@ -844,7 +844,7 @@ pose, etc.
 * `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
 * `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char))</i>: Acting puppeteer.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 * `sig` <i>(string)</i>: Signature.
 * `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
@@ -863,7 +863,7 @@ marked as a pose, such as OOC events.
 * `id` <i>(string)</i>: Event ID.
 * `msg` <i>(string)</i>: Message.
 * `pose` <i>(boolean)</i>: Message is a pose.
-* `puppeteer` <i>([Event.Char](#class-event-char))</i>: Acting puppeteer.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 * `sig` <i>(string)</i>: Signature.
 * `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
@@ -893,7 +893,7 @@ Describe event.
 * `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
 * `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char))</i>: Acting puppeteer.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 * `sig` <i>(string)</i>: Signature.
 * `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
@@ -911,7 +911,7 @@ Leave event.
 * `id` <i>(string)</i>: Event ID.
 * `method` <i>(string)</i>: Method
 * `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char))</i>: Acting puppeteer.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 * `sig` <i>(string)</i>: Signature.
 * `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
@@ -929,7 +929,7 @@ OOC event.
 * `id` <i>(string)</i>: Event ID.
 * `msg` <i>(string)</i>: Message.
 * `pose` <i>(boolean)</i>: Message is a pose.
-* `puppeteer` <i>([Event.Char](#class-event-char))</i>: Acting puppeteer.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 * `sig` <i>(string)</i>: Signature.
 * `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
@@ -946,7 +946,7 @@ Pose event.
 * `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
 * `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char))</i>: Acting puppeteer.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 * `sig` <i>(string)</i>: Signature.
 * `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
@@ -962,9 +962,9 @@ Roll event.
 
 * `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
-* `puppeteer` <i>([Event.Char](#class-event-char))</i>: Acting puppeteer.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 * `quiet` <i>(boolean)</i>: Quiet roll.
-* `result` <i>()</i>: Roll result.
+* `result` <i>(Array<[Event.RollResult](#class-event-rollresult)>)</i>: Roll result.
 * `sig` <i>(string)</i>: Signature.
 * `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `total` <i>(i32)</i>: Roll total.
@@ -980,7 +980,7 @@ Results in a roll event.
 <h4 id="class-event-rollresult-properties">class Event.RollResult properties</h4>
 
 * `count` <i>(i32)</i>: Dice count. Always 0 on type "mod".
-* `dice` <i>()</i>: Roll value for each die. Always empty slice on type "mod"
+* `dice` <i>(Array<i32>)</i>: Roll value for each die. Always empty slice on type "mod"
 * `op` <i>(string)</i>: Modifier operator. Either "+" or "-".
 * `sides` <i>(i32)</i>: Sides on dice. Always 0 on type "mod"
 * `type` <i>(string)</i>
@@ -998,7 +998,7 @@ Say event.
 * `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
 * `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char))</i>: Acting puppeteer.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 * `sig` <i>(string)</i>: Signature.
 * `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
@@ -1015,7 +1015,7 @@ Sleep event.
 * `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
 * `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char))</i>: Acting puppeteer.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 * `sig` <i>(string)</i>: Signature.
 * `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
@@ -1032,7 +1032,7 @@ Wakeup event.
 * `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `id` <i>(string)</i>: Event ID.
 * `msg` <i>(string)</i>: Message.
-* `puppeteer` <i>([Event.Char](#class-event-char))</i>: Acting puppeteer.
+* `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 * `sig` <i>(string)</i>: Signature.
 * `time` <i>(i64)</i>: Unix timestamp (milliseconds).
 * `type` <i>(string)</i>: Event type.
@@ -1072,14 +1072,14 @@ Returns the help description of the command field.
 <h3 id="method-field-bool-getopts">method Field.Bool.getOpts</h3>
 
 ```ts
-getOpts(): string
+getOpts(): string | null
 ```
 
-Returns the options of the command field as a JSOn encoded string.
+Returns the options of the command field as a JSON encoded string.
 
 <h4>Returns</h4>
 
-* <i>(string)</i>
+* <i>(string | null)</i>
 
 
 ---
@@ -1134,14 +1134,14 @@ Returns the help description of the command field.
 <h3 id="method-field-char-getopts">method Field.Char.getOpts</h3>
 
 ```ts
-getOpts(): string
+getOpts(): string | null
 ```
 
-Returns the options of the command field as a JSOn encoded string.
+Returns the options of the command field as a JSON encoded string.
 
 <h4>Returns</h4>
 
-* <i>(string)</i>
+* <i>(string | null)</i>
 
 
 ---
@@ -1226,14 +1226,14 @@ Returns the help description of the command field.
 <h3 id="method-field-float-getopts">method Field.Float.getOpts</h3>
 
 ```ts
-getOpts(): string
+getOpts(): string | null
 ```
 
-Returns the options of the command field as a JSOn encoded string.
+Returns the options of the command field as a JSON encoded string.
 
 <h4>Returns</h4>
 
-* <i>(string)</i>
+* <i>(string | null)</i>
 
 
 ---
@@ -1328,14 +1328,14 @@ Returns the help description of the command field.
 <h3 id="method-field-integer-getopts">method Field.Integer.getOpts</h3>
 
 ```ts
-getOpts(): string
+getOpts(): string | null
 ```
 
-Returns the options of the command field as a JSOn encoded string.
+Returns the options of the command field as a JSON encoded string.
 
 <h4>Returns</h4>
 
-* <i>(string)</i>
+* <i>(string | null)</i>
 
 
 ---
@@ -1431,14 +1431,14 @@ Returns the help description of the command field.
 <h3 id="method-field-keyword-getopts">method Field.Keyword.getOpts</h3>
 
 ```ts
-getOpts(): string
+getOpts(): string | null
 ```
 
-Returns the options of the command field as a JSOn encoded string.
+Returns the options of the command field as a JSON encoded string.
 
 <h4>Returns</h4>
 
-* <i>(string)</i>
+* <i>(string | null)</i>
 
 
 ---
@@ -1534,7 +1534,7 @@ new Field.List(desc: string = "")
 
 <h4 id="class-field-list-properties">class Field.List properties</h4>
 
-* `items` <i>()</i>
+* `items` <i>(Array<string>)</i>
 
 
 ---
@@ -1572,14 +1572,14 @@ Returns the help description of the command field.
 <h3 id="method-field-list-getopts">method Field.List.getOpts</h3>
 
 ```ts
-getOpts(): string
+getOpts(): string | null
 ```
 
-Returns the options of the command field as a JSOn encoded string.
+Returns the options of the command field as a JSON encoded string.
 
 <h4>Returns</h4>
 
-* <i>(string)</i>
+* <i>(string | null)</i>
 
 
 ---
@@ -1602,14 +1602,14 @@ Returns the type of the command field.
 <h3 id="method-field-list-setitems">method Field.List.setItems</h3>
 
 ```ts
-setItems(items: undefined): this
+setItems(items: Array<string>): this
 ```
 
 Sets an array of list items, replacing any previously set items.
 
 <h4>Parameters</h4>
 
-* `items` <i>()</i>: Array of list items.
+* `items` <i>(Array<string>)</i>: Array of list items.
 
 <h4>Returns</h4>
 
@@ -1656,14 +1656,14 @@ Returns the help description of the command field.
 <h3 id="method-field-text-getopts">method Field.Text.getOpts</h3>
 
 ```ts
-getOpts(): string
+getOpts(): string | null
 ```
 
-Returns the options of the command field as a JSOn encoded string.
+Returns the options of the command field as a JSON encoded string.
 
 <h4>Returns</h4>
 
-* <i>(string)</i>
+* <i>(string | null)</i>
 
 
 ---
@@ -1909,7 +1909,7 @@ JSON.parse<T>(data)
 <h3 id="function-json-stringify">function JSON.stringify</h3>
 
 ```ts
-JSON.stringify(data: T, out: string = null): string
+JSON.stringify(data: T, out: string | null = null): string
 ```
 
 Serializes valid JSON data
@@ -1920,7 +1920,7 @@ JSON.stringify<T>(data)
 <h4>Parameters</h4>
 
 * `data` <i>(T)</i>: T
-* `out` <i>(string)</i>
+* `out` <i>(string | null)</i>
 
 <h4>Returns</h4>
 
@@ -2025,12 +2025,12 @@ delete(key: string): bool
 <h3 id="method-json-obj-get">method JSON.Obj.get</h3>
 
 ```ts
-get(key: string): Value
+get(key: string): Value | null
 ```
 
 <h4>Returns</h4>
 
-* <i>([JSON.Value](#class-json-value))</i>
+* <i>([JSON.Value](#class-json-value) | null)</i>
 
 
 ---
@@ -2051,12 +2051,12 @@ has(key: string): bool
 <h3 id="method-json-obj-keys">method JSON.Obj.keys</h3>
 
 ```ts
-keys(): undefined
+keys(): Array<string>
 ```
 
 <h4>Returns</h4>
 
-* <i>()</i>
+* <i>(Array<string>)</i>
 
 
 ---
@@ -2086,12 +2086,12 @@ toString(): string
 <h3 id="method-json-obj-values">method JSON.Obj.values</h3>
 
 ```ts
-values(): undefined
+values(): Array<Value>
 ```
 
 <h4>Returns</h4>
 
-* <i>()</i>
+* <i>(Array<[JSON.Value](#class-json-value)>)</i>
 
 
 ---
@@ -2297,7 +2297,7 @@ the same player as the character. It does not include admins or builders.
 
 <h4>Parameters</h4>
 
-* `charId` <i>([ID](#undefined-id))</i>: Character ID.
+* `charId` <i>([ID](#type-id))</i>: Character ID.
 
 <h4>Returns</h4>
 
@@ -2356,18 +2356,18 @@ Gets an iterator for the exits in the room. Order is undefined.
 <h3 id="function-room-getchar">function Room.getChar</h3>
 
 ```ts
-Room.getChar(charId: ID): Char
+Room.getChar(charId: ID): Char | null
 ```
 
 Gets a character in the room by ID.
 
 <h4>Parameters</h4>
 
-* `charId` <i>([ID](#undefined-id))</i>: Character ID.
+* `charId` <i>([ID](#type-id))</i>: Character ID.
 
 <h4>Returns</h4>
 
-* <i>([Room.Char](#class-room-char))</i>: [Room.Char](#class-room-char) object or null if the character is not found in the room.
+* <i>([Room.Char](#class-room-char) | null)</i>: [Room.Char](#class-room-char) object or null if the character is not found in the room.
 
 
 ---
@@ -2390,14 +2390,14 @@ Get detailed room information, such as description and settings.
 <h3 id="function-room-getexit">function Room.getExit</h3>
 
 ```ts
-Room.getExit(keyword: string): Exit
+Room.getExit(keyword: string): Exit | null
 ```
 
 Gets an exit in the room by keyword.
 
 <h4>Returns</h4>
 
-* <i>([Room.Exit](#class-room-exit))</i>: [Room.Exit](#class-room-exit) object or null if the exit is not found in the room.
+* <i>([Room.Exit](#class-room-exit) | null)</i>: [Room.Exit](#class-room-exit) object or null if the exit is not found in the room.
 
 
 ---
@@ -2405,18 +2405,18 @@ Gets an exit in the room by keyword.
 <h3 id="function-room-getexitbyid">function Room.getExitById</h3>
 
 ```ts
-Room.getExitById(exitId: ID): Exit
+Room.getExitById(exitId: ID): Exit | null
 ```
 
 Gets an exit in the room by ID.
 
 <h4>Parameters</h4>
 
-* `exitId` <i>([ID](#undefined-id))</i>: Exit ID.
+* `exitId` <i>([ID](#type-id))</i>: Exit ID.
 
 <h4>Returns</h4>
 
-* <i>([Room.Exit](#class-room-exit))</i>: [Room.Exit](#class-room-exit) object or null if the exit is not found in the room.
+* <i>([Room.Exit](#class-room-exit) | null)</i>: [Room.Exit](#class-room-exit) object or null if the exit is not found in the room.
 
 
 ---
@@ -2424,14 +2424,14 @@ Gets an exit in the room by ID.
 <h3 id="function-room-getexitorder">function Room.getExitOrder</h3>
 
 ```ts
-Room.getExitOrder(): undefined
+Room.getExitOrder(): Array<ID>
 ```
 
-Gets the exit order of visible exits in the room as an array of [ID](#undefined-id) values.
+Gets the exit order of visible exits in the room as an array of [ID](#type-id) values.
 
 <h4>Returns</h4>
 
-* <i>()</i>
+* <i>(Array<[ID](#type-id)>)</i>
 
 
 ---
@@ -2439,7 +2439,7 @@ Gets the exit order of visible exits in the room as an array of [ID](#undefined-
 <h3 id="function-room-listen">function Room.listen</h3>
 
 ```ts
-Room.listen(instance: string = null): boolean
+Room.listen(instance: string | null = null): boolean
 ```
 
 Starts listening to room events on the current instance. If `instance` is
@@ -2449,7 +2449,7 @@ instance.
 
 <h4>Parameters</h4>
 
-* `instance` <i>(string)</i>: Instance or null for the non-instance.
+* `instance` <i>(string | null)</i>: Instance or null for the non-instance.
 
 <h4>Returns</h4>
 
@@ -2461,7 +2461,7 @@ instance.
 <h3 id="function-room-listencharevent">function Room.listenCharEvent</h3>
 
 ```ts
-Room.listenCharEvent(instance: string = null): boolean
+Room.listenCharEvent(instance: string | null = null): boolean
 ```
 
 Starts listening to char events in the room. If `instance` is set, it
@@ -2471,7 +2471,7 @@ instance.
 
 <h4>Parameters</h4>
 
-* `instance` <i>(string)</i>: Instance or null for any instance.
+* `instance` <i>(string | null)</i>: Instance or null for any instance.
 
 <h4>Returns</h4>
 
@@ -2483,7 +2483,7 @@ instance.
 <h3 id="function-room-listenexit">function Room.listenExit</h3>
 
 ```ts
-Room.listenExit(exitId: string = null): boolean
+Room.listenExit(exitId: string | null = null): boolean
 ```
 
 Starts listening to exit usage in the room, including any instance. If
@@ -2496,7 +2496,7 @@ may listen to any exit with the null wildcard at any one time
 
 <h4>Parameters</h4>
 
-* `exitId` <i>(string)</i>: Exit ID or null for any exit.
+* `exitId` <i>(string | null)</i>: Exit ID or null for any exit.
 
 <h4>Returns</h4>
 
@@ -2508,7 +2508,7 @@ may listen to any exit with the null wildcard at any one time
 <h3 id="function-room-privatedescribe">function Room.privateDescribe</h3>
 
 ```ts
-Room.privateDescribe(msg: string, targetCharIds: undefined): void
+Room.privateDescribe(msg: string, targetCharIds: Array<ID>): void
 ```
 
 Sends a "privateDescribe" event to one or more target characters in the
@@ -2550,7 +2550,7 @@ following paramters. Any other fields will be ignored.
 
 <h4>Parameters</h4>
 
-* `exitId` <i>([ID](#undefined-id))</i>: Exit ID.
+* `exitId` <i>([ID](#type-id))</i>: Exit ID.
 * `fields` <i>(T)</i>: Exit fields to update.
 
 
@@ -2577,15 +2577,15 @@ following paramters. Any other fields will be ignored.
 <h3 id="function-room-sweepchar">function Room.sweepChar</h3>
 
 ```ts
-Room.sweepChar(charId: ID, msg: string): void
+Room.sweepChar(charId: ID, msg: string | null): void
 ```
 
 Sweep a single character from the room by sending them home.
 
 <h4>Parameters</h4>
 
-* `charId` <i>([ID](#undefined-id))</i>: Character ID.
-* `msg` <i>(string)</i>: Message to show too the room when the character is teleported away. Defaults to other teleport messages.
+* `charId` <i>([ID](#type-id))</i>: Character ID.
+* `msg` <i>(string | null)</i>: Message to show too the room when the character is teleported away. Defaults to other teleport messages.
 
 
 ---
@@ -2593,7 +2593,7 @@ Sweep a single character from the room by sending them home.
 <h3 id="function-room-unlisten">function Room.unlisten</h3>
 
 ```ts
-Room.unlisten(instance: string = null): boolean
+Room.unlisten(instance: string | null = null): boolean
 ```
 
 Stops listening to room events on the current instance. If `instance` is
@@ -2602,7 +2602,7 @@ non-instance room.
 
 <h4>Parameters</h4>
 
-* `instance` <i>(string)</i>: Instance or null for the non-instance.
+* `instance` <i>(string | null)</i>: Instance or null for the non-instance.
 
 <h4>Returns</h4>
 
@@ -2614,7 +2614,7 @@ non-instance room.
 <h3 id="function-room-unlistencharevent">function Room.unlistenCharEvent</h3>
 
 ```ts
-Room.unlistenCharEvent(instance: string = null): boolean
+Room.unlistenCharEvent(instance: string | null = null): boolean
 ```
 
 Stops listening to char events in the room. If `instance` is set, it
@@ -2623,7 +2623,7 @@ room instance.
 
 <h4>Parameters</h4>
 
-* `instance` <i>(string)</i>: Instance or null for any instance.
+* `instance` <i>(string | null)</i>: Instance or null for any instance.
 
 <h4>Returns</h4>
 
@@ -2635,7 +2635,7 @@ room instance.
 <h3 id="function-room-unlistenexit">function Room.unlistenExit</h3>
 
 ```ts
-Room.unlistenExit(exitId: string = null): boolean
+Room.unlistenExit(exitId: string | null = null): boolean
 ```
 
 Stops listening to exit usage in the room. If `exitId` is set, it stops
@@ -2644,7 +2644,7 @@ for the the wildcard listener.
 
 <h4>Parameters</h4>
 
-* `exitId` <i>(string)</i>: Exit ID or null for any exit.
+* `exitId` <i>(string | null)</i>: Exit ID or null for any exit.
 
 <h4>Returns</h4>
 
@@ -2675,12 +2675,12 @@ Room character.
 
 <h4 id="class-room-char-properties">class Room.Char properties</h4>
 
-* `avatar` <i>([ID](#undefined-id))</i>: Character avatar.
+* `avatar` <i>([ID](#type-id))</i>: Character avatar.
 * `desc` <i>(string)</i>: Character description.
 * `gender` <i>(string)</i>: Character gender.
 * `id` <i>(string)</i>: Character ID.
 * `idle` <i>(i32)</i>: Character idle status.
-* `image` <i>([ID](#undefined-id))</i>: Character image.
+* `image` <i>([ID](#type-id))</i>: Character image.
 * `name` <i>(string)</i>: Character name.
 * `rp` <i>(i32)</i>: Character RP state.
 * `species` <i>(string)</i>: Character species.
@@ -2747,7 +2747,7 @@ if the cursor has reached the end of the iterator.
 
 <h4>Returns</h4>
 
-* <i>([ID](#undefined-id))</i>
+* <i>([ID](#type-id))</i>
 
 
 ---
@@ -2806,11 +2806,11 @@ Room exit.
 * `icon` <i>(i32)</i>: Exit icon.
 * `id` <i>(string)</i>: Exit ID.
 * `inactive` <i>(boolean)</i>: Is inactive flag.
-* `keys` <i>()</i>: Exit keys.
+* `keys` <i>(Array<string>)</i>: Exit keys.
 * `leaveMsg` <i>(string)</i>: Leave message.
 * `name` <i>(string)</i>: Exit name.
 * `nav` <i>(i32)</i>: Exit navigation direction.
-* `targetRoom` <i>([ID](#undefined-id))</i>: Target room.
+* `targetRoom` <i>([ID](#type-id))</i>: Target room.
 * `transparent` <i>(boolean)</i>: Is transparent flag.
 * `travelMsg` <i>(string)</i>: Travel message.
 
@@ -2874,7 +2874,7 @@ if the cursor has reached the end of the iterator.
 
 <h4>Returns</h4>
 
-* <i>([ID](#undefined-id))</i>
+* <i>([ID](#type-id))</i>
 
 
 ---
@@ -2945,8 +2945,8 @@ Detailed room information.
 * `created` <i>(i64)</i>: Created time.
 * `customTeleportMsgs` <i>(boolean)</i>: CustomTeleportMsgs flags if the room uses custom teleport messages.
 * `desc` <i>(string)</i>: Room description.
-* `id` <i>([ID](#undefined-id))</i>: Room ID.
-* `imageId` <i>([ID](#undefined-id))</i>: Room image ID;
+* `id` <i>([ID](#type-id))</i>: Room ID.
+* `imageId` <i>([ID](#type-id))</i>: Room image ID;
 * `isDark` <i>(boolean)</i>: IsDark flags if other character can be seen or whispered to in the room.
 * `isHome` <i>(boolean)</i>: IsHome flags if the room can be set as home by others.
 * `isInstance` <i>(boolean)</i>: IsInstance flags if the room creates an instance.
@@ -2964,7 +2964,7 @@ Detailed room information.
 <h3 id="function-script-cancelpost">function Script.cancelPost</h3>
 
 ```ts
-Script.cancelPost(scheduleId: ID): boolean
+Script.cancelPost(scheduleId: ID | null): boolean
 ```
 
 Cancel a message previously scheduled with `Script.post` with a delay.
@@ -2976,7 +2976,7 @@ post was already sent.
 
 <h4>Parameters</h4>
 
-* `scheduleId` <i>([ID](#undefined-id))</i>: Schedule ID returned by script.Post.
+* `scheduleId` <i>([ID](#type-id) | null)</i>: Schedule ID returned by script.Post.
 
 <h4>Returns</h4>
 
@@ -2988,7 +2988,7 @@ post was already sent.
 <h3 id="function-script-getchar">function Script.getChar</h3>
 
 ```ts
-Script.getChar(charId: ID): Char
+Script.getChar(charId: ID): Char | null
 ```
 
 Gets info on an existing character.
@@ -2997,11 +2997,11 @@ To get character description or image info use Room.getChar instead.
 
 <h4>Parameters</h4>
 
-* `charId` <i>([ID](#undefined-id))</i>: Character ID.
+* `charId` <i>([ID](#type-id))</i>: Character ID.
 
 <h4>Returns</h4>
 
-* <i>([Script.Char](#class-script-char))</i>: [Script.Char](#class-script-char) object or null if the character is not found.
+* <i>([Script.Char](#class-script-char) | null)</i>: [Script.Char](#class-script-char) object or null if the character is not found.
 
 
 ---
@@ -3009,7 +3009,7 @@ To get character description or image info use Room.getChar instead.
 <h3 id="function-script-listen">function Script.listen</h3>
 
 ```ts
-Script.listen(addrs: undefined = null): void
+Script.listen(addrs: Array<string> | null = null): void
 ```
 
 Starts listening for posted messages from any of the given `addr`
@@ -3034,7 +3034,7 @@ help roomscript
 <h3 id="function-script-post">function Script.post</h3>
 
 ```ts
-Script.post(addr: string, topic: string, data: string = null, delay: i64 = 0): ID
+Script.post(addr: string, topic: string, data: string | null = null, delay: i64 = 0): ID | null
 ```
 
 Posts a message to another script with the address `addr`.
@@ -3049,12 +3049,12 @@ help roomscript
 
 * `addr` <i>(string)</i>: Address of target script. If addr is "#", it will be a post to the current script instance.
 * `topic` <i>(string)</i>: Message topic. May be any kind of string.
-* `data` <i>(string)</i>: Additional data. Must be valid JSON.
+* `data` <i>(string | null)</i>: Additional data. Must be valid JSON.
 * `delay` <i>(i64)</i>: Delay in milliseconds.
 
 <h4>Returns</h4>
 
-* <i>([ID](#undefined-id))</i>: Schedule [ID](#undefined-id) or null if the message was posted without delay of if the receiving script was not listening.
+* <i>([ID](#type-id) | null)</i>: Schedule [ID](#type-id) or null if the message was posted without delay of if the receiving script was not listening.
 
 
 ---
@@ -3062,7 +3062,7 @@ help roomscript
 <h3 id="function-script-unlisten">function Script.unlisten</h3>
 
 ```ts
-Script.unlisten(addrs: undefined = null): void
+Script.unlisten(addrs: Array<string> | null = null): void
 ```
 
 Starts listening for posted messages from any of the given `addr`
@@ -3087,7 +3087,7 @@ Realm character.
 
 <h4 id="class-script-char-properties">class Script.Char properties</h4>
 
-* `avatar` <i>([ID](#undefined-id))</i>: Character avatar.
+* `avatar` <i>([ID](#type-id))</i>: Character avatar.
 * `gender` <i>(string)</i>: Character gender.
 * `id` <i>(string)</i>: Character ID.
 * `idle` <i>(i32)</i>: Character idle status.
@@ -3121,7 +3121,7 @@ this is a no-op.
 <h3 id="function-store-getbuffer">function Store.getBuffer</h3>
 
 ```ts
-Store.getBuffer(key: T): ArrayBuffer
+Store.getBuffer(key: T): ArrayBuffer | null
 ```
 
 Returns the stored ArrayBuffer value for the key, or null if the key does
@@ -3133,7 +3133,7 @@ not exist.
 
 <h4>Returns</h4>
 
-* <i>(ArrayBuffer)</i>
+* <i>(ArrayBuffer | null)</i>
 
 
 ---
@@ -3141,7 +3141,7 @@ not exist.
 <h3 id="function-store-getstring">function Store.getString</h3>
 
 ```ts
-Store.getString(key: T): string
+Store.getString(key: T): string | null
 ```
 
 Returns the stored string value for the key, or null if the key does not
@@ -3153,7 +3153,7 @@ exist.
 
 <h4>Returns</h4>
 
-* <i>(string)</i>
+* <i>(string | null)</i>
 
 
 ---
@@ -3349,7 +3349,7 @@ Any iterator prefix passed to withPrefix() will be used as prefix.
 <h3 id="method-store-iterator-isvalidforprefix">method Store.Iterator.isValidForPrefix</h3>
 
 ```ts
-isValidForPrefix(prefix: T): boolean
+isValidForPrefix(prefix: T | null): boolean
 ```
 
 Returns false when the cursor is at the end of the iterator, or when

@@ -21,19 +21,29 @@ const kind = {
 };
 
 const kindName = {
-	1: 'project',
-	2: 'unknown',
-	4: 'namespace',
-	8: 'enum',
-	16: 'type',
-	32: 'variable',
-	64: 'function',
-	128: 'class',
-	256: 'interface',
-	512: 'constructor',
-	1024: 'property',
-	2048: 'method',
-	4096: 'signature',
+	0x1: 'project',
+	0x2: 'module',
+	0x4: 'namespace',
+	0x8: 'enum',
+	0x10: 'member',
+	0x20: 'variable',
+	0x40: 'function',
+	0x80: 'class',
+	0x100: 'interface',
+	0x200: 'constructor',
+	0x400: 'property',
+	0x800: 'method',
+	0x1000: 'signature',
+	0x2000: 'indexsignature',
+	0x4000: 'constructorsignature',
+	0x8000: 'parameter',
+	0x10000: 'typeliteral',
+	0x20000: 'typeparam',
+	0x40000: 'accessor',
+	0x80000: 'getter',
+	0x100000: 'setter',
+	0x200000: 'type', // type alias
+	0x400000: 'ref', // reference
 };
 
 
@@ -607,10 +617,10 @@ export default class DocsConverter {
 
 		const syntax = "```ts" + LF +
 			name + "(" + params.map(p => {
-				return `${p.name}: ${p.type.name}${p.defaultValue ? ' = ' + p.defaultValue : ''}`;
+				return `${p.name}: ${this._formatType(p.type, false)}${p.defaultValue ? ' = ' + p.defaultValue : ''}`;
 			}).join(", ") + ")" + (
 				!noReturnType && signature.type
-					? `: ${signature.type.name}`
+					? `: ${this._formatType(signature.type, false)}`
 					: ''
 			) + LF +
 		"```"
@@ -666,8 +676,43 @@ export default class DocsConverter {
 		return !!symbol?.signatures?.[0].sources?.length;
 	}
 
-	_formatType(o) {
-		if (typeof o.target == 'number' ) {
+	_formatType(o, link = true) {
+		// Array
+		if (o.type == 'array' ) {
+			return 'Array<' + this._formatType(o.elementType, link) + '>';
+		}
+
+		// Literal
+		if (o.type == 'literal') {
+			return escapeHtml(o.value === null ? 'null' : o.value);
+		}
+
+		// Union
+		if (o.type == 'union') {
+			// Move literals and null to the end. Keep remaining order.
+			o.types.sort((a, b) => {
+				if (
+					(a.type == 'literal' && b.type != 'literal') ||
+					(a.type != 'litera' && b.type == 'literal')
+				) {
+					return a.type == 'literal' ? 1 : -1;
+				}
+				// Both are literals
+				if (a.type == 'literal') {
+					return !a.value
+						? 1
+						: !b.value
+							? -1
+							: 0;
+				}
+				return 0;
+			});
+
+			return o.types.map(t => this._formatType(t, link)).join(" | ");
+		}
+
+		// Reference
+		if (link && typeof o.target == 'number' ) {
 			let symbol = this.data.symbolIdMap?.[o.target];
 			let linkId = this._getLinkId(o.target);
 			// Do not link to external package types that are not in a
