@@ -6,10 +6,34 @@ const indent = "&nbsp;&nbsp;&nbsp;&nbsp;";
 const spaceIndent = "    ";
 
 const kind = {
+	project: 1,
+	namespace: 4,
+	enum: 8,
+	type: 16,
+	variable: 32,
+	function: 64,
 	class: 128,
+	interface: 256,
 	constructor: 512,
 	property: 1024,
 	method: 2048,
+	signature: 4096,
+};
+
+const kindName = {
+	1: 'project',
+	2: 'unknown',
+	4: 'namespace',
+	8: 'enum',
+	16: 'type',
+	32: 'variable',
+	64: 'function',
+	128: 'class',
+	256: 'interface',
+	512: 'constructor',
+	1024: 'property',
+	2048: 'method',
+	4096: 'signature',
 };
 
 
@@ -23,6 +47,22 @@ export default class DocsConverter {
 	constructor(data, typeAliases) {
 		this.data = data;
 		this.typeAliases = typeAliases;
+		this.linkIds = this._resolveLinkIds(this.data, {});
+	}
+
+	_resolveLinkIds(symbol, ids) {
+		if (symbol.kind) {
+			let o = this.data.symbolIdMap?.[symbol.id];
+			if (o?.qualifiedName) {
+				ids[symbol.id] = kindName[symbol.kind] + '-' + this._stringToId(o.qualifiedName);
+			}
+		}
+		if (symbol.children) {
+			for (let child of symbol.children) {
+				this._resolveLinkIds(child, ids);
+			}
+		}
+		return ids;
 	}
 
 	/**
@@ -61,30 +101,36 @@ export default class DocsConverter {
 	}
 
 	formatNamespace(visited, root) {
-		let rootName = root && root != this.data
+		root = root || this.data;
+		if (visited[root.id]) {
+			return [ [], [] ];
+		}
+		visited[root.id] = true;
+
+		let rootName = root != this.data
 			? this._getSymbolName(root.id)
 			: '';
 		let rootIdPrefix = rootName ? this._stringToId(rootName) + '-' : '';
 
 		// Enums
 		let enumsName = rootName ? `${rootName} enums` : "Enums";
-		let [ enums, enumLinks ] = this.formatEnums(visited);
+		let [ enums, enumLinks ] = this.formatEnums(visited, root);
 
 		// Type aliases
 		let aliasesName = rootName ? `${rootName} type aliases` : "Type aliases";
-		let [ aliases, aliasLinks ] = this.formatTypeAliases(visited);
+		let [ aliases, aliasLinks ] = this.formatTypeAliases(visited, root);
 
 		// Functions
 		let functionsName = rootName ? `${rootName} functions` : "Functions";
-		let [ functions, functionLinks ] = this.formatFunctions(visited);
+		let [ functions, functionLinks ] = this.formatFunctions(visited, root);
 
 		// Classes
 		let classesName = rootName ? `${rootName} classes` : "Classes";
-		let [ classes, classLinks ] = this.formatClasses(visited);
+		let [ classes, classLinks ] = this.formatClasses(visited, root);
 
 		// Namespaces
 		let namespacesName = rootName ? `${rootName} namespaces` : "Namespaces";
-		let [ namespaces, namespaceLinks ] = this.formatNamespaces(visited);
+		let [ namespaces, namespaceLinks ] = this.formatNamespaces(visited, root);
 
 		return [
 			[
@@ -152,18 +198,6 @@ export default class DocsConverter {
 	}
 
 	/**
-	 * Formats functions in a namespace.
-	 * @param {Record<string,boolean>} visited Record of all previously visited symbols
-	 * @param {object} [root] Root symbol object to look in. Defaults to this.data.
-	 * @returns {[Array<string>, Array<string>]} Result.
-	 */
-	formatFunctions(visited, root) {
-		const contents = [];
-		const links = [];
-		return [ contents, links ];
-	}
-
-	/**
 	 * Formats an enum namespace.
 	 * @param {object} namespaceSymbol Namespace symbol object
 	 * @param {object} typeSymbol Type symbol object
@@ -175,8 +209,8 @@ export default class DocsConverter {
 		visited[namespaceSymbol.id] = true;
 		visited[typeSymbol.id] = true;
 
-
-		let id = this._getSymbolId(namespaceSymbol.id);
+		let qualifiedName = this._getSymbolName(namespaceSymbol.id);
+		let id = this._getLinkId(namespaceSymbol.id);
 		let longestName = 0;
 		namespaceSymbol.children.forEach(c => {
 			// Set const as visited
@@ -184,7 +218,7 @@ export default class DocsConverter {
 			// Get longest child name
 			longestName = Math.max(longestName, c.name.length);
 		});
-		let s = `<h3 id="${id}">enum ${escapeHtml(namespaceSymbol.name)}</h3>` + LF +
+		let s = `<h3 id="${id}">enum ${escapeHtml(qualifiedName)}</h3>` + LF +
 			LF +
 			"```ts" + LF +
 			`type ${typeSymbol.name} = ${typeSymbol.type.name}` + LF +
@@ -195,7 +229,48 @@ export default class DocsConverter {
 			LF +
 			this._formatComment(namespaceSymbol.comment);
 
-		return [s, indent + `[enum ${namespaceSymbol.name}](#${id})`];
+		return [s, indent + `[enum ${qualifiedName}](#${id})`];
+	}
+
+	/**
+	 * Formats functions in a namespace.
+	 * @param {Record<string,boolean>} visited Record of all previously visited symbols
+	 * @param {object} [root] Root symbol object to look in. Defaults to this.data.
+	 * @returns {[Array<string>, Array<string>]} Result.
+	 */
+	formatFunctions(visited, root) {
+		const contents = [];
+		const links = [];
+		for (let o of this._getGroupSymbols("Functions", visited, root || this.data)) {
+			let result = this.formatFunction(o, visited);
+			if (result) {
+				contents.push(result[0]);
+				links.push(result[1]);
+			}
+		}
+		return [ contents, links ];
+	}
+
+	/**
+	 * Formats a function.
+	 * @param {object} functionSymbol Function symbol object
+	 * @param {Record<string,boolean>} visited Record of all previously visited symbols
+	 * @returns {[string, string]} Result or null if symbol is not a function
+	 */
+	formatFunction(functionSymbol, visited) {
+		if (visited[functionSymbol.id]) return null;
+
+		// Set class namespace and type as visited
+		visited[functionSymbol.id] = true;
+
+		const qualifiedName = this._getSymbolName(functionSymbol.id);
+		const id = this._getLinkId(functionSymbol.id);
+
+		const s = `<h3 id="${id}">function ${escapeHtml(qualifiedName)}</h3>` + LF +
+			LF +
+			this._formatMethod(qualifiedName, functionSymbol);
+
+		return [s, indent + `[function ${qualifiedName}](#${id})`];
 	}
 
 	/**
@@ -229,8 +304,9 @@ export default class DocsConverter {
 		// Set enum namespace and type as visited
 		visited[typeSymbol.id] = true;
 
-		let id = this._getSymbolId(typeSymbol.id);
-		let s = `<h3 id="${id}">type ${escapeHtml(typeSymbol.name)}</h3>` + LF +
+		let qualifiedName = this._getSymbolName(typeSymbol.id);
+		let id = this._getLinkId(typeSymbol.id);
+		let s = `<h3 id="${id}">type ${escapeHtml(qualifiedName)}</h3>` + LF +
 			LF +
 			"```ts" + LF +
 			`type ${typeSymbol.name} = ${this.typeAliases?.[typeSymbol.name] || this._formatType(typeSymbol.type)}` + LF +
@@ -238,7 +314,7 @@ export default class DocsConverter {
 			LF +
 			this._formatComment(typeSymbol.comment);
 
-		return [s, indent + `[type ${typeSymbol.name}](#${id})`];
+		return [s, indent + `[type ${qualifiedName}](#${id})`];
 	}
 
 	/**
@@ -275,7 +351,8 @@ export default class DocsConverter {
 		// Set class namespace and type as visited
 		visited[classSymbol.id] = true;
 
-		let id = this._getSymbolId(classSymbol.id);
+		let qualifiedName = this._getSymbolName(classSymbol.id);
+		let id = this._getLinkId(classSymbol.id);
 		let longestName = 0;
 		classSymbol.children.forEach(c => {
 			// Set const as visited
@@ -286,24 +363,24 @@ export default class DocsConverter {
 		let constructorSymbol = this._findChildByKind(classSymbol, kind.constructor);
 
 		// Constructor
-		let mainContent = (`<h3 id="${id}">class ${escapeHtml(classSymbol.name)}</h3>` + LF +
+		let mainContent = (`<h3 id="${id}">class ${escapeHtml(qualifiedName)}</h3>` + LF +
 			LF +
 			this._formatComment(classSymbol.comment) + LF +
 			(this._hasSourceCodeSignature(constructorSymbol)
 				? LF +
-					this._formatMethod(`new ${classSymbol.name}`, constructorSymbol, true) + LF
+					this._formatMethod(`new ${qualifiedName}`, constructorSymbol, true) + LF
 				: ''
 			)
 		);
-		links.push(indent + `[class ${classSymbol.name}](#${id})`);
+		links.push(indent + `[class ${qualifiedName}](#${id})`);
 
 		// Properties
 		let propSymbols = this._findChildrenByKind(classSymbol, kind.property);
 		if (propSymbols.length) {
-			mainContent += LF + `<h4 id="${id}-properties">class ${escapeHtml(classSymbol.name)} properties</h4>` + LF +
+			mainContent += LF + `<h4 id="${id}-properties">class ${escapeHtml(qualifiedName)} properties</h4>` + LF +
 				LF +
 				this._formatProperties(propSymbols) + LF;
-			links.push(indent + indent + `[properties](#${id}-properties)`);
+			// links.push(indent + indent + `[properties](#${id}-properties)`);
 		}
 
 		// We include properties in mainContent instead of making it a new
@@ -313,9 +390,10 @@ export default class DocsConverter {
 		// Methods
 		let methodSymbols = this._findChildrenByKind(classSymbol, kind.method);
 		for (let methodSymbol of methodSymbols) {
-			let methodId = this._getSymbolId(methodSymbol.id)
+			let methodQualifiedName = this._getSymbolName(methodSymbol.id);
+			let methodId = this._getLinkId(methodSymbol.id)
 			contents.push(
-				`<h3 id="${methodId}">method ${escapeHtml(classSymbol.name + "." + methodSymbol.name)}</h3>` + LF +
+				`<h3 id="${methodId}">method ${escapeHtml(methodQualifiedName)}</h3>` + LF +
 				LF +
 				this._formatMethod(`${methodSymbol.name}`, methodSymbol)
 			);
@@ -328,6 +406,12 @@ export default class DocsConverter {
 	formatNamespaces(visited, root) {
 		let contents = [];
 		let links = [];
+		for (let namespace of this._getGroupSymbols("Namespaces", visited, root || this.data)) {
+			// Convert root namespace
+			let [ namespaceContents, namespaceLinks ] = this.formatNamespace(visited, namespace);
+			contents = contents.concat(namespaceContents);
+			links = links.concat(namespaceLinks);
+		}
 
 		return [ contents, links ];
 	}
@@ -409,9 +493,8 @@ export default class DocsConverter {
 			.replace(/[\s\-.]+/g, '-');
 	}
 
-	_getSymbolId(symbolId) {
-		let o = this.data.symbolIdMap?.[symbolId];
-		return (o && this._stringToId(o.qualifiedName)) || '';
+	_getLinkId(symbolId) {
+		return this.linkIds[symbolId];
 	}
 
 	/**
@@ -514,20 +597,13 @@ export default class DocsConverter {
 	}
 
 	_formatMethod(name, symbol, noReturnType) {
-		let longestParam = 0;
 		let hasComment = false;
 		const signature = symbol.signatures?.[0];
 		const params = signature?.parameters || [];
-			// .map(p => {
-			// 	let field = `${p.name}: ${p.type.name}${p.defaultValue ? ' = ' + p.defaultValue : ''}`;
-			// 	let comment = this._formatText(p.comment?.summary) || '';
-			// 	hasComment = hasComment || !!comment;
-			// 	longestParam = Math.max(longestParam, field.length);
-			// 	return { field, comment };
-			// });
 
+		const returnsVoid = signature.type.name == 'void'
 		const summary = this._formatComment(signature.comment);
-		const returns = this._formatReturnsComment(signature.comment);
+		const returnsComment = this._formatReturnsComment(signature.comment);
 
 		const syntax = "```ts" + LF +
 			name + "(" + params.map(p => {
@@ -552,10 +628,6 @@ export default class DocsConverter {
 		return  syntax + (
 			summary ? "\n\n" + summary : ''
 		) + (
-		// 	returns
-		// 		? "  \n" + returns
-		// 		: ''
-		// ) + (
 			parameters && hasComment
 				? "\n\n" +
 					`<h4>Parameters</h4>` + LF +
@@ -563,11 +635,15 @@ export default class DocsConverter {
 					parameters
 				: ''
 		) + (
-			returns
+			!noReturnType && (returnsComment || !returnsVoid)
 				? "\n\n" +
 					`<h4>Returns</h4>` + LF +
 					LF +
-					"* " + returns
+					"* <i>(" + this._formatType(signature.type) + ")</i>" + (
+						returnsComment
+							? ": " + returnsComment
+							: ''
+					)
 				: ''
 		) + LF;
 	}
@@ -587,17 +663,24 @@ export default class DocsConverter {
 	 * @param {óbject} symbol
 	 */
 	_hasSourceCodeSignature(symbol) {
-		return !!symbol.signatures?.[0].sources?.length;
+		return !!symbol?.signatures?.[0].sources?.length;
 	}
 
 	_formatType(o) {
-		if (typeof o.target != 'number' ) {
-			return escapeHtml(o.name || o.text);
+		if (typeof o.target == 'number' ) {
+			let symbol = this.data.symbolIdMap?.[o.target];
+			let linkId = this._getLinkId(o.target);
+			// Do not link to external package types that are not in a
+			// namespace. This applies to things like json-as types: "T", "key",
+			// "value", etc.
+			if (
+				symbol &&
+				linkId &&
+				(symbol.packageName == 'mucklet-script'|| symbol.qualifiedName?.includes('.'))
+			) {
+				return `[${escapeHtml(symbol.qualifiedName)}](#${linkId})`;
+			}
 		}
-		let id = this._getSymbolId(o.target);
-		if (!id) {
-			throw new Error("unknown symbol: " + (o.name || o.text));
-		}
-		return `[${escapeHtml(o.name || o.text)}](#${id})`;
+		return escapeHtml(o.name || o.text);
 	}
 }

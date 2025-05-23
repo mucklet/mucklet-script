@@ -316,7 +316,7 @@ export class CmdAction {
 /**
  * BaseIterator is an iterator over items with an ID.
  */
-class BaseIterator {
+export class BaseIterator {
 	protected iterator: i32;
 	/**
 	 * Constructor of the Iterator instance.
@@ -1236,7 +1236,7 @@ export namespace Room {
 		return room_binding.removeCommand(keyword);
 	}
 
-	class CharIterator extends BaseIterator {
+	export class CharIterator extends BaseIterator {
 		/**
 		 * Returns the current char. It will abort if the cursor has reached the
 		 * end of the iterator.
@@ -1247,7 +1247,7 @@ export namespace Room {
 		}
 	}
 
-	class ExitIterator extends BaseIterator {
+	export class ExitIterator extends BaseIterator {
 		/**
 		 * Returns the current char. It will abort if the cursor has reached the
 		 * end of the iterator.
