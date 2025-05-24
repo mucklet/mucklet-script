@@ -137,7 +137,7 @@ export default class DocsConverter {
 		overviewLinks.push(`[Index](#index)`);
 
 		// Convert root namespace
-		let [ content, links ] = this.formatNamespace(visitedSymbolIds);
+		let [ content, links ] = this.formatNamespace(visitedSymbolIds, this.data, true);
 
 		// Output
 		return `# ${title}` + LF +
@@ -155,7 +155,7 @@ export default class DocsConverter {
 			content.join("\n\n") + LF;
 	}
 
-	formatNamespace(visited, root) {
+	formatNamespace(visited, root, useNamespaceSectionHeader) {
 		root = root || this.data;
 		if (visited[root.id]) {
 			return [ [], [] ];
@@ -184,8 +184,8 @@ export default class DocsConverter {
 		let [ classes, classLinks ] = this.formatClasses(visited, root);
 
 		// Namespaces
-		let namespacesName = rootName ? `${rootName} namespaces` : "Namespaces";
-		let [ namespaces, namespaceLinks ] = this.formatNamespaces(visited, root);
+		// let namespacesName = rootName ? `${rootName} namespaces` : "Namespaces";
+		let [ namespaces, namespaceLinks ] = this.formatNamespaces(visited, root, useNamespaceSectionHeader);
 
 		return [
 			[
@@ -207,7 +207,7 @@ export default class DocsConverter {
 						classes.join("\n\n---\n\n"),
 					] : []),
 					...(namespaces.length ? [
-						this._convertToNamedHeaders(`## ${namespacesName}`),
+						// this._convertToNamedHeaders(`## ${namespacesName}`),
 						namespaces.join("\n\n---\n\n"),
 					] : []),
 				].join("\n\n"),
@@ -221,7 +221,7 @@ export default class DocsConverter {
 				...functionLinks,
 				...(classLinks.length ? [ `[${classesName}](#${rootIdPrefix}classes)` ] : []),
 				...classLinks,
-				...(namespaceLinks.length ? [ `[${namespacesName}](#${rootIdPrefix}namespaces)` ] : []),
+				// ...(namespaceLinks.length ? [ `[${namespacesName}](#${rootIdPrefix}namespaces)` ] : []),
 				...namespaceLinks,
 			],
 		];
@@ -452,14 +452,18 @@ export default class DocsConverter {
 		return [ contents, links ];
 	}
 
-	formatNamespaces(visited, root) {
+	formatNamespaces(visited, root, useSectionHeader) {
 		let contents = [];
 		let links = [];
 		for (let namespace of this._getGroupSymbols("Namespaces", visited, root || this.data).sort(compareSymbolName)) {
 			// Convert root namespace
-			let [ namespaceContents, namespaceLinks ] = this.formatNamespace(visited, namespace);
+			let [ namespaceContents, namespaceLinks ] = this.formatNamespace(visited, namespace, false);
 			contents = contents.concat(namespaceContents);
-			links = links.concat(namespaceLinks);
+			links = [
+				...links,
+				...(useSectionHeader ? [ "\n### " + this._getSymbolName(namespace) + " namespace" ] : []),
+				...namespaceLinks
+			];
 		}
 
 		return [ contents, links ];
@@ -474,15 +478,15 @@ export default class DocsConverter {
 	 * @returns
 	 */
 	_formatComment(comment, level, prefix, headerCallback) {
-		if (!comment?.summary) {
-			return '';
+		let s = [];
+		if (comment?.summary) {
+			s.push(this._convertToNamedHeaders(this._formatText(comment.summary), level, prefix, headerCallback));
 		}
-
-		if (!comment.summary) {
-			return '';
+		const seeComments = this._formatSeeComments(comment);
+		if (seeComments?.length) {
+			s.push(seeComments.map(c => "See also: " + c).join("  \n"));
 		}
-
-		return this._convertToNamedHeaders(this._formatText(comment.summary), level, prefix, headerCallback);
+		return s.join("\n\n");
 	}
 
 	/**
@@ -498,6 +502,14 @@ export default class DocsConverter {
 		return this._formatText(returns.content);
 	}
 
+	_formatSeeComments(comment) {
+		const tags = comment?.blockTags?.filter(o => o.tag == "@see");
+		if (tags?.length) {
+			return tags.map(t => this._formatText(t.content));
+		}
+		return null;
+	}
+
 	/**
 	 * Formats a text array.
 	 * @param {Array<{kind:string, text: string}} textArray Array of text objects.
@@ -510,7 +522,12 @@ export default class DocsConverter {
 		return textArray.map(o => {
 			switch (o.kind) {
 				case "inline-tag":
-					return this._formatType(o);
+					if (o.tag == '@link') {
+						return this._formatLink(o.text, o.target);
+					}
+					return escapeHtml(o.text)
+				case "code":
+					return o.text;
 
 				default:
 					return o.text;
@@ -726,6 +743,30 @@ export default class DocsConverter {
 		return !!symbol?.signatures?.[0].sources?.length;
 	}
 
+	_formatLink(text, target) {
+		if (target) {
+			let t = typeof target;
+			if (t == 'number')  {
+				let symbol = this.data.symbolIdMap?.[target];
+				let linkId = this._getLinkId(target);
+				// Do not link to external package types that are not in a
+				// namespace. This applies to things like json-as types: "T",
+				// "key", "value", etc.
+				if (
+					symbol &&
+					linkId &&
+					(symbol.packageName == 'mucklet-script' || symbol.qualifiedName?.includes('.'))
+				) {
+					return `[${escapeHtml(symbol.qualifiedName)}](#${linkId})`;
+				}
+			} else if (t == "string") {
+				return `[${escapeHtml(text)}](${escapeHtml(target)})`
+			}
+		}
+
+		return escapeHtml(text);
+	}
+
 	_formatType(o, link = true) {
 		// Array
 		if (o.type == 'array' ) {
@@ -761,21 +802,11 @@ export default class DocsConverter {
 			return o.types.map(t => this._formatType(t, link)).join(" | ");
 		}
 
-		// Reference
-		if (link && typeof o.target == 'number' ) {
-			let symbol = this.data.symbolIdMap?.[o.target];
-			let linkId = this._getLinkId(o.target);
-			// Do not link to external package types that are not in a
-			// namespace. This applies to things like json-as types: "T", "key",
-			// "value", etc.
-			if (
-				symbol &&
-				linkId &&
-				(symbol.packageName == 'mucklet-script'|| symbol.qualifiedName?.includes('.'))
-			) {
-				return `[${escapeHtml(symbol.qualifiedName)}](#${linkId})`;
-			}
+		// Link
+		if (link) {
+			return this._formatLink(o.name, o.target);
 		}
-		return escapeHtml(o.name || o.text);
+
+		return escapeHtml(o.name);
 	}
 }

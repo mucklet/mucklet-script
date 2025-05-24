@@ -805,6 +805,7 @@ export interface CommandField {
 /**
  * Command class is a representation of a custom command, and is used as an
  * argument when calling {@link Room.addCommand}.
+ * @see {@link https://github.com/mucklet/mucklet-script/blob/master/docs/writingscripts-customcommands.md | Writing scripts - Custom commands}
  */
 export class Command {
 	private fieldDefs: Map<string, string> = new Map<string, string>();
@@ -1211,13 +1212,15 @@ export namespace Room {
 	 * Adds a custom command to the room.
 	 *
 	 * Pattern is a string describing the general command structure, and may
-	 * contain <Fields> and [optional] parts.
+	 * contain \<Fields\> parts. Any field defined in the pattern must have a
+	 * corresponding field entry.
 	 *
-	 * Any field defined in the pattern must have a corresponding field entry.
+ 	 * @see {@link https://github.com/mucklet/mucklet-script/blob/master/docs/writingscripts-customcommands.md | Writing scripts - Custom commands}
 	 *
 	 * @param keyword - Keyword for the command.
 	 * @param cmd - Command to add.
-	 * @param priority - Priority for sort order (descending) and when two or more commands match the same input. Higher priority is selected first.
+	 * @param priority - Priority for sort order (descending) and when two or
+	 * more commands match the same input. Higher priority is selected first.
 	 */
 	export function addCommand(keyword: string, cmd: Command, priority: u32 = 0): void {
 		return room_binding.addCommand(keyword, cmd.json(), priority);
