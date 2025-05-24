@@ -134,7 +134,7 @@ export default class DocsConverter {
 				overviewLinks.push(indent.repeat(level - 1) + `[${title}](#${id})`);
 			}
 		});
-		overviewLinks.push(`[Index](#index)`);
+		overviewLinks.push(`[API references](#api-references)`);
 
 		// Convert root namespace
 		let [ content, links ] = this.formatNamespace(visitedSymbolIds, this.data, true);
@@ -148,7 +148,7 @@ export default class DocsConverter {
 			LF +
 			overview + LF +
 			LF +
-			this._convertToNamedHeaders("# Index") + LF +
+			this._convertToNamedHeaders("# API references") + LF +
 			LF +
 			links.join("  \n") + LF +
 			LF +
