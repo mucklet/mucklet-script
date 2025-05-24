@@ -179,6 +179,10 @@ export default class DocsConverter {
 		let functionsName = rootName ? `${rootName} functions` : "Functions";
 		let [ functions, functionLinks ] = this.formatFunctions(visited, root);
 
+		// Interfaces
+		let interfacesName = rootName ? `${rootName} interfaces` : "Interfaces";
+		let [ interfaces, interfaceLinks ] = this.formatInterfaces(visited, root);
+
 		// Classes
 		let classesName = rootName ? `${rootName} classes` : "Classes";
 		let [ classes, classLinks ] = this.formatClasses(visited, root);
@@ -202,6 +206,10 @@ export default class DocsConverter {
 						this._convertToNamedHeaders(`## ${functionsName}`),
 						functions.join("\n\n---\n\n"),
 					] : []),
+					...(interfaces.length ? [
+						this._convertToNamedHeaders(`## ${interfacesName}`),
+						interfaces.join("\n\n---\n\n"),
+					] : []),
 					...(classes.length ? [
 						this._convertToNamedHeaders(`## ${classesName}`),
 						classes.join("\n\n---\n\n"),
@@ -219,6 +227,8 @@ export default class DocsConverter {
 				...enumLinks,
 				...(functionLinks.length ? [ `[${functionsName}](#${rootIdPrefix}functions)` ] : []),
 				...functionLinks,
+				...(interfaceLinks.length ? [ `[${interfacesName}](#${rootIdPrefix}interfaces)` ] : []),
+				...interfaceLinks,
 				...(classLinks.length ? [ `[${classesName}](#${rootIdPrefix}classes)` ] : []),
 				...classLinks,
 				// ...(namespaceLinks.length ? [ `[${namespacesName}](#${rootIdPrefix}namespaces)` ] : []),
@@ -392,11 +402,12 @@ export default class DocsConverter {
 	 * @param {Record<string,boolean>} visited Record of all previously visited symbols
 	 * @returns {[Array<string>, Array<string>]} Result or null if symbol is not an class
 	 */
-	formatClass(classSymbol, visited) {
+	formatClass(classSymbol, visited, isInterface) {
 		if (visited[classSymbol.id]) return null;
 
 		const contents = [];
 		const links = [];
+		const typeName = isInterface ? 'interface' : 'class';
 
 		// Set class namespace and type as visited
 		visited[classSymbol.id] = true;
@@ -413,7 +424,7 @@ export default class DocsConverter {
 		let constructorSymbol = this._findChildByKind(classSymbol, kind.constructor);
 
 		// Constructor
-		let mainContent = (`<h3 id="${id}">class ${escapeHtml(qualifiedName)}</h3>` + LF +
+		let mainContent = (`<h3 id="${id}">${typeName} ${escapeHtml(qualifiedName)}</h3>` + LF +
 			LF +
 			this._formatComment(classSymbol.comment) + LF +
 			(this._hasSourceCodeSignature(constructorSymbol)
@@ -422,12 +433,12 @@ export default class DocsConverter {
 				: ''
 			)
 		);
-		links.push(indent + `[class ${qualifiedName}](#${id})`);
+		links.push(indent + `[${typeName} ${qualifiedName}](#${id})`);
 
 		// Properties
 		let propSymbols = this._findChildrenByKind(classSymbol, kind.property);
 		if (propSymbols.length) {
-			mainContent += LF + `<h4 id="${id}-properties">class ${escapeHtml(qualifiedName)} properties</h4>` + LF +
+			mainContent += LF + `<h4 id="${id}-properties">${typeName} ${escapeHtml(qualifiedName)} properties</h4>` + LF +
 				LF +
 				this._formatProperties(propSymbols) + LF;
 		}
@@ -451,6 +462,26 @@ export default class DocsConverter {
 
 		return [ contents, links ];
 	}
+
+	/**
+	 * Formats interfaces.
+	 * @param {Record<string,boolean>} visited Record of all previously visited symbols
+	 * @param {object} [root] Root symbol object to look in. Defaults to this.data.
+	 * @returns {[Array<string>, Array<string>]} Result.
+	 */
+	formatInterfaces(visited, root) {
+		let contents = [];
+		let links = [];
+		for (let o of this._getGroupSymbols("Interfaces", visited, root || this.data).sort(compareSymbolName)) {
+			let result = this.formatClass(o, visited, true);
+			if (result) {
+				contents = contents.concat(result[0]);
+				links = links.concat(result[1]);
+			}
+		}
+		return [ contents, links ];
+	}
+
 
 	formatNamespaces(visited, root, useSectionHeader) {
 		let contents = [];
@@ -677,6 +708,7 @@ export default class DocsConverter {
 	_formatMethod(name, symbol, noReturnType) {
 		let hasComment = false;
 		const signature = symbol.signatures?.[0];
+		const typeParams = signature?.typeParameters || [];
 		const params = signature?.parameters || [];
 
 		const returnsVoid = signature.type.name == 'void'
@@ -684,7 +716,11 @@ export default class DocsConverter {
 		const returnsComment = this._formatReturnsComment(signature.comment);
 
 		const syntax = "```ts" + LF +
-			name + "(" + params.map(p => {
+			name + (
+				typeParams.length
+					? "<" + typeParams.map(t => this._formatType(t, false)).join(", ") + ">"
+					: ''
+			) + "(" + params.map(p => {
 				return `${p.name}: ${this._formatType(p.type, false)}${p.defaultValue ? ' = ' + p.defaultValue : ''}`;
 			}).join(", ") + ")" + (
 				!noReturnType && signature.type
@@ -692,7 +728,6 @@ export default class DocsConverter {
 					: ''
 			) + LF +
 		"```"
-
 		const parameters = params.map(p => {
 			let comment = this._formatText(p.comment?.summary) || '';
 			return "* `" + p.name + "` <i>(" + this._formatType(p.type) + ")</i>" + (
@@ -700,16 +735,27 @@ export default class DocsConverter {
 					? ": " + comment
 					: ''
 			);
-		}).join(LF);
+		});
+
+		const typeParameters = typeParams.map(t => {
+			return "* " + this._formatType(t);
+		});
 
 		return  syntax + (
 			summary ? "\n\n" + summary : ''
+		) + (
+			typeParameters.filter(t => !t.match(/[^a-zA-Z0-9]/)).length
+				? "\n\n" +
+					`<h4>Type parameters</h4>` + LF +
+					LF +
+					typeParameters.join(LF)
+				: ''
 		) + (
 			parameters.length
 				? "\n\n" +
 					`<h4>Parameters</h4>` + LF +
 					LF +
-					parameters
+					parameters.join(LF)
 				: ''
 		) + (
 			!noReturnType && (returnsComment || !returnsVoid)

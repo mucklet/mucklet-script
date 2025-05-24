@@ -193,6 +193,11 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;[enum ExitNav](#enum-exitnav)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum IdleLevel](#enum-idlelevel)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum RPState](#enum-rpstate)  
+[Interfaces](#interfaces)  
+&nbsp;&nbsp;&nbsp;&nbsp;[interface CommandField](#interface-commandfield)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-commandfield-gettype)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getDesc](#method-commandfield-getdesc)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getOpts](#method-commandfield-getopts)  
 [Classes](#classes)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class CmdAction](#class-cmdaction)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method info](#method-cmdaction-info)  
@@ -510,6 +515,58 @@ const enum RPState {
 ```
 
 Roleplaying state that a character may have.
+
+<h2 id="interfaces">Interfaces</h2>
+
+<h3 id="interface-commandfield">interface CommandField</h3>
+
+
+
+
+---
+
+<h3 id="method-commandfield-gettype">method CommandField.getType</h3>
+
+```ts
+getType(): string
+```
+
+Returns the type of the command field.
+
+<h4>Returns</h4>
+
+* <i>(string)</i>
+
+
+---
+
+<h3 id="method-commandfield-getdesc">method CommandField.getDesc</h3>
+
+```ts
+getDesc(): string
+```
+
+Returns the help description of the command field.
+
+<h4>Returns</h4>
+
+* <i>(string)</i>
+
+
+---
+
+<h3 id="method-commandfield-getopts">method CommandField.getOpts</h3>
+
+```ts
+getOpts(): string | null
+```
+
+Returns the options of the command field as a JSON encoded string.
+
+<h4>Returns</h4>
+
+* <i>(string | null)</i>
+
 
 <h2 id="classes">Classes</h2>
 
@@ -1866,7 +1923,7 @@ Enum representing the different types supported by JSON.
 <h3 id="function-json-parse">function JSON.parse</h3>
 
 ```ts
-JSON.parse(data: string): T
+JSON.parse<T>(data: string): T
 ```
 
 Parses valid JSON strings into their original format
@@ -1888,7 +1945,7 @@ JSON.parse<T>(data)
 <h3 id="function-json-stringify">function JSON.stringify</h3>
 
 ```ts
-JSON.stringify(data: T, out: string | null = null): string
+JSON.stringify<T>(data: T, out: string | null = null): string
 ```
 
 Serializes valid JSON data
@@ -1913,7 +1970,7 @@ JSON.stringify<T>(data)
 Box for primitive types
 
 ```ts
-new JSON.Box(value: T)
+new JSON.Box<T>(value: T)
 ```
 
 <h4>Parameters</h4>
@@ -1950,7 +2007,7 @@ Set the internal value of Box to new value
 <h3 id="method-json-box-from">method JSON.Box.from</h3>
 
 ```ts
-from(value: T): Box
+from<T>(value: T): Box
 ```
 
 Creates a reference to a primitive type
@@ -1999,7 +2056,7 @@ new JSON.Obj()
 <h3 id="method-json-obj-set">method JSON.Obj.set</h3>
 
 ```ts
-set(key: string, value: T): void
+set<T>(key: string, value: T): void
 ```
 
 <h4>Parameters</h4>
@@ -2103,7 +2160,7 @@ toString(): string
 <h3 id="method-json-obj-from">method JSON.Obj.from</h3>
 
 ```ts
-from(value: T): Obj
+from<T>(value: T): Obj
 ```
 
 <h4>Parameters</h4>
@@ -2210,7 +2267,7 @@ Creates an JSON.Value instance with no set value.
 <h3 id="method-json-value-from">method JSON.Value.from</h3>
 
 ```ts
-from(value: T): Value
+from<T>(value: T): Value
 ```
 
 Creates an JSON.Value instance from a given value.
@@ -2229,7 +2286,7 @@ Creates an JSON.Value instance from a given value.
 <h3 id="method-json-value-set">method JSON.Value.set</h3>
 
 ```ts
-set(value: T): void
+set<T>(value: T): void
 ```
 
 Sets the value of the JSON.Value instance.
@@ -2244,7 +2301,7 @@ Sets the value of the JSON.Value instance.
 <h3 id="method-json-value-get">method JSON.Value.get</h3>
 
 ```ts
-get(): T
+get<T>(): T
 ```
 
 Gets the value of the JSON.Value instance.
@@ -2575,7 +2632,7 @@ Removes a custom command, added by the script, from the room.
 <h3 id="function-room-setexit">function Room.setExit</h3>
 
 ```ts
-Room.setExit(exitId: ID, fields: T): void
+Room.setExit<T>(exitId: ID, fields: T): void
 ```
 
 Set exit information.
@@ -2594,7 +2651,7 @@ following paramters. Any other fields will be ignored.
 <h3 id="function-room-setroom">function Room.setRoom</h3>
 
 ```ts
-Room.setRoom(fields: T): void
+Room.setRoom<T>(fields: T): void
 ```
 
 Set room information.
@@ -3156,7 +3213,7 @@ Realm character.
 <h3 id="function-store-deletekey">function Store.deleteKey</h3>
 
 ```ts
-Store.deleteKey(key: T): void
+Store.deleteKey<T>(key: T): void
 ```
 
 Deletes a key and it's value from the store. If the key does not exist,
@@ -3172,7 +3229,7 @@ this is a no-op.
 <h3 id="function-store-getbuffer">function Store.getBuffer</h3>
 
 ```ts
-Store.getBuffer(key: T): ArrayBuffer | null
+Store.getBuffer<T>(key: T): ArrayBuffer | null
 ```
 
 Returns the stored ArrayBuffer value for the key, or null if the key does
@@ -3192,7 +3249,7 @@ not exist.
 <h3 id="function-store-getstring">function Store.getString</h3>
 
 ```ts
-Store.getString(key: T): string | null
+Store.getString<T>(key: T): string | null
 ```
 
 Returns the stored string value for the key, or null if the key does not
@@ -3226,7 +3283,7 @@ Must be called before using the store.
 <h3 id="function-store-setbuffer">function Store.setBuffer</h3>
 
 ```ts
-Store.setBuffer(key: T, value: ArrayBuffer): void
+Store.setBuffer<T>(key: T, value: ArrayBuffer): void
 ```
 
 Adds a key and an ArrayBuffer value to the store, or updates that key's
@@ -3243,7 +3300,7 @@ value if it already exists.
 <h3 id="function-store-setstring">function Store.setString</h3>
 
 ```ts
-Store.setString(key: T, value: string): void
+Store.setString<T>(key: T, value: string): void
 ```
 
 Adds a key and a string value to the store, or updates that key's value
@@ -3290,7 +3347,7 @@ Constructor of the Iterator instance.
 <h3 id="method-store-iterator-withprefix">method Store.Iterator.withPrefix</h3>
 
 ```ts
-withPrefix(prefix: T): Iterator
+withPrefix<T>(prefix: T): Iterator
 ```
 
 Sets a prefix to use for calls to seek, rewind, and isValid.
@@ -3340,7 +3397,7 @@ to ensure have not reached the end of the iterator.
 <h3 id="method-store-iterator-seek">method Store.Iterator.seek</h3>
 
 ```ts
-seek(key: T): void
+seek<T>(key: T): void
 ```
 
 Seeks to the provided key if found. If not found, it would seek to
@@ -3457,7 +3514,7 @@ Any iterator prefix passed to withPrefix() will be used as prefix.
 <h3 id="method-store-iterator-isvalidforprefix">method Store.Iterator.isValidForPrefix</h3>
 
 ```ts
-isValidForPrefix(prefix: T | null): boolean
+isValidForPrefix<T>(prefix: T | null): boolean
 ```
 
 Returns false when the cursor is at the end of the iterator, or when
