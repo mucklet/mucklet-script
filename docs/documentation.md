@@ -209,8 +209,17 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;[class ExitAction](#class-exitaction)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method useExit](#method-exitaction-useexit)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method cancel](#method-exitaction-cancel)  
+[Namespaces](#namespaces)  
+&nbsp;&nbsp;&nbsp;&nbsp;[Event namespace](#namespace-event)  
+&nbsp;&nbsp;&nbsp;&nbsp;[Field namespace](#namespace-field)  
+&nbsp;&nbsp;&nbsp;&nbsp;[FieldValue namespace](#namespace-fieldvalue)  
+&nbsp;&nbsp;&nbsp;&nbsp;[JSON namespace](#namespace-json)  
+&nbsp;&nbsp;&nbsp;&nbsp;[Room namespace](#namespace-room)  
+&nbsp;&nbsp;&nbsp;&nbsp;[Script namespace](#namespace-script)  
+&nbsp;&nbsp;&nbsp;&nbsp;[Store namespace](#namespace-store)  
 
-### Event namespace  
+<h3 id="namespace-event">Event namespace</h3>
+  
 [Event functions](#event-functions)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Event.getType](#function-event-gettype)  
 [Event classes](#event-classes)  
@@ -231,7 +240,8 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;[class Event.Sleep](#class-event-sleep)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Event.Wakeup](#class-event-wakeup)  
 
-### Field namespace  
+<h3 id="namespace-field">Field namespace</h3>
+  
 [Field classes](#field-classes)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Field.Bool](#class-field-bool)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getType](#method-field-bool-gettype)  
@@ -278,7 +288,8 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMinLength](#method-field-text-setminlength)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setMaxLength](#method-field-text-setmaxlength)  
 
-### FieldValue namespace  
+<h3 id="namespace-fieldvalue">FieldValue namespace</h3>
+  
 [FieldValue classes](#fieldvalue-classes)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class FieldValue.Bool](#class-fieldvalue-bool)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class FieldValue.Char](#class-fieldvalue-char)  
@@ -288,7 +299,8 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;[class FieldValue.List](#class-fieldvalue-list)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class FieldValue.Text](#class-fieldvalue-text)  
 
-### JSON namespace  
+<h3 id="namespace-json">JSON namespace</h3>
+  
 [JSON enums](#json-enums)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum JSON.Types](#enum-json-types)  
 [JSON functions](#json-functions)  
@@ -321,7 +333,8 @@ export function onCommand(
 [JSON.Memory functions](#json-memory-functions)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function JSON.Memory.shrink](#function-json-memory-shrink)  
 
-### Room namespace  
+<h3 id="namespace-room">Room namespace</h3>
+  
 [Room functions](#room-functions)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Room.addCommand](#function-room-addcommand)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Room.canEdit](#function-room-canedit)  
@@ -365,7 +378,8 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.MoveMsgs](#class-room-movemsgs)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.RoomDetails](#class-room-roomdetails)  
 
-### Script namespace  
+<h3 id="namespace-script">Script namespace</h3>
+  
 [Script functions](#script-functions)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Script.cancelPost](#function-script-cancelpost)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Script.getChar](#function-script-getchar)  
@@ -375,7 +389,8 @@ export function onCommand(
 [Script classes](#script-classes)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Script.Char](#class-script-char)  
 
-### Store namespace  
+<h3 id="namespace-store">Store namespace</h3>
+  
 [Store functions](#store-functions)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Store.deleteKey](#function-store-deletekey)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Store.getBuffer](#function-store-getbuffer)  
@@ -742,6 +757,8 @@ shown.
 
 * `msg` <i>(string | null)</i>: Info message to show, or default message if null.
 
+
+<h2 id="namespaces">Namespaces</h2>
 
 <h2 id="event-functions">Event functions</h2>
 
@@ -2324,15 +2341,6 @@ Converts the JSON.Value to a string representation.
 <h4>Returns</h4>
 
 * <i>(string)</i>: The string representation of the JSON.Value.
-
-
-<h2 id="json-memory-functions">JSON.Memory functions</h2>
-
-<h3 id="function-json-memory-shrink">function JSON.Memory.shrink</h3>
-
-```ts
-JSON.Memory.shrink(): void
-```
 
 
 ---

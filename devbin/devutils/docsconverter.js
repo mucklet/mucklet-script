@@ -188,7 +188,7 @@ export default class DocsConverter {
 		let [ classes, classLinks ] = this.formatClasses(visited, root);
 
 		// Namespaces
-		// let namespacesName = rootName ? `${rootName} namespaces` : "Namespaces";
+		let namespacesName = rootName ? `${rootName} namespaces` : "Namespaces";
 		let [ namespaces, namespaceLinks ] = this.formatNamespaces(visited, root, useNamespaceSectionHeader);
 
 		return [
@@ -214,8 +214,8 @@ export default class DocsConverter {
 						this._convertToNamedHeaders(`## ${classesName}`),
 						classes.join("\n\n---\n\n"),
 					] : []),
-					...(namespaces.length ? [
-						// this._convertToNamedHeaders(`## ${namespacesName}`),
+					...(namespaces.length && useNamespaceSectionHeader ? [
+						this._convertToNamedHeaders(`## ${namespacesName}`),
 						namespaces.join("\n\n---\n\n"),
 					] : []),
 				].join("\n\n"),
@@ -231,7 +231,7 @@ export default class DocsConverter {
 				...interfaceLinks,
 				...(classLinks.length ? [ `[${classesName}](#${rootIdPrefix}classes)` ] : []),
 				...classLinks,
-				// ...(namespaceLinks.length ? [ `[${namespacesName}](#${rootIdPrefix}namespaces)` ] : []),
+				...(namespaceLinks.length && useNamespaceSectionHeader ? [ `[${namespacesName}](#${rootIdPrefix}namespaces)` ] : []),
 				...namespaceLinks,
 			],
 		];
@@ -485,14 +485,25 @@ export default class DocsConverter {
 
 	formatNamespaces(visited, root, useSectionHeader) {
 		let contents = [];
-		let links = [];
-		for (let namespace of this._getGroupSymbols("Namespaces", visited, root || this.data).sort(compareSymbolName)) {
-			// Convert root namespace
+		const namespaces = this._getGroupSymbols("Namespaces", visited, root || this.data).sort(compareSymbolName);
+		let links = useSectionHeader
+			? namespaces.map(o => {
+				let qualifiedName = this._getSymbolName(o);
+				return indent + `[${qualifiedName} namespace](#namespace-${this._stringToId(qualifiedName)})`;
+			})
+			: [];
+
+
+		for (let namespace of namespaces) {
+			let qualifiedName = this._getSymbolName(namespace);
 			let [ namespaceContents, namespaceLinks ] = this.formatNamespace(visited, namespace, false);
 			contents = contents.concat(namespaceContents);
 			links = [
 				...links,
-				...(useSectionHeader ? [ "\n### " + this._getSymbolName(namespace) + " namespace" ] : []),
+				...(useSectionHeader
+					? [ `\n<h3 id="namespace-${this._stringToId(qualifiedName)}">${escapeHtml(qualifiedName)} namespace</h3>\n` ]
+					: []
+				),
 				...namespaceLinks
 			];
 		}
