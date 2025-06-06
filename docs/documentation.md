@@ -980,7 +980,7 @@ Roll event.
 * `char` <i>([Event.Char](#class-event-char))</i>: Acting character.
 * `puppeteer` <i>([Event.Char](#class-event-char) | null)</i>: Acting puppeteer.
 * `total` <i>(i32)</i>: Roll total.
-* `result` <i>(Array<[Event.RollResult](#class-event-rollresult)>)</i>: Roll result.
+* `result` <i>(Array&lt;[Event.RollResult](#class-event-rollresult)&gt;)</i>: Roll result.
 * `quiet` <i>(boolean)</i>: Quiet roll.
 
 
@@ -996,7 +996,7 @@ Results in a roll event.
 * `op` <i>(string)</i>: Modifier operator. Either "+" or "-".
 * `count` <i>(i32)</i>: Dice count. Always 0 on type "mod".
 * `sides` <i>(i32)</i>: Sides on dice. Always 0 on type "mod"
-* `dice` <i>(Array<i32>)</i>: Roll value for each die. Always empty slice on type "mod"
+* `dice` <i>(Array&lt;i32&gt;)</i>: Roll value for each die. Always empty slice on type "mod"
 * `value` <i>(i32)</i>: Modifier value. Always 0 on type "std".
 
 
@@ -1575,7 +1575,7 @@ new Field.List(desc: string = "")
 
 <h4 id="class-field-list-properties">class Field.List properties</h4>
 
-* `items` <i>(Array<string>)</i>
+* `items` <i>(Array&lt;string&gt;)</i>
 
 
 ---
@@ -1654,7 +1654,7 @@ Sets an array of list items, replacing any previously set items.
 
 <h4>Parameters</h4>
 
-* `items` <i>(Array<string>)</i>: Array of list items.
+* `items` <i>(Array&lt;string&gt;)</i>: Array of list items.
 
 <h4>Returns</h4>
 
@@ -2003,7 +2003,7 @@ new JSON.Box<T>(value: T)
 <h3 id="method-json-box-set">method JSON.Box.set</h3>
 
 ```ts
-set(value: T): Box
+set(value: T): Box<T>
 ```
 
 Set the internal value of Box to new value
@@ -2014,7 +2014,7 @@ Set the internal value of Box to new value
 
 <h4>Returns</h4>
 
-* <i>([JSON.Box](#class-json-box))</i>: this
+* <i>([JSON.Box](#class-json-box)&lt;T&gt;)</i>: this
 
 
 ---
@@ -2022,7 +2022,7 @@ Set the internal value of Box to new value
 <h3 id="method-json-box-from">method JSON.Box.from</h3>
 
 ```ts
-from<T>(value: T): Box
+from<T>(value: T): Box<T>
 ```
 
 Creates a reference to a primitive type
@@ -2038,7 +2038,7 @@ JSON.stringify<Box<i32> | null>(null);
 
 <h4>Returns</h4>
 
-* <i>([JSON.Box](#class-json-box))</i>: Box<T>
+* <i>([JSON.Box](#class-json-box)&lt;T&gt;)</i>: Box<T>
 
 
 ---
@@ -2141,7 +2141,7 @@ keys(): Array<string>
 
 <h4>Returns</h4>
 
-* <i>(Array<string>)</i>
+* <i>(Array&lt;string&gt;)</i>
 
 
 ---
@@ -2154,7 +2154,7 @@ values(): Array<Value>
 
 <h4>Returns</h4>
 
-* <i>(Array<[JSON.Value](#class-json-value)>)</i>
+* <i>(Array&lt;[JSON.Value](#class-json-value)&gt;)</i>
 
 
 ---
@@ -2258,7 +2258,7 @@ from(data: string): Raw
 
 <h4 id="class-json-value-properties">class JSON.Value properties</h4>
 
-* `METHODS` <i>(Map)</i>
+* `METHODS` <i>(Map&lt;u32, u32&gt;)</i>
 * `type` <i>(i32)</i>
 
 
@@ -2522,7 +2522,7 @@ Gets the exit order of visible exits in the room as an array of [ID](#type-id) v
 
 <h4>Returns</h4>
 
-* <i>(Array<[ID](#type-id)>)</i>
+* <i>(Array&lt;[ID](#type-id)&gt;)</i>
 
 
 ---
@@ -2609,7 +2609,7 @@ targeted characters.
 <h4>Parameters</h4>
 
 * `msg` <i>(string)</i>
-* `targetCharIds` <i>(Array<[ID](#type-id)>)</i>
+* `targetCharIds` <i>(Array&lt;[ID](#type-id)&gt;)</i>
 
 
 ---
@@ -2953,7 +2953,7 @@ Room exit.
 <h4 id="class-room-exit-properties">class Room.Exit properties</h4>
 
 * `id` <i>(string)</i>: Exit ID.
-* `keys` <i>(Array<string>)</i>: Exit keys.
+* `keys` <i>(Array&lt;string&gt;)</i>: Exit keys.
 * `name` <i>(string)</i>: Exit name.
 * `icon` <i>([ExitIcon](#enum-exiticon))</i>: Exit icon.
 * `nav` <i>([ExitNav](#enum-exitnav))</i>: Exit navigation direction.
@@ -3186,7 +3186,7 @@ help roomscript
 
 <h4>Parameters</h4>
 
-* `addrs` <i>(Array<string> | null)</i>
+* `addrs` <i>(Array&lt;string&gt; | null)</i>
 
 
 ---
@@ -3240,7 +3240,7 @@ help roomscript
 
 <h4>Parameters</h4>
 
-* `addrs` <i>(Array<string> | null)</i>
+* `addrs` <i>(Array&lt;string&gt; | null)</i>
 
 
 <h2 id="script-classes">Script classes</h2>

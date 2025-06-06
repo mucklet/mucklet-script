@@ -849,12 +849,16 @@ export default class DocsConverter {
 	_formatType(o, link = true) {
 		// Array
 		if (o.type == 'array' ) {
-			return 'Array<' + this._formatType(o.elementType, link) + '>';
+			return link
+				? escapeHtml('Array<') + this._formatType(o.elementType, link) + escapeHtml('>')
+				: 'Array<' + this._formatType(o.elementType, link) + '>';
 		}
 
 		// Literal
 		if (o.type == 'literal') {
-			return escapeHtml(String(o.value));
+			return link
+				? escapeHtml(String(o.value))
+				: String(o.value);
 		}
 
 		// Union
@@ -882,11 +886,19 @@ export default class DocsConverter {
 		}
 
 		// Link
-		if (link) {
-			return this._formatLink(o.name, o.target);
+		let result = link
+			? this._formatLink(o.name, o.target)
+			: o.name;
+
+		// Type arguments
+		if (o.typeArguments?.length) {
+			const args = o.typeArguments.map(t => this._formatType(t, link)).join(", ");
+			result += link
+				? escapeHtml('<') + args + escapeHtml('>')
+				: '<' + args + '>';
 		}
 
-		return escapeHtml(o.name);
+		return result;
 	}
 
 	_excludeSymbol(symbol) {
