@@ -65,6 +65,12 @@ const childKinds = {
 	[kind.constructorSignatur]: (parentId) => parentId,
 }
 
+const excludedSymbols = [
+	'JSON.internal',
+	'JSON.Memory',
+	'JSON.Util',
+];
+
 function compareSymbolName(a, b) {
 	return a.name.localeCompare(b.name);
 }
@@ -214,8 +220,11 @@ export default class DocsConverter {
 						this._convertToNamedHeaders(`## ${classesName}`),
 						classes.join("\n\n---\n\n"),
 					] : []),
-					...(namespaces.length && useNamespaceSectionHeader ? [
-						this._convertToNamedHeaders(`## ${namespacesName}`),
+					...(namespaces.length ? [
+						...(useNamespaceSectionHeader
+							? [ this._convertToNamedHeaders(`## ${namespacesName}`) ]
+							: []
+						),
 						namespaces.join("\n\n---\n\n"),
 					] : []),
 				].join("\n\n"),
@@ -642,7 +651,7 @@ export default class DocsConverter {
 	_getGroupSymbols(title, exclude, root) {
 		return this._getGroupIds(title, exclude, root)
 			.map(id => this._getSymbol(id, this.data.children))
-			.filter(o => !o.name.startsWith("_")); // Exclude symbols starting with underscore.
+			.filter(o => !o.name.startsWith("_") && !this._excludeSymbol(o)); // Exclude symbols starting with underscore.
 	}
 
 	/**
@@ -878,5 +887,15 @@ export default class DocsConverter {
 		}
 
 		return escapeHtml(o.name);
+	}
+
+	_excludeSymbol(symbol) {
+		if (!symbol) {
+			return false;
+		}
+
+		let o = this.data.symbolIdMap?.[symbol.id];
+
+		return excludedSymbols.includes(o.qualifiedName);
 	}
 }

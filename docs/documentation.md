@@ -330,8 +330,6 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method set](#method-json-value-set)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method get](#method-json-value-get)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method toString](#method-json-value-tostring)  
-[JSON.Memory functions](#json-memory-functions)  
-&nbsp;&nbsp;&nbsp;&nbsp;[function JSON.Memory.shrink](#function-json-memory-shrink)  
 
 <h3 id="namespace-room">Room namespace</h3>
   

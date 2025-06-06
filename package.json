@@ -34,9 +34,9 @@
     "tsconfig.json"
   ],
   "dependencies": {
-    "assemblyscript": "^0.27.35",
+    "assemblyscript": "^0.28.2",
     "isomorphic-ws": "^5.0.0",
-    "json-as": "github:anisus/json-as#7eb5b4bd5eef77f1f63704aabfaf07547d7cddf1",
+    "json-as": "^1.1.14",
     "resclient": "^2.5.0",
     "tinyargs": "^0.1.4",
     "visitor-as": "^0.11.4"
