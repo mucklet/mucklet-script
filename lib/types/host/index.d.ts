@@ -51,8 +51,8 @@
  * ```ts
  * // Send a describe to the room and log a message to the console on activation.
  * export function onActivate(): void {
- *	 Room.describe("Hello, world!");
- *	 console.log("Hello, console!");
+ *     Room.describe("Hello, world!");
+ *     console.log("Hello, console!");
  * }
  * ```
  *
@@ -65,14 +65,14 @@
  * ```ts
  * // Check the event type and decode the event.
  * export function onRoomEvent(
- *	 addr: string, // Address of this script instance receiving the event.
- *	 ev: string,   // Event encoded as a json string.
+ *     addr: string, // Address of this script instance receiving the event.
+ *     ev: string,   // Event encoded as a json string.
  * ): void {
- *	 const eventType = Event.getType(ev);
- *	 if (eventType == 'say') {
- *		 const say = JSON.parse<Event.Say>(ev);
- *		 // Handle the say event
- *	 }
+ *     const eventType = Event.getType(ev);
+ *     if (eventType == 'say') {
+ *         const say = JSON.parse<Event.Say>(ev);
+ *         // Handle the say event
+ *     }
  * }
  * ```
  *
@@ -85,14 +85,14 @@
  * ```ts
  * // Receive a message from another script to change room profile
  * export function onMessage(
- *	 addr: string,		// Address of this script instance receiving the message.
- *	 topic: string,	   // Topic of the message. Determined by the sender.
- *	 data: string | null, // JSON encoded data of the message or null. Determined by the sender.
- *	 sender: string,	  // Address of the sending script instance.
+ *     addr: string,        // Address of this script instance receiving the message.
+ *     topic: string,       // Topic of the message. Determined by the sender.
+ *     data: string | null, // JSON encoded data of the message or null. Determined by the sender.
+ *     sender: string,      // Address of the sending script instance.
  * ): void {
- *	 if (topic == "changeProfile") {
- *		 Room.setProfile(JSON.parse<string>(data))
- *	 }
+ *     if (topic == "changeProfile") {
+ *         Room.setProfile(JSON.parse<string>(data))
+ *     }
  * }
  * ```
  *
@@ -106,21 +106,21 @@
  * ```ts
  * // Output to log when a character arrives or leaves
  * export function onCharEvent(
- *	 addr: string,		  // Address of this script instance receiving the event.
- *	 charId: string,		// ID of character.
- *	 after: string | null,  // Character state after the event encoded as a json string, or null if the character left the room.
- *	 before: string | null, // Character state before the event encoded as a json string, or null if the character entered the room.
+ *     addr: string,          // Address of this script instance receiving the event.
+ *     charId: string,        // ID of character.
+ *     after: string | null,  // Character state after the event encoded as a json string, or null if the character left the room.
+ *     before: string | null, // Character state before the event encoded as a json string, or null if the character entered the room.
  * ): void {
- *	 if (after == null && before != null) {
- *		 // If after is null, the character left
- *		 const char = JSON.parse<Room.Char>(before);
- *		 console.log(`${char.name} left.`)
- *	 }
- *	 if (before == null && after != null) {
- *		 // If before is null, the character arrived
- *		 const char = JSON.parse<Room.Char>(after);
- *		 console.log(`${char.name} arrived.`)
- *	 }
+ *     if (after == null && before != null) {
+ *         // If after is null, the character left
+ *         const char = JSON.parse<Room.Char>(before);
+ *         console.log(`${char.name} left.`)
+ *     }
+ *     if (before == null && after != null) {
+ *         // If before is null, the character arrived
+ *         const char = JSON.parse<Room.Char>(after);
+ *         console.log(`${char.name} arrived.`)
+ *     }
  * }
  * ```
  *
@@ -136,10 +136,10 @@
  * ```ts
  * // Prevent anyone from using an exit
  * export function onExitUse(
- *	 addr: string,		   // Address of this script instance receiving the event.
- *	 exitAction: ExitAction, // Exit action object.
+ *     addr: string,           // Address of this script instance receiving the event.
+ *     exitAction: ExitAction, // Exit action object.
  * ): void {
- *	 exitAction.cancel("The door seems to be locked.");
+ *     exitAction.cancel("The door seems to be locked.");
  * }
  * ```
  *
@@ -155,15 +155,15 @@
  * ```ts
  * // Adding a ping command on activation
  * export function onActivate(): void {
- *	 Room.addCommand("ping", new Command("send ping", "Sends a ping to the script.");
+ *     Room.addCommand("ping", new Command("send ping", "Sends a ping to the script.");
  * }
  *
  * // Adds a "send ping" command that responds with an info message
  * export function onCommand(
- *	 addr: string,		 // Address of this script instance receiving the action.
- *	 cmdAction: CmdAction, // Command action object.
+ *     addr: string,         // Address of this script instance receiving the action.
+ *     cmdAction: CmdAction, // Command action object.
  * ): void {
- *	 cmdAction.info("Pong!");
+ *     cmdAction.info("Pong!");
  * }
  * ```
  *
@@ -744,23 +744,37 @@ declare namespace Room {
 	/**
 	 * Set room information.
 	 *
-	 * The parameters must be an object that may be converted to json with the
-	 * following paramters. Any other fields will be ignored.
-	 * @param {object} [fields] Room fields to update.
-	 * @param {string} [fields.name] Room name.
-	 * @param {string} [fields.desc]  Room description.
-	 * @param {boolean} [fields.isDark] IsDark flags if other character can be seen or whispered to in the room.
-	 * @param {boolean} [fields.isQuiet] IsQuiet flags if a room is quiet and won't allow communication.
-	 * @param {boolean} [fields.isHome] IsHome flags if the room can be set as home by others.
-	 * @param {boolean} [fields.isTeleport] IsTeleport flags if the room can be added as a teleport node by others.
-	 * @param {boolean} [fields.isInstance] IsInstance flags if the room creates an instance.
-	 * @param {boolean} [fields.autosweep] Autosweep flags if sleepers in the room should be sent home automatically.
-	 * @param {Duration} [fields.autosweepDelay] AutosweepDelay is the time in milliseconds until a sleeper is swept.
-	 * @param {boolean} [fields.customTeleportMsgs] CustomTeleportMsgs flags if the room uses custom teleport messages.
-	 * @param {boolean} [fields.overrideCharTeleportMsgs] OverrideCharTeleportMsgs flags if the custom teleport messages should override any set character teleport messages.
-	 * @param {object} [fields.teleportLeaveMsg] // Custom teleport message shown when someone teleports away from the room.
-	 * @param {object} [fields.teleportArriveMsg] // Custom teleport message shown when someone teleports into the room.
-	 * @param {object} [fields.teleportTravelMsg] // Custom teleport message shown to the character teleporting into the room.
+	 *
+	 * The _field_ parameter must an object that can be converted to a json
+	 * object string with {@link JSON.stringify}, containing the following
+	 * fields. Any other fields will be ignored.
+	 *
+	 * ```ts
+	 * {
+	 *     name?:                     string,   // Room name.
+	 *     desc?:                     string,   // Room description.
+	 *     isDark?:                   boolean,  // IsDark flags if other character can be seen or whispered to in the room.
+	 *     isQuiet?:                  boolean,  // IsQuiet flags if a room is quiet and won't allow communication.
+	 *     isHome?:                   boolean,  // IsHome flags if the room can be set as home by others.
+	 *     isTeleport?:               boolean,  // IsTeleport flags if the room can be added as a teleport node by others.
+	 *     isInstance?:               boolean,  // IsInstance flags if the room creates an instance.
+	 *     autosweep?:                boolean,  // Autosweep flags if sleepers in the room should be sent home automatically.
+	 *     autosweepDelay?:           Duration, // AutosweepDelay is the time in milliseconds until a sleeper is swept.
+	 *     customTeleportMsgs?:       boolean,  // CustomTeleportMsgs flags if the room uses custom teleport messages.
+	 *     overrideCharTeleportMsgs?: boolean,  // OverrideCharTeleportMsgs flags if the custom teleport messages should override any set character teleport messages.
+	 *     teleportLeaveMsg?:         object,   // Custom teleport message shown when someone teleports away from the room.
+	 *     teleportArriveMsg?:        object,   // Custom teleport message shown when someone teleports into the room.
+	 *     teleportTravelMsg?:        object,   // Custom teleport message shown to the character teleporting into the room.
+	 * }
+	 * ```
+	 *
+	 * @example
+	 * ```ts
+	 * // Setting the room to be dark
+	 * Room.setRoom(new Map<string, boolean>().set("isDark", true))
+	 * ```
+	 *
+	 * @param {object} fields Room fields to update as an object that can be stringified to json.
 	 */
 	function setRoom<T>(fields: T): void;
 	/**
@@ -800,7 +814,7 @@ declare namespace Room {
 	function getChar(charId: ID): Char | null;
 	/**
 	 * Gets an exit in the room by keyword.
-	 * @param exitId - Exit ID.
+	 * @param keyword - Exit keyword.
 	 * @returns {@link Exit} object or null if the exit is not found in the room.
 	 */
 	function getExit(keyword: string): Exit | null;
@@ -817,21 +831,34 @@ declare namespace Room {
 	/**
 	 * Set exit information.
 	 *
-	 * The parameters must be an object that may be converted to json with the
-	 * following paramters. Any other fields will be ignored.
+	 * The _field_ parameter must an object that can be converted to a json
+	 * object string with {@link JSON.stringify}, containing the following
+	 * fields. Any other fields will be ignored.
+	 *
+	 * ```ts
+	 * {
+	 *     name?:        string,            // Name of the exit.
+	 *     keys?:        string[],          // Exit keywords used with the go command.
+	 *     leaveMsg?:    boolean,           // Message seen by the origin room. Usually in present tense (eg. "leaves ...").
+	 *     arriveMsg?:   boolean,           // Message seen by the arrival room. Usually in present tense (eg. "arrives from ...").
+	 *     travelMsg?:   boolean,           // Message seen by the exit user. Usually in present tense (eg. "goes ...").
+	 *     icon?:        ExitIcon,          // Icon for the exit.
+	 *     nav?:         ExitNav,           // Navigation direction for the exit.
+	 *     hidden?:      boolean,           // Flag telling if the exit is hidden, preventing it from being listed.
+	 *     inactive?:    boolean,           // Flag telling if the exit is inactive, preventing it from being listed and used.
+	 *     transparent?: boolean,           // Flag telling if the exit is transparent, allowing you to see awake characters in the target room.
+	 *     order?:       i32|i32u|i64|i64u, // Sort order of the exit with 0 being the first listed. Ignored if the exit is hidden or inactive.
+	 * }
+	 * ```
+	 *
+	 * @example
+	 * ```ts
+	 * // Setting a room exit to be active
+	 * Room.setExit(exitId, new Map<string, boolean>().set("inactive", false))
+	 * ```
+	 *
 	 * @param exitId - Exit ID.
-	 * @param {object} [fields] Exit fields to update.
-	 * @param {string} [fields.name] Name of the exit.
-	 * @param {string[]} [fields.keys] Exit keywords used with the go command.
-	 * @param {boolean} [fields.leaveMsg] Message seen by the origin room. Usually in present tense (eg. "leaves ...").
-	 * @param {boolean} [fields.arriveMsg] Message seen by the arrival room. Usually in present tense (eg. "arrives from ...").
-	 * @param {boolean} [fields.travelMsg] 	Message seen by the exit user. Usually in present tense (eg. "goes ...").
-	 * @param {ExitIcon} [fields.icon] Icon for the exit.
-	 * @param {ExitNav} [fields.nav] Navigation direction for the exit.
-	 * @param {boolean} [fields.hidden] Flag telling if the exit is hidden, preventing it from being listed.
-	 * @param {boolean} [fields.inactive] Flag telling if the exit is inactive, preventing it from being listed and used.
-	 * @param {boolean} [fields.transparent] Flag telling if the exit is transparent, allowing you to see awake characters in the target room.
-	 * @param {i32|i32u|i64|i64u} [fields.order] Sort order of the exit with 0 being the first listed. Ignored if the exit is hidden or inactive.
+	 * @param fields Exit fields to update as an object that can be stringified to json.
 	 */
 	function setExit<T>(exitId: ID, fields: T): void;
 	/**

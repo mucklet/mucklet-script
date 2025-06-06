@@ -2359,8 +2359,6 @@ Pattern is a string describing the general command structure, and may
 contain \<Fields\> parts. Any field defined in the pattern must have a
 corresponding field entry.
 
- *
-
 See also: [Writing scripts - Custom commands](https://github.com/mucklet/mucklet-script/blob/master/docs/writingscripts-customcommands.md)
 
 <h4>Parameters</h4>
@@ -2488,7 +2486,7 @@ Gets an exit in the room by keyword.
 
 <h4>Parameters</h4>
 
-* `keyword` <i>(string)</i>
+* `keyword` <i>(string)</i>: Exit keyword.
 
 <h4>Returns</h4>
 
@@ -2645,13 +2643,37 @@ Room.setExit<T>(exitId: ID, fields: T): void
 
 Set exit information.
 
-The parameters must be an object that may be converted to json with the
-following paramters. Any other fields will be ignored.
+The _field_ parameter must an object that can be converted to a json
+object string with [JSON.stringify](#function-json-stringify), containing the following
+fields. Any other fields will be ignored.
+
+```ts
+{
+    name?:        string,            // Name of the exit.
+    keys?:        string[],          // Exit keywords used with the go command.
+    leaveMsg?:    boolean,           // Message seen by the origin room. Usually in present tense (eg. "leaves ...").
+    arriveMsg?:   boolean,           // Message seen by the arrival room. Usually in present tense (eg. "arrives from ...").
+    travelMsg?:   boolean,           // Message seen by the exit user. Usually in present tense (eg. "goes ...").
+    icon?:        ExitIcon,          // Icon for the exit.
+    nav?:         ExitNav,           // Navigation direction for the exit.
+    hidden?:      boolean,           // Flag telling if the exit is hidden, preventing it from being listed.
+    inactive?:    boolean,           // Flag telling if the exit is inactive, preventing it from being listed and used.
+    transparent?: boolean,           // Flag telling if the exit is transparent, allowing you to see awake characters in the target room.
+    order?:       i32|i32u|i64|i64u, // Sort order of the exit with 0 being the first listed. Ignored if the exit is hidden or inactive.
+}
+```
+
+<h4>Examples</h4>
+
+```ts
+// Setting a room exit to be active
+Room.setExit(exitId, new Map<string, boolean>().set("inactive", false))
+```
 
 <h4>Parameters</h4>
 
 * `exitId` <i>([ID](#type-id))</i>: Exit ID.
-* `fields` <i>(T)</i>: Exit fields to update.
+* `fields` <i>(T)</i>: Exit fields to update as an object that can be stringified to json.
 
 
 ---
@@ -2664,12 +2686,40 @@ Room.setRoom<T>(fields: T): void
 
 Set room information.
 
-The parameters must be an object that may be converted to json with the
-following paramters. Any other fields will be ignored.
+
+The _field_ parameter must an object that can be converted to a json
+object string with [JSON.stringify](#function-json-stringify), containing the following
+fields. Any other fields will be ignored.
+
+```ts
+{
+    name?:                     string,   // Room name.
+    desc?:                     string,   // Room description.
+    isDark?:                   boolean,  // IsDark flags if other character can be seen or whispered to in the room.
+    isQuiet?:                  boolean,  // IsQuiet flags if a room is quiet and won't allow communication.
+    isHome?:                   boolean,  // IsHome flags if the room can be set as home by others.
+    isTeleport?:               boolean,  // IsTeleport flags if the room can be added as a teleport node by others.
+    isInstance?:               boolean,  // IsInstance flags if the room creates an instance.
+    autosweep?:                boolean,  // Autosweep flags if sleepers in the room should be sent home automatically.
+    autosweepDelay?:           Duration, // AutosweepDelay is the time in milliseconds until a sleeper is swept.
+    customTeleportMsgs?:       boolean,  // CustomTeleportMsgs flags if the room uses custom teleport messages.
+    overrideCharTeleportMsgs?: boolean,  // OverrideCharTeleportMsgs flags if the custom teleport messages should override any set character teleport messages.
+    teleportLeaveMsg?:         object,   // Custom teleport message shown when someone teleports away from the room.
+    teleportArriveMsg?:        object,   // Custom teleport message shown when someone teleports into the room.
+    teleportTravelMsg?:        object,   // Custom teleport message shown to the character teleporting into the room.
+}
+```
+
+<h4>Examples</h4>
+
+```ts
+// Setting the room to be dark
+Room.setRoom(new Map<string, boolean>().set("isDark", true))
+```
 
 <h4>Parameters</h4>
 
-* `fields` <i>(T)</i>: Room fields to update.
+* `fields` <i>(T)</i>: Room fields to update as an object that can be stringified to json.
 
 
 ---

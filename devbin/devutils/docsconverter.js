@@ -528,6 +528,10 @@ export default class DocsConverter {
 		if (seeComments?.length) {
 			s.push(seeComments.map(c => "See also: " + c).join("  \n"));
 		}
+		const exampleComments = this._formatExampleComments(comment);
+		if (exampleComments?.length) {
+			s.push(`<h4>Examples</h4>\n\n` + exampleComments.join("\n\n"));
+		}
 		return s.join("\n\n");
 	}
 
@@ -551,6 +555,15 @@ export default class DocsConverter {
 		}
 		return null;
 	}
+
+	_formatExampleComments(comment) {
+		const tags = comment?.blockTags?.filter(o => o.tag == "@example");
+		if (tags?.length) {
+			return tags.map(t => this._formatText(t.content));
+		}
+		return null;
+	}
+
 
 	/**
 	 * Formats a text array.
