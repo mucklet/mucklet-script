@@ -4,7 +4,8 @@
   "scripts": {
     "test": "node tests",
     "build": "asc scripts/index.ts --runtime minimal --exportRuntime --lib ./lib/host.ts --lib ./lib/env.ts",
-    "build:types": "node devbin/buildtypes.js"
+    "build:types": "node devbin/buildtypes.js",
+    "build:docs": "node devbin/builddocs.js"
   },
   "author": "Accipiter Nisus <accipiter@gmail.com>",
   "license": "Apache-2.0",
@@ -43,6 +44,8 @@
   "devDependencies": {
     "eslint": "^9.18.0",
     "eslint-plugin-jsdoc": "^50.6.2",
-    "jsdoc": "^4.0.4"
+    "jsdoc": "^4.0.4",
+    "typedoc": "^0.28.4",
+    "typescript": "^5.8.3"
   }
 }

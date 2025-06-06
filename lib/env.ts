@@ -10,6 +10,9 @@ export declare namespace Room {
 	@external("env", "room.describe")
 	export function describe(msg: string): void
 
+	@external("env", "room.privateDescribe")
+	export function privateDescribe(msg: string, targetCharIds: string[]): void
+
 	@external("env", "room.getRoom")
 	export function getRoom(): string
 
@@ -68,6 +71,9 @@ export declare namespace Script {
 
 	@external("env", "script.cancelPost")
 	export function cancelPost(scheduleId: string): boolean
+
+	@external("env", "script.getChar")
+	export function getChar(charId: string): string | null
 }
 
 export declare namespace Store {
@@ -121,4 +127,7 @@ export declare namespace CmdAction {
 
 	@external("env", "cmdAction.error")
 	export function error(actionId: i32, msg: string): void
+
+	@external("env", "cmdAction.useExit")
+	export function useExit(actionId: i32, exitId: string): void
 }

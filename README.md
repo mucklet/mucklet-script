@@ -1,7 +1,7 @@
 <h2 align="center"><b>Mucklet Script</b></h2>
 
 A development cli tool used to build, test, and deploy room scripts for
-Mucklet.com, a textual world of roleplay.
+[Mucklet.com](https://mucklet.com) realms, creating textual worlds of roleplay.
 
 ## Quick start
 
@@ -24,13 +24,16 @@ npx mucklet-script
 ## Documentation
 
 * [Configuration](docs/configuration.md)
+* [Mucklet Script Documentation](docs/documentation.md)
+
+## Guides
+
 * [Writing scripts - Custom commands](docs/writingscripts-customcommands.md)
 
 ## Script examples
 
 Script file | Description
 --- | ---
-[hello_world.ts](./examples/hello_world.ts) | A Hello world script with informative comments on a script's entry functions.
 [ambience.ts](./examples/ambience.ts) | A script showing ambient descriptions with random time intervals.
 [day_and_night.ts](./examples/day_and_night.ts) | A script cycling between a "day" and "night" room profile based on real time.
 [intercom_inside.ts](./examples/intercom_inside.ts) | An intercom script allowing communication with another room running the [intercom_outside.ts](./examples/intercom_outside.ts) script.
@@ -47,37 +50,5 @@ The _mucklet-script_ cli tool lets you:
 * deploy scripts to a Mucklet realm
 * fetch and display script console logs
 
-Scripts are written using [AssemblyScript](https://www.assemblyscript.org/), a
-statically typed language similar to TypeScript, sharing many of its features
-and standard library functions (including its _.ts_ suffix).
-
-### Standard library
-
-In addition to the [AssemblyScript's standard
-library](https://www.assemblyscript.org/stdlib/globals.html), Mucklet room
-scripts also includes [json-as](https://github.com/JairusSW/as-json) available
-through the `JSON` namespace:
-```typescript
-JSON.stringify("Hello, world!")
-```
-
-The `Room` namespace provides functions for interacting with the room:
-```typescript
-Room.describe("A bird is chirping from a nearby tree.")
-```
-
-The `Script` namespace provides functions for sending and receiving messages
-from other scripts.
-```typescript
-Script.post(destAddr, "newVisitor")
-```
-
-The `Store` namespace provides functions for setting, getting, and iterating
-over data from a persistent key/value store.
-```typescript
-Store.setString("foo", "bar")
-let str = Store.getString("foo")
-```
-
-(Room scripting is a restricted feature, only available to _supporters_ and
-_pioneers_. Deploying scripts may not be available to everyone.)
+See the [Mucklet Script Documentation](docs/documentation.md) for guides, examples,
+and API references.
