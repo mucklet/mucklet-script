@@ -4,7 +4,7 @@ Room scripts may add custom commands that can be used by characters in that room
 
 **Example adding a custom command and responding to use:**
 
-```typescript
+```ts
 export function onActivate(): void {
 	// Add a command, "push button", with keyword "pushButton".
 	Room.addCommand("pushButton", new Command("push button"))
@@ -20,7 +20,7 @@ export function onCommand(addr: string, cmdAction: CmdAction): void {
 
 ## Command pattern
 A command _pattern_ is the text string passed to the `Command` constructor:
-```typescript
+```ts
 new Command("this is a pattern")
 ```
 
@@ -57,7 +57,7 @@ välj rödräv  // Non-ascii characters
 > It is allowed to use patterns matching existing client commands. However, the client will require that the player prefixes the commands with the word `do` to prevent conflict.
 >
 > For the following command:
-> ```typescript
+> ```ts
 > Room.addCommand("mySay", new Command("say hi"))
 > ```
 > The user must type:
@@ -69,7 +69,7 @@ välj rödräv  // Non-ascii characters
 ## Field types
 
 Each `<Field>` must have a field definition, explaining what type of field it is:
-```typescript
+```ts
 new Command("send <Message>", "Sends a message to all rooms in the area.")
 	.field("Message", new Field.Text("The message to send.")
 		.setSpanLines(true)
@@ -96,7 +96,7 @@ For more info on each type, use an IDE that can show type/parameter info for Typ
 When a command is used by a character, the values for the command fields will be included as _JSON_ data to the `onCommand` function, in the `CmdAction.data` property.
 
 **Example getting a message from a Text field**
-```typescript
+```ts
 export function onActivate(): void {
 	// Adding our command on script activation
 	Room.addCommand("send", new Command("send <Message>")
@@ -137,7 +137,7 @@ for the example above could look like:
 When you type commands, more than one command may be (fully or partially) valid for that input. In general, the client will try to find the best match. But in cases where multiple commands match equally well, the client selects the command with the highest _priority_ value passed to the `new Command` constructor.
 
 **Example**
-```typescript
+```ts
 Room.addCommand("sendEmpty", new Command("send empty"), 20)
 Room.addCommand("sendText", new Command("send <Text>")
 	.field("Text", new Field.Text("The text to send.")), 10)
@@ -156,7 +156,7 @@ When using `Field.Char`, it is always a good idea to delimit with a symbol.
 
 **Examples**
 
-```typescript
+```ts
 // Because no symbol is used between "<Color>" and "button", the client will
 // automatically filter out colors containing space.
 Room.addCommand("pushColorButton", new Command("push <Color> button")

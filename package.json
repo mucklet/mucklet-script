@@ -1,10 +1,11 @@
 {
   "name": "mucklet-script",
-  "version": "1.65.3",
+  "version": "1.66.0",
   "scripts": {
     "test": "node tests",
     "build": "asc scripts/index.ts --runtime minimal --exportRuntime --lib ./lib/host.ts --lib ./lib/env.ts",
-    "build:types": "node devbin/buildtypes.js"
+    "build:types": "node devbin/buildtypes.js",
+    "build:docs": "node devbin/builddocs.js"
   },
   "author": "Accipiter Nisus <accipiter@gmail.com>",
   "license": "Apache-2.0",
@@ -33,9 +34,9 @@
     "tsconfig.json"
   ],
   "dependencies": {
-    "assemblyscript": "^0.27.35",
+    "assemblyscript": "^0.28.2",
     "isomorphic-ws": "^5.0.0",
-    "json-as": "github:anisus/json-as#7eb5b4bd5eef77f1f63704aabfaf07547d7cddf1",
+    "json-as": "github:anisus/json-as#fdccc775552d79bd2d13426e1885d80e33085458",
     "resclient": "^2.5.0",
     "tinyargs": "^0.1.4",
     "visitor-as": "^0.11.4"
@@ -43,6 +44,8 @@
   "devDependencies": {
     "eslint": "^9.18.0",
     "eslint-plugin-jsdoc": "^50.6.2",
-    "jsdoc": "^4.0.4"
+    "jsdoc": "^4.0.4",
+    "typedoc": "^0.28.4",
+    "typescript": "^5.8.3"
   }
 }

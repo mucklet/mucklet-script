@@ -1,3 +1,176 @@
+/**
+ * Mucklet scripts are written in AssemblyScript, a strictly typed
+ * TypeScript-like language. For more info on AssemblyScript, its types, and
+ * standard library, see:
+ *
+ * &nbsp;&nbsp;&nbsp;&nbsp;🔗 [AssemblyScript
+ * Concepts](https://www.assemblyscript.org/concepts.html)
+ *
+ * The standard library of AssemblyScript has been extended with classes and
+ * functions to interact with Mucklet realms. See the [API
+ * references](#api-references) for a complete list of those extensions.
+ *
+ * # Guides
+ *
+ * * [Writing scripts - Custom
+ *   commands](https://github.com/mucklet/mucklet-script/blob/master/docs/writingscripts-customcommands.md)
+ *
+ * # Script examples
+ *
+ * Script file | Description
+ * --- | ---
+ * [ambience.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/ambience.ts) | A script showing ambient descriptions with random time intervals.
+ * [day_and_night.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/day_and_night.ts) | A script cycling between a "day" and "night" room profile based on real time.
+ * [intercom_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_inside.ts) | An intercom script allowing communication with another room running the [intercom_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_outside.ts) script.
+ * [intercom_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_outside.ts) | An intercom script allowing communication with another room running the [intercom_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_inside.ts) script.
+ * [lock_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_inside.ts) | A script that locks a door preventing others from using an exit in the room running the [lock_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_outside.ts) script.
+ * [lock_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_outside.ts) | A script that prevents characters from using an exit locked by the script running the [lock_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_inside.ts) script.
+ * [secret_exit.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/secret_exit.ts) | A script that reveals a secret passage when the password "tapeworm" is spoken.
+ *
+ * # Entry points
+ *
+ * The script entry points are exported functions that are called on different
+ * types of events, such as the script activating, someone entering a room, or a
+ * command being called.
+ *
+ * The only entry point that is required is [onActivate](#onactivate).
+ *
+ *
+ * ## onActivate
+ *
+ * _onActivate_ is called each time a script is activated or updated. It is
+ * primarily used to call {@link Script.listen}, {@link Room.listen}, or
+ * {@link Room.addCommand}, to have the script listening for events, messages,
+ * or commands.
+ *
+ * When a script is updated, previous listeners, (e.g. {@link Room.listen}),
+ * commands ({@link Room.addCommand}), or scheduled posts ({@link Script.post}
+ * with delay), will be removed, and [onActivate](#onactivate) will be called
+ * again on the new script version.
+ *
+ * ```ts
+ * // Send a describe to the room and log a message to the console on activation.
+ * export function onActivate(): void {
+ *     Room.describe("Hello, world!");
+ *     console.log("Hello, console!");
+ * }
+ * ```
+ *
+ * ## onRoomEvent
+ *
+ * _onRoomEvent_ is called when an event occurs in the room, such as a _say_,
+ * _arrive_, or _sleep_. It requires that {@link Room.listen} has been called
+ * earlier, usually in the [onActivate](#onactivate) function.
+ *
+ * ```ts
+ * // Check the event type and decode the event.
+ * export function onRoomEvent(
+ *     addr: string, // Address of this script instance receiving the event.
+ *     ev: string,   // Event encoded as a json string.
+ * ): void {
+ *     const eventType = Event.getType(ev);
+ *     if (eventType == 'say') {
+ *         const say = JSON.parse<Event.Say>(ev);
+ *         // Handle the say event
+ *     }
+ * }
+ * ```
+ *
+ * ## onMessage
+ *
+ * _onMessage_ is called when another script sends a message to this script,
+ * using {@link Script.post}. It requires that {@link Script.listen} has been
+ * called earlier, usually in the [onActivate](#onactivate) function.
+ *
+ * ```ts
+ * // Receive a message from another script to change room profile
+ * export function onMessage(
+ *     addr: string,        // Address of this script instance receiving the message.
+ *     topic: string,       // Topic of the message. Determined by the sender.
+ *     data: string | null, // JSON encoded data of the message or null. Determined by the sender.
+ *     sender: string,      // Address of the sending script instance.
+ * ): void {
+ *     if (topic == "changeProfile") {
+ *         Room.setProfile(JSON.parse<string>(data))
+ *     }
+ * }
+ * ```
+ *
+ * ## onCharEvent
+ *
+ * _onCharEvent_ is called when a character enters a room, leaves a room, or
+ * changes any of its properties while inside the room. It requires that
+ * {@link Room.listenCharEvent} has been called earlier, usually in the
+ * [onActivate](#onactivate) function.
+ *
+ * ```ts
+ * // Output to log when a character arrives or leaves
+ * export function onCharEvent(
+ *     addr: string,          // Address of this script instance receiving the event.
+ *     charId: string,        // ID of character.
+ *     after: string | null,  // Character state after the event encoded as a json string, or null if the character left the room.
+ *     before: string | null, // Character state before the event encoded as a json string, or null if the character entered the room.
+ * ): void {
+ *     if (after == null && before != null) {
+ *         // If after is null, the character left
+ *         const char = JSON.parse<Room.Char>(before);
+ *         console.log(`${char.name} left.`)
+ *     }
+ *     if (before == null && after != null) {
+ *         // If before is null, the character arrived
+ *         const char = JSON.parse<Room.Char>(after);
+ *         console.log(`${char.name} arrived.`)
+ *     }
+ * }
+ * ```
+ *
+ * ## onExitUse
+ *
+ * _onExitUse_ is called when a character tries to use an exit. It requires that
+ * {@link Room.listenExit} has been called earlier, usually in the
+ * [onActivate](#onactivate) function. The script should call either
+ * {@link ExitAction.cancel} or {@link ExitAction.useExit} to determine what
+ * should happen. If neither method is called, the action will timeout after 1
+ * second, automatically canceling the exit use with a default message.
+ *
+ * ```ts
+ * // Prevent anyone from using an exit
+ * export function onExitUse(
+ *     addr: string,           // Address of this script instance receiving the event.
+ *     exitAction: ExitAction, // Exit action object.
+ * ): void {
+ *     exitAction.cancel("The door seems to be locked.");
+ * }
+ * ```
+ *
+ * ## onCommand
+ *
+ * _onCommand_ is called when a character uses a custom command. It requires
+ * that {@link Room.addCommand} has been called earlier to register the command,
+ * usually in the [onActivate](#onactivate) function. The script may send a
+ * response to the caller using either {@link CmdAction.info},
+ * {@link CmdAction.error}, or {@link CmdAction.useExit}, but it is not
+ * required. The response must be sent within 1 second from the call.
+ *
+ * ```ts
+ * // Adding a ping command on activation
+ * export function onActivate(): void {
+ *     Room.addCommand("ping", new Command("send ping", "Sends a ping to the script.");
+ * }
+ *
+ * // Adds a "send ping" command that responds with an info message
+ * export function onCommand(
+ *     addr: string,         // Address of this script instance receiving the action.
+ *     cmdAction: CmdAction, // Command action object.
+ * ): void {
+ *     cmdAction.info("Pong!");
+ * }
+ * ```
+ *
+ * @packageDocumentation
+ */
+
+
 import {
 	Room as room_binding,
 	Script as script_binding,
@@ -15,58 +188,53 @@ export type ID = string;
 export type Timestamp = i64;
 /** Duration in milliseconds. */
 export type Duration = i64;
-/** Char state */
-export namespace CharState {
-	export const Asleep = i32(0);
-	export const Awake = i32(1)
-	export const Dazed = i32(2);
-	export const Any = i32(255);
+/** States that a character may have. */
+export const enum CharState {
+	Asleep = 0,
+	Awake = 1,
+	Dazed = 2,
+	Any = 255,
 }
-export type CharState = i32;
-/** Char idle level */
-export namespace IdleLevel {
-	export const Asleep = i32(0);
-	export const Active = i32(1);
-	export const Idle = i32(2);
-	export const Inactive = i32(3);
+/** Idle levels that a character may have. */
+export const enum IdleLevel {
+	Asleep = 0,
+	Active = 1,
+	Idle = 2,
+	Inactive = 3,
 }
-export type IdleLevel = i32;
-/** RP state */
-export namespace RPState {
-	export const None = i32(0);
-	export const LFRP = i32(1);
+/** Roleplaying state that a character may have. */
+export const enum RPState {
+	None = 0,
+	LFRP = 1,
 }
-export type RPState = i32;
-/** Exit navigation direction */
-export namespace ExitNav {
-	export const None = i32(0)
-	export const North = i32(1)
-	export const NorthEast = i32(2)
-	export const East = i32(3)
-	export const SouthEast = i32(4)
-	export const South = i32(5)
-	export const SouthWest = i32(6)
-	export const West = i32(7)
-	export const NorthWest = i32(8)
+/** Exit navigation directions. */
+export const enum ExitNav {
+	None = 0,
+	North = 1,
+	NorthEast = 2,
+	East = 3,
+	SouthEast = 4,
+	South = 5,
+	SouthWest = 6,
+	West = 7,
+	NorthWest = 8,
 }
-export type ExitNav = i32;
-/** Exit navigation icon */
-export namespace ExitIcon {
-	export const None = i32(0)
-	export const North = i32(1)
-	export const NorthEast = i32(2)
-	export const East = i32(3)
-	export const SouthEast = i32(4)
-	export const South = i32(5)
-	export const SouthWest = i32(6)
-	export const West = i32(7)
-	export const NorthWest = i32(8)
-	export const Up = i32(9)
-	export const Down = i32(10)
-	export const In = i32(11)
-	export const Out = i32(12)
+/** Exit navigation icon. */
+export const enum ExitIcon {
+	None = 0,
+	North = 1,
+	NorthEast = 2,
+	East = 3,
+	SouthEast = 4,
+	South = 5,
+	SouthWest = 6,
+	West = 7,
+	NorthWest = 8,
+	Up = 9,
+	Down = 10,
+	In = 11,
+	Out = 12,
 }
-export type ExitIcon = i32;
 
 // @ts-expect-error
 @inline
@@ -82,6 +250,9 @@ function keyToBuffer<T>(key: T): ArrayBuffer {
 
 /**
  * ExitAction is an action representing an intercepted use of an exit.
+ *
+ * It is passed to [onExitUse](#onexituse) entry point when a character tries to
+ * use an exit that is being listen to with {@link Room.listenExit}.
  */
 export class ExitAction {
 	/** Action ID */
@@ -140,6 +311,17 @@ export class CmdAction {
 	 */
 	error(msg: string): void {
 		cmdaction_binding.error(this.actionId, msg);
+	}
+
+	/**
+	 * Responds to the command action by making the character use an exit.
+	 *
+	 * The exit may be hidden or inactive. May not be used in combination with
+	 * info or error.
+	 * @param exitId Exit ID.
+	 */
+	useExit(exitId: ID): void {
+		cmdaction_binding.useExit(this.actionId, exitId);
 	}
 }
 
@@ -283,6 +465,7 @@ export namespace Field {
 		/**
 		 * Sets span lines flag. Is false by default.
 		 * @param spanLines - Flag telling if the text can be spanned across multiple lines.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setSpanLines(spanLines: boolean): this {
 			this.spanLines = spanLines;
@@ -292,6 +475,7 @@ export namespace Field {
 		/**
 		 * Sets flag to spellCheck text. Is true by default.
 		 * @param spellCheck - Flag telling if the text should be checked for spelling errors.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setSpellCheck(spellCheck: boolean): this {
 			this.spellCheck = spellCheck;
@@ -301,6 +485,7 @@ export namespace Field {
 		/**
 		 * Sets flag to format text while typing. Is false by default.
 		 * @param formatText - Flag telling the text should be formatted while typing.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setFormatText(formatText: boolean): this {
 			this.formatText = formatText;
@@ -311,6 +496,7 @@ export namespace Field {
 		 * Sets text min length. Must be smaller or equal to max length unless
 		 * max length is set to zero (0).. Is 0 by default.
 		 * @param minLength - Min length of text.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setMinLength(minLength: u32): this {
 			this.minLength = minLength;
@@ -320,6 +506,7 @@ export namespace Field {
 		/**
 		 * Sets text maximum length. Zero (0) means server max length. Is 0 by default.
 		 * @param maxLength - Max length of text.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setMaxLength(maxLength: u32): this {
 			this.maxLength = maxLength;
@@ -423,6 +610,7 @@ export namespace Field {
 		/**
 		 * Sets integer min value. Must be smaller or equal to max value.
 		 * @param min - Min value of integer.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setMin(min: i64): this {
 			this.min = min;
@@ -433,6 +621,7 @@ export namespace Field {
 		/**
 		 * Sets integer max value. Must be greater or equal to min value.
 		 * @param max - Max value of integer
+		 * @returns This instance, allowing method chaining.
 		 */
 		setMax(max: i64): this {
 			this.max = max;
@@ -477,6 +666,7 @@ export namespace Field {
 		 * Sets float min value. Must be smaller than (or equal if both are inclusive) to max value.
 		 * @param min - Min value of float.
 		 * @param inclusive - Flag to tell if min value is inclusive (>=) on true, or exclusive (>) on false.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setMin(min: f64, inclusive: bool): this {
 			this.min = min;
@@ -488,6 +678,7 @@ export namespace Field {
 		 * Sets float max value. Must be greater than (or equal if both are inclusive) to min value.
 		 * @param max - Max value of float.
 		 * @param inclusive - Flag to tell if max value is inclusive (<=) on true, or exclusive (<) on false.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setMax(max: f64, inclusive: bool): this {
 			this.max = max;
@@ -551,6 +742,7 @@ export namespace Field {
 
 		/**
 		 * Sets inRoom flag, requiring the character to be in the room.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setInRoom(): this {
 			this.inRoom = true;
@@ -558,7 +750,8 @@ export namespace Field {
 		}
 
 		/**
-		 * Sets state that the character must be in. Default is CharState.Any.
+		 * Sets state that the character must be in. Default is {@link CharState.Any}.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setState(state: CharState): this {
 			this.state = state;
@@ -596,6 +789,7 @@ export namespace Field {
 
 		/**
 		 * Adds a single item to the list.
+		 * @returns This instance, allowing method chaining.
 		 */
 		addItem(item: string): this {
 			this.items.push(item);
@@ -605,6 +799,7 @@ export namespace Field {
 		/**
 		 * Sets an array of list items, replacing any previously set items.
 		 * @param items Array of list items.
+		 * @returns This instance, allowing method chaining.
 		 */
 		setItems(items: Array<string>): this {
 			this.items = items;
@@ -620,17 +815,19 @@ export interface CommandField {
 	/** Returns the help description of the command field. */
 	getDesc(): string;
 
-	/** Returns the options of the command field as a JSOn encoded string. */
+	/** Returns the options of the command field as a JSON encoded string. */
 	getOpts(): string | null;
 }
 
 /**
- * Command is an object that represents a custom command.
+ * Command class is a representation of a custom command, and is used as an
+ * argument when calling {@link Room.addCommand}.
+ * @see {@link https://github.com/mucklet/mucklet-script/blob/master/docs/writingscripts-customcommands.md | Writing scripts - Custom commands}
  */
 export class Command {
 	private fieldDefs: Map<string, string> = new Map<string, string>();
 	/**
-	 * Constructor of the Command instance.
+	 * Creates a new instance of the {@link Command} class.
 	 */
 	constructor(public pattern: string, public desc: string = "") {}
 
@@ -638,6 +835,7 @@ export class Command {
 	 * Sets the definition for a command field.
 	 * @param key - Field <key> as found in command pattern.
 	 * @param def - Field definition.
+	 * @returns This instance, allowing method chaining.
 	 */
 	field(key: string, def: CommandField): Command {
 		assert(!this.fieldDefs.has(key), `command already has definition for field "${key}"`);
@@ -796,7 +994,7 @@ export namespace Room {
 	 * for any room instance. Room events will be sent to `onRoomEvent` for the
 	 * instance.
 	 * @param instance - Instance or null for the non-instance.
-	 * @returns True if a new listener was added, otherwise false.
+	 * @returns Returns true if a new listener was added, otherwise false.
 	 */
 	export function listen(instance: string | null = null): boolean {
 		return room_binding.listen(0 /** room event **/, instance);
@@ -870,6 +1068,17 @@ export namespace Room {
 	}
 
 	/**
+	 * Sends a "privateDescribe" event to one or more target characters in the
+	 * current room instance. A private describe can only be seen by the
+	 * targeted characters.
+	 */
+	export function privateDescribe(msg: string, targetCharIds: ID[]): void {
+		if (targetCharIds.length > 0) {
+			room_binding.privateDescribe(msg, targetCharIds);
+		}
+	}
+
+	/**
 	 * Get detailed room information, such as description and settings.
 	 */
 	export function getDetails(): RoomDetails  {
@@ -879,23 +1088,37 @@ export namespace Room {
 	/**
 	 * Set room information.
 	 *
-	 * The parameters must be an object that may be converted to json with the
-	 * following paramters. Any other fields will be ignored.
-	 * @param {object} [fields] Room fields to update.
-	 * @param {string} [fields.name] Room name.
-	 * @param {string} [fields.desc]  Room description.
-	 * @param {boolean} [fields.isDark] IsDark flags if other character can be seen or whispered to in the room.
-	 * @param {boolean} [fields.isQuiet] IsQuiet flags if a room is quiet and won't allow communication.
-	 * @param {boolean} [fields.isHome] IsHome flags if the room can be set as home by others.
-	 * @param {boolean} [fields.isTeleport] IsTeleport flags if the room can be added as a teleport node by others.
-	 * @param {boolean} [fields.isInstance] IsInstance flags if the room creates an instance.
-	 * @param {boolean} [fields.autosweep] Autosweep flags if sleepers in the room should be sent home automatically.
-	 * @param {Duration} [fields.autosweepDelay] AutosweepDelay is the time in milliseconds until a sleeper is swept.
-	 * @param {boolean} [fields.customTeleportMsgs] CustomTeleportMsgs flags if the room uses custom teleport messages.
-	 * @param {boolean} [fields.overrideCharTeleportMsgs] OverrideCharTeleportMsgs flags if the custom teleport messages should override any set character teleport messages.
-	 * @param {object} [fields.teleportLeaveMsg] // Custom teleport message shown when someone teleports away from the room.
-	 * @param {object} [fields.teleportArriveMsg] // Custom teleport message shown when someone teleports into the room.
-	 * @param {object} [fields.teleportTravelMsg] // Custom teleport message shown to the character teleporting into the room.
+	 *
+	 * The _field_ parameter must an object that can be converted to a json
+	 * object string with {@link JSON.stringify}, containing the following
+	 * fields. Any other fields will be ignored.
+	 *
+	 * ```ts
+	 * {
+	 *     name?:                     string,   // Room name.
+	 *     desc?:                     string,   // Room description.
+	 *     isDark?:                   boolean,  // IsDark flags if other character can be seen or whispered to in the room.
+	 *     isQuiet?:                  boolean,  // IsQuiet flags if a room is quiet and won't allow communication.
+	 *     isHome?:                   boolean,  // IsHome flags if the room can be set as home by others.
+	 *     isTeleport?:               boolean,  // IsTeleport flags if the room can be added as a teleport node by others.
+	 *     isInstance?:               boolean,  // IsInstance flags if the room creates an instance.
+	 *     autosweep?:                boolean,  // Autosweep flags if sleepers in the room should be sent home automatically.
+	 *     autosweepDelay?:           Duration, // AutosweepDelay is the time in milliseconds until a sleeper is swept.
+	 *     customTeleportMsgs?:       boolean,  // CustomTeleportMsgs flags if the room uses custom teleport messages.
+	 *     overrideCharTeleportMsgs?: boolean,  // OverrideCharTeleportMsgs flags if the custom teleport messages should override any set character teleport messages.
+	 *     teleportLeaveMsg?:         object,   // Custom teleport message shown when someone teleports away from the room.
+	 *     teleportArriveMsg?:        object,   // Custom teleport message shown when someone teleports into the room.
+	 *     teleportTravelMsg?:        object,   // Custom teleport message shown to the character teleporting into the room.
+	 * }
+	 * ```
+	 *
+	 * @example
+	 * ```ts
+	 * // Setting the room to be dark
+	 * Room.setRoom(new Map<string, boolean>().set("isDark", true))
+	 * ```
+	 *
+	 * @param {object} fields Room fields to update as an object that can be stringified to json.
 	 */
 	export function setRoom<T>(fields: T): void {
 		let dta = JSON.stringify(fields);
@@ -934,7 +1157,6 @@ export namespace Room {
 	 * character most recently entering the room.
 	 * @param state - State of the characters to iterate over.
 	 * @param reverse - Flag to reverse the iteration direction, starting with the character that has been in the room the longest.
-	 * @returns Character iterator.
 	 */
 	export function charIterator(state: CharState = CharState.Any, reverse: boolean = false): CharIterator {
 		return new CharIterator(room_binding.charIterator(state, reverse));
@@ -942,17 +1164,15 @@ export namespace Room {
 
 	/**
 	 * Gets an iterator for the exits in the room. Order is undefined.
-	 * @returns Exit iterator.
 	 */
 	export function exitIterator(): ExitIterator {
 		return new ExitIterator(room_binding.exitIterator());
 	}
 
-
 	/**
 	 * Gets a character in the room by ID.
 	 * @param charId - Character ID.
-	 * @returns Char object or null if the character is not found in the room.
+	 * @returns {@link Char} object or null if the character is not found in the room.
 	 */
 	export function getChar(charId: ID): Char | null {
 		const dta = room_binding.getChar(charId)
@@ -964,8 +1184,8 @@ export namespace Room {
 
 	/**
 	 * Gets an exit in the room by keyword.
-	 * @param exitId - Exit ID.
-	 * @returns Exit object or null if the exit is not found in the room.
+	 * @param keyword - Exit keyword.
+	 * @returns {@link Exit} object or null if the exit is not found in the room.
 	 */
 	export function getExit(keyword: string): Exit | null {
 		const dta = room_binding.getExit(keyword, true)
@@ -978,7 +1198,7 @@ export namespace Room {
 	/**
 	 * Gets an exit in the room by ID.
 	 * @param exitId - Exit ID.
-	 * @returns Exit object or null if the exit is not found in the room.
+	 * @returns {@link Exit} object or null if the exit is not found in the room.
 	 */
 	export function getExitById(exitId: ID): Exit | null {
 		const dta = room_binding.getExit(exitId, false)
@@ -989,8 +1209,7 @@ export namespace Room {
 	}
 
 	/**
-	 * Gets the exit order of visible exits in the room as an array of IDs.
-	 * @returns Exit object or null if the exit is not found in the room.
+	 * Gets the exit order of visible exits in the room as an array of {@link ID} values.
 	 */
 	export function getExitOrder(): ID[] {
 		return room_binding.getExitOrder();
@@ -999,21 +1218,34 @@ export namespace Room {
 	/**
 	 * Set exit information.
 	 *
-	 * The parameters must be an object that may be converted to json with the
-	 * following paramters. Any other fields will be ignored.
+	 * The _field_ parameter must an object that can be converted to a json
+	 * object string with {@link JSON.stringify}, containing the following
+	 * fields. Any other fields will be ignored.
+	 *
+	 * ```ts
+	 * {
+	 *     name?:        string,            // Name of the exit.
+	 *     keys?:        string[],          // Exit keywords used with the go command.
+	 *     leaveMsg?:    boolean,           // Message seen by the origin room. Usually in present tense (eg. "leaves ...").
+	 *     arriveMsg?:   boolean,           // Message seen by the arrival room. Usually in present tense (eg. "arrives from ...").
+	 *     travelMsg?:   boolean,           // Message seen by the exit user. Usually in present tense (eg. "goes ...").
+	 *     icon?:        ExitIcon,          // Icon for the exit.
+	 *     nav?:         ExitNav,           // Navigation direction for the exit.
+	 *     hidden?:      boolean,           // Flag telling if the exit is hidden, preventing it from being listed.
+	 *     inactive?:    boolean,           // Flag telling if the exit is inactive, preventing it from being listed and used.
+	 *     transparent?: boolean,           // Flag telling if the exit is transparent, allowing you to see awake characters in the target room.
+	 *     order?:       i32|i32u|i64|i64u, // Sort order of the exit with 0 being the first listed. Ignored if the exit is hidden or inactive.
+	 * }
+	 * ```
+	 *
+	 * @example
+	 * ```ts
+	 * // Setting a room exit to be active
+	 * Room.setExit(exitId, new Map<string, boolean>().set("inactive", false))
+	 * ```
+	 *
 	 * @param exitId - Exit ID.
-	 * @param {object} [fields] Exit fields to update.
-	 * @param {string} [fields.name] Name of the exit.
-	 * @param {string[]} [fields.keys] Exit keywords used with the go command.
-	 * @param {boolean} [fields.leaveMsg] Message seen by the origin room. Usually in present tense (eg. "leaves ...").
-	 * @param {boolean} [fields.arriveMsg] Message seen by the arrival room. Usually in present tense (eg. "arrives from ...").
-	 * @param {boolean} [fields.travelMsg] 	Message seen by the exit user. Usually in present tense (eg. "goes ...").
-	 * @param {ExitIcon} [fields.icon] Icon for the exit.
-	 * @param {ExitNav} [fields.nav] Navigation direction for the exit.
-	 * @param {boolean} [fields.hidden] Flag telling if the exit is hidden, preventing it from being listed.
-	 * @param {boolean} [fields.inactive] Flag telling if the exit is inactive, preventing it from being listed and used.
-	 * @param {boolean} [fields.transparent] Flag telling if the exit is transparent, allowing you to see awake characters in the target room.
-	 * @param {i32|i32u|i64|i64u} [fields.order] Sort order of the exit with 0 being the first listed. Ignored if the exit is hidden or inactive.
+	 * @param fields Exit fields to update as an object that can be stringified to json.
 	 */
 	export function setExit<T>(exitId: ID, fields: T): void {
 		let dta = JSON.stringify(fields);
@@ -1024,13 +1256,15 @@ export namespace Room {
 	 * Adds a custom command to the room.
 	 *
 	 * Pattern is a string describing the general command structure, and may
-	 * contain <Fields> and [optional] parts.
+	 * contain \<Fields\> parts. Any field defined in the pattern must have a
+	 * corresponding field entry.
 	 *
-	 * Any field defined in the pattern must have a corresponding field entry.
+	 * @see {@link https://github.com/mucklet/mucklet-script/blob/master/docs/writingscripts-customcommands.md | Writing scripts - Custom commands}
 	 *
 	 * @param keyword - Keyword for the command.
 	 * @param cmd - Command to add.
-	 * @param priority - Priority for sort order (descending) and when two or more commands match the same input. Higher priority is selected first.
+	 * @param priority - Priority for sort order (descending) and when two or
+	 * more commands match the same input. Higher priority is selected first.
 	 */
 	export function addCommand(keyword: string, cmd: Command, priority: u32 = 0): void {
 		return room_binding.addCommand(keyword, cmd.json(), priority);
@@ -1044,7 +1278,7 @@ export namespace Room {
 		return room_binding.removeCommand(keyword);
 	}
 
-	class CharIterator extends BaseIterator {
+	export class CharIterator extends BaseIterator {
 		/**
 		 * Returns the current char. It will abort if the cursor has reached the
 		 * end of the iterator.
@@ -1055,7 +1289,7 @@ export namespace Room {
 		}
 	}
 
-	class ExitIterator extends BaseIterator {
+	export class ExitIterator extends BaseIterator {
 		/**
 		 * Returns the current char. It will abort if the cursor has reached the
 		 * end of the iterator.
@@ -1071,6 +1305,31 @@ export namespace Room {
  * Script API functions.
  */
 export namespace Script {
+
+	/**
+	 * Realm character.
+	 */
+	@json
+	export class Char {
+		/** Character ID. */
+		id: string = "";
+		/** Character name. */
+		name: string = "";
+		/** Character surname. */
+		surname: string = "";
+		/** Character avatar. */
+		avatar: ID = "";
+		/** Character species. */
+		species: string = "";
+		/** Character gender. */
+		gender: string = "";
+		/** Character state. */
+		state: CharState = CharState.Asleep;
+		/** Character idle status. */
+		idle: IdleLevel = IdleLevel.Asleep;
+		/** Character RP state. */
+		rp: RPState = RPState.None;
+	}
 
 	/**
 	 * Starts listening for posted messages from any of the given `addr`
@@ -1123,7 +1382,7 @@ export namespace Script {
 	 * @param topic - Message topic. May be any kind of string.
 	 * @param data - Additional data. Must be valid JSON.
 	 * @param delay - Delay in milliseconds.
-	 * @returns Schedule ID or null if the message was posted without delay of if the receiving script was not listening.
+	 * @returns Schedule {@link ID} or null if the message was posted without delay of if the receiving script was not listening.
 	 */
 	export function post(addr: string, topic: string, data: string | null = null, delay: i64 = 0): ID | null {
 		return script_binding.post(addr, topic, data, delay);
@@ -1144,6 +1403,21 @@ export namespace Script {
 			return false;
 		}
 		return script_binding.cancelPost(scheduleId);
+	}
+
+	/**
+	 * Gets info on an existing character.
+	 *
+	 * To get character description or image info use Room.getChar instead.
+	 * @param charId - Character ID.
+	 * @returns {@link Char} object or null if the character is not found.
+	 */
+	export function getChar(charId: ID): Char | null {
+		const dta = script_binding.getChar(charId)
+		if (dta == null) {
+			return null
+		}
+		return JSON.parse<Char>(dta);
 	}
 }
 
@@ -1424,7 +1698,7 @@ export namespace Store {
 		 *
 		 * Must be called before using the iterator.
 		 * @param {string | ArrayBuffer} prefix - Key prefix used in seek, rewind, and isValid.
-		 * @returns This instance.
+		 * @returns This instance, allowing method chaining.
 		 */
 		withPrefix<T>(prefix: T): Iterator {
 			assert(this.iterator < 0, "withPrefix must be called before using the iterator");
@@ -1437,7 +1711,7 @@ export namespace Store {
 		 * Sets direction of iteration to be in lexiographcially reversed order.
 		 *
 		 * Must be called before using the iterator.
-		 * @returns This instance.
+		 * @returns This instance, allowing method chaining.
 		 */
 		inReverse(): Iterator {
 			assert(this.iterator < 0, "withReverseIteration must be called before using the iterator");

@@ -14,8 +14,14 @@ exec('tsc lib/host.ts --declaration --emitDeclarationOnly --outDir build/types',
 		.replace(/^import \{.*\n/gm, "")      // (delete the line)
 		.replace(/^export \{.*\n/gm, "")      // (delete the line)
 		.replace(/^\s*export \{\};\n/gm, "")  // (delete lines with just `export {};`)
-		.replace(/^(\s*)export /gm, "$1")     // (remove the 'export' word)
-		.replace(/ {4}/g, "\t");              // (replace spaces with tabs)
+		.replace(/^(\s*)export /gm, "$1");     // (remove the 'export' word)
+
+	// Replace spaces with tabs
+	let lastContent = "";
+	while (content != lastContent) {
+		lastContent = content;
+		content = content.replace(/^(\t*) {4}/gm, "$1\t");
+	}
 
 	const destFile = path.join(rootDir, 'lib', 'types', 'host', 'index.d.ts');
 
