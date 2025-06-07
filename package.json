@@ -36,7 +36,7 @@
   "dependencies": {
     "assemblyscript": "^0.28.2",
     "isomorphic-ws": "^5.0.0",
-    "json-as": "^1.1.14",
+    "json-as": "github:anisus/json-as#fdccc775552d79bd2d13426e1885d80e33085458",
     "resclient": "^2.5.0",
     "tinyargs": "^0.1.4",
     "visitor-as": "^0.11.4"
