@@ -1,0 +1,53 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+        cache-dependency-path: package-lock.json
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build docs
+      run: npm run build:docs
+    - name: Fail if documentation.md changed
+      run: |
+        if git diff --exit-code ./docs/documentation.md; then
+          echo "documentation.md unchanged."
+        else
+          echo "::error file=docs/documentation.md::documentation.md is out of date. Please rebuild docs and commit the changes."
+          exit 1
+        fi
+
+    - name: Build types
+      run: npm run build:types
+    - name: Fail if index.d.ts changed
+      run: |
+        if git diff --exit-code ./lib/types/host/index.d.ts; then
+          echo "index.d.ts unchanged."
+        else
+          echo "::error file=lib/types/host/index.d.ts::index.d.ts is out of date. Please rebuild types and commit the changes."
+          exit 1
+        fi
+
+    - name: Test lib
+      run: npm run test:dev
+
+    - name: Build example
+      run: npm run build
+
+    - name: Test example
+      run: npm run test
