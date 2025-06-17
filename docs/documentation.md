@@ -329,6 +329,7 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method from](#method-json-value-from)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method set](#method-json-value-set)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method get](#method-json-value-get)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method as](#method-json-value-as)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method toString](#method-json-value-tostring)  
 
 <h3 id="namespace-room">Room namespace</h3>
@@ -2320,6 +2321,22 @@ get<T>(): T
 ```
 
 Gets the value of the JSON.Value instance.
+
+<h4>Returns</h4>
+
+* <i>(T)</i>: The encapsulated value.
+
+
+---
+
+<h3 id="method-json-value-as">method JSON.Value.as</h3>
+
+```ts
+as<T>(): T
+```
+
+Gets the value of the JSON.Value instance.
+Alias for .get<T>()
 
 <h4>Returns</h4>
 
