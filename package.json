@@ -1,6 +1,6 @@
 {
   "name": "mucklet-script",
-  "version": "1.66.2",
+  "version": "1.66.3",
   "scripts": {
     "test": "node tests",
     "test:dev": "node --test",
@@ -37,7 +37,7 @@
   "dependencies": {
     "assemblyscript": "^0.28.2",
     "isomorphic-ws": "^5.0.0",
-    "json-as": "github:anisus/json-as#27c604b886863f046b5cbf617559b5fbb4bd3973",
+    "json-as": "1.1.17",
     "resclient": "^2.5.0",
     "tinyargs": "^0.1.4",
     "visitor-as": "^0.11.4"
