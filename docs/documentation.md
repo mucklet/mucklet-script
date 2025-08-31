@@ -349,6 +349,7 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;[function Room.listenCharEvent](#function-room-listencharevent)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Room.listenExit](#function-room-listenexit)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Room.privateDescribe](#function-room-privatedescribe)  
+&nbsp;&nbsp;&nbsp;&nbsp;[function Room.profileIterator](#function-room-profileiterator)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Room.removeCommand](#function-room-removecommand)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Room.setExit](#function-room-setexit)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Room.setRoom](#function-room-setroom)  
@@ -375,6 +376,14 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method close](#method-room-exititerator-close)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getExit](#method-room-exititerator-getexit)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.MoveMsgs](#class-room-movemsgs)  
+&nbsp;&nbsp;&nbsp;&nbsp;[class Room.Profile](#class-room-profile)  
+&nbsp;&nbsp;&nbsp;&nbsp;[class Room.ProfileIterator](#class-room-profileiterator)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method next](#method-room-profileiterator-next)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method rewind](#method-room-profileiterator-rewind)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getID](#method-room-profileiterator-getid)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method isValid](#method-room-profileiterator-isvalid)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method close](#method-room-profileiterator-close)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getProfile](#method-room-profileiterator-getprofile)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.RoomDetails](#class-room-roomdetails)  
 
 <h3 id="namespace-script">Script namespace</h3>
@@ -2631,6 +2640,21 @@ targeted characters.
 
 ---
 
+<h3 id="function-room-profileiterator">function Room.profileIterator</h3>
+
+```ts
+Room.profileIterator(): ProfileIterator
+```
+
+Gets an iterator for the profiles for the room. Order is undefined.
+
+<h4>Returns</h4>
+
+* <i>([Room.ProfileIterator](#class-room-profileiterator))</i>
+
+
+---
+
 <h3 id="function-room-removecommand">function Room.removeCommand</h3>
 
 ```ts
@@ -2840,7 +2864,7 @@ Room character.
 
 <h4 id="class-room-char-properties">class Room.Char properties</h4>
 
-* `id` <i>(string)</i>: Character ID.
+* `id` <i>([ID](#type-id))</i>: Character ID.
 * `name` <i>(string)</i>: Character name.
 * `surname` <i>(string)</i>: Character surname.
 * `avatar` <i>([ID](#type-id))</i>: Character avatar.
@@ -2969,7 +2993,7 @@ Room exit.
 
 <h4 id="class-room-exit-properties">class Room.Exit properties</h4>
 
-* `id` <i>(string)</i>: Exit ID.
+* `id` <i>([ID](#type-id))</i>: Exit ID.
 * `keys` <i>(Array&lt;string&gt;)</i>: Exit keys.
 * `name` <i>(string)</i>: Exit name.
 * `icon` <i>([ExitIcon](#enum-exiticon))</i>: Exit icon.
@@ -3103,6 +3127,129 @@ Move messages used when entering or leaving a room.
 * `leaveMsg` <i>(string)</i>
 * `arriveMsg` <i>(string)</i>
 * `travelMsg` <i>(string)</i>
+
+
+---
+
+<h3 id="class-room-profile">class Room.Profile</h3>
+
+Room profile.
+
+<h4 id="class-room-profile-properties">class Room.Profile properties</h4>
+
+* `id` <i>([ID](#type-id))</i>: Profile ID.
+* `name` <i>(string)</i>: Profile name.
+* `key` <i>(string)</i>: Profile key.
+* `desc` <i>(string)</i>: Profile desc.
+* `image` <i>([ID](#type-id))</i>: Profile image.
+
+
+---
+
+<h3 id="class-room-profileiterator">class Room.ProfileIterator</h3>
+
+
+
+```ts
+new Room.ProfileIterator(iterator: i32)
+```
+
+Constructor of the Iterator instance.
+
+<h4>Parameters</h4>
+
+* `iterator` <i>(i32)</i>
+
+
+<h4 id="class-room-profileiterator-properties">class Room.ProfileIterator properties</h4>
+
+* `iterator` <i>(i32)</i>
+
+
+---
+
+<h3 id="method-room-profileiterator-next">method Room.ProfileIterator.next</h3>
+
+```ts
+next(): void
+```
+
+Advances the iterator by one. Always check isValid() after a next()
+to ensure have not reached the end of the iterator.
+
+
+---
+
+<h3 id="method-room-profileiterator-rewind">method Room.ProfileIterator.rewind</h3>
+
+```ts
+rewind(): void
+```
+
+Rewinds the iterator cursor all the way back to first position, which
+would be the smallest key, or greatest key if inReverse() was called.
+
+Any iterator prefix passed to withPrefix() will be used on rewind.
+The iterator is rewound by default.
+
+
+---
+
+<h3 id="method-room-profileiterator-getid">method Room.ProfileIterator.getID</h3>
+
+```ts
+getID(): ID
+```
+
+Returns the key string of the current key-value pair. It will abort
+if the cursor has reached the end of the iterator.
+
+<h4>Returns</h4>
+
+* <i>([ID](#type-id))</i>
+
+
+---
+
+<h3 id="method-room-profileiterator-isvalid">method Room.ProfileIterator.isValid</h3>
+
+```ts
+isValid(): boolean
+```
+
+Returns false when the cursor is at the end of the iterator.
+
+<h4>Returns</h4>
+
+* <i>(boolean)</i>
+
+
+---
+
+<h3 id="method-room-profileiterator-close">method Room.ProfileIterator.close</h3>
+
+```ts
+close(): void
+```
+
+Closes the iterator. Any further calls to the iterator will cause an
+error. May be called multiple times.
+
+
+---
+
+<h3 id="method-room-profileiterator-getprofile">method Room.ProfileIterator.getProfile</h3>
+
+```ts
+getProfile(): Profile
+```
+
+Returns the current profile. It will abort if the cursor has reached the
+end of the iterator.
+
+<h4>Returns</h4>
+
+* <i>([Room.Profile](#class-room-profile))</i>
 
 
 ---

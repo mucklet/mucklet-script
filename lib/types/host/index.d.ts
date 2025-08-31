@@ -620,7 +620,7 @@ declare namespace Room {
 	 */
 	class Char {
 		/** Character ID. */
-		id: string;
+		id: ID;
 		/** Character name. */
 		name: string;
 		/** Character surname. */
@@ -647,7 +647,7 @@ declare namespace Room {
 	 */
 	class Exit {
 		/** Exit ID. */
-		id: string;
+		id: ID;
 		/** Exit keys. */
 		keys: string[];
 		/** Exit name. */
@@ -672,6 +672,21 @@ declare namespace Room {
 		inactive: boolean;
 		/** Is transparent flag. */
 		transparent: boolean;
+	}
+	/**
+	 * Room profile.
+	 */
+	class Profile {
+		/** Profile ID. */
+		id: ID;
+		/** Profile name. */
+		name: string;
+		/** Profile key. */
+		key: string;
+		/** Profile desc. */
+		desc: string;
+		/** Profile image. */
+		image: ID;
 	}
 	/**
 	 * Starts listening to room events on the current instance. If `instance` is
@@ -807,6 +822,10 @@ declare namespace Room {
 	 */
 	function exitIterator(): ExitIterator;
 	/**
+	 * Gets an iterator for the profiles for the room. Order is undefined.
+	 */
+	function profileIterator(): ProfileIterator;
+	/**
 	 * Gets a character in the room by ID.
 	 * @param charId - Character ID.
 	 * @returns {@link Char} object or null if the character is not found in the room.
@@ -894,6 +913,13 @@ declare namespace Room {
 		 * end of the iterator.
 		 */
 		getExit(): Exit;
+	}
+	class ProfileIterator extends BaseIterator {
+		/**
+		 * Returns the current profile. It will abort if the cursor has reached the
+		 * end of the iterator.
+		 */
+		getProfile(): Profile;
 	}
 }
 /**
