@@ -932,7 +932,7 @@ export namespace Room {
 	@json
 	export class Char {
 		/** Character ID. */
-		id: string = "";
+		id: ID = "";
 		/** Character name. */
 		name: string = "";
 		/** Character surname. */
@@ -961,7 +961,7 @@ export namespace Room {
 	@json
 	export class Exit {
 		/** Exit ID. */
-		id: string = "";
+		id: ID = "";
 		/** Exit keys. */
 		keys: string[] = [];
 		/** Exit name. */
@@ -986,6 +986,23 @@ export namespace Room {
 		inactive: boolean = false;
 		/** Is transparent flag. */
 		transparent: boolean = false;
+	}
+
+	/**
+	 * Room profile.
+	 */
+	@json
+	export class Profile {
+		/** Profile ID. */
+		id: ID = "";
+		/** Profile name. */
+		name: string = "";
+		/** Profile key. */
+		key: string = "";
+		/** Profile desc. */
+		desc: string = "";
+		/** Profile image. */
+		image: ID = "";
 	}
 
 	/**
@@ -1170,6 +1187,13 @@ export namespace Room {
 	}
 
 	/**
+	 * Gets an iterator for the profiles for the room. Order is undefined.
+	 */
+	export function profileIterator(): ProfileIterator {
+		return new ProfileIterator(room_binding.profileIterator());
+	}
+
+	/**
 	 * Gets a character in the room by ID.
 	 * @param charId - Character ID.
 	 * @returns {@link Char} object or null if the character is not found in the room.
@@ -1297,6 +1321,17 @@ export namespace Room {
 		getExit(): Exit {
 			// @ts-expect-error
 			return JSON.parse<Exit>(String.UTF8.decode(iterator_binding.value(super.iterator)));
+		}
+	}
+
+	export class ProfileIterator extends BaseIterator {
+		/**
+		 * Returns the current profile. It will abort if the cursor has reached the
+		 * end of the iterator.
+		 */
+		getProfile(): Profile {
+			// @ts-expect-error
+			return JSON.parse<Profile>(String.UTF8.decode(iterator_binding.value(super.iterator)));
 		}
 	}
 }

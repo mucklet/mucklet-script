@@ -57,6 +57,9 @@ export declare namespace Room {
 
 	@external("env", "room.removeCommand")
 	export function removeCommand(key: string): boolean
+
+	@external("env", "room.profileIterator")
+	export function profileIterator(): i32
 }
 
 export declare namespace Script {
