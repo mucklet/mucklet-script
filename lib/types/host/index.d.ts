@@ -48,6 +48,8 @@
  * with delay), will be removed, and [onActivate](#onactivate) will be called
  * again on the new script version.
  *
+ * ### Examples
+ *
  * ```ts
  * // Send a describe to the room and log a message to the console on activation.
  * export function onActivate(): void {
@@ -59,14 +61,22 @@
  * ## onRoomEvent
  *
  * _onRoomEvent_ is called when an event occurs in the room, such as a _say_,
- * _arrive_, or _sleep_. It requires that {@link Room.listen} has been called
- * earlier, usually in the [onActivate](#onactivate) function.
+ * _arrive_, or _sleep_. {@link Room.listen} must have been called earlier to
+ * start listening to room events, usually in the [onActivate](#onactivate)
+ * function.
+ *
+ * ### Parameters
+ *
+ * * `addr` _(string)_: Address of this script instance receiving the event.
+ * * `ev` _(string)_: Event encoded as a json string.
+ *
+ * ### Examples
  *
  * ```ts
  * // Check the event type and decode the event.
  * export function onRoomEvent(
- *     addr: string, // Address of this script instance receiving the event.
- *     ev: string,   // Event encoded as a json string.
+ *     addr: string,
+ *     ev: string,
  * ): void {
  *     const eventType = Event.getType(ev);
  *     if (eventType == 'say') {
@@ -79,16 +89,27 @@
  * ## onMessage
  *
  * _onMessage_ is called when another script sends a message to this script,
- * using {@link Script.post}. It requires that {@link Script.listen} has been
- * called earlier, usually in the [onActivate](#onactivate) function.
+ * using {@link Script.post}. {@link Script.listen} must have been called
+ * earlier to start listening to messages, usually in the
+ * [onActivate](#onactivate) function.
+ *
+ * ### Parameters
+ *
+ * * `addr` _(string)_: Address of this script instance receiving the message.
+ * * `topic` _(string)_: Topic of the message. Determined by the sender.
+ * * `data` _(string | null)_: JSON encoded data of the message or null.
+ *   Determined by the sender.
+ * * `sender` _(string)_: Address of the sending script instance.
+ *
+ * ### Examples
  *
  * ```ts
  * // Receive a message from another script to change room profile
  * export function onMessage(
- *     addr: string,        // Address of this script instance receiving the message.
- *     topic: string,       // Topic of the message. Determined by the sender.
- *     data: string | null, // JSON encoded data of the message or null. Determined by the sender.
- *     sender: string,      // Address of the sending script instance.
+ *     addr: string,
+ *     topic: string,
+ *     data: string | null,
+ *     sender: string,
  * ): void {
  *     if (topic == "changeProfile") {
  *         Room.setProfile(JSON.parse<string>(data))
@@ -99,17 +120,28 @@
  * ## onCharEvent
  *
  * _onCharEvent_ is called when a character enters a room, leaves a room, or
- * changes any of its properties while inside the room. It requires that
- * {@link Room.listenCharEvent} has been called earlier, usually in the
- * [onActivate](#onactivate) function.
+ * changes any of its properties while inside the room.
+ * {@link Room.listenCharEvent} must have been called earlier to start listening
+ * to character events, usually in the [onActivate](#onactivate) function.
+ *
+ * ### Parameters
+ *
+ * * `addr` _(string)_: Address of this script instance receiving the event.
+ * * `charId` _(string)_: ID of character.
+ * * `after` _(string | null)_: Character state after the event encoded as a
+ *   json string, or null if the character left the room.
+ * * `before` _(string | null)_: Character state before the event encoded as a
+ *   json string, or null if the character entered the room.
+ *
+ * ### Examples
  *
  * ```ts
  * // Output to log when a character arrives or leaves
  * export function onCharEvent(
- *     addr: string,          // Address of this script instance receiving the event.
- *     charId: string,        // ID of character.
- *     after: string | null,  // Character state after the event encoded as a json string, or null if the character left the room.
- *     before: string | null, // Character state before the event encoded as a json string, or null if the character entered the room.
+ *     addr: string,
+ *     charId: string,
+ *     after: string | null,
+ *     before: string | null,
  * ): void {
  *     if (after == null && before != null) {
  *         // If after is null, the character left
@@ -126,18 +158,26 @@
  *
  * ## onExitUse
  *
- * _onExitUse_ is called when a character tries to use an exit. It requires that
- * {@link Room.listenExit} has been called earlier, usually in the
- * [onActivate](#onactivate) function. The script should call either
- * {@link ExitAction.cancel} or {@link ExitAction.useExit} to determine what
- * should happen. If neither method is called, the action will timeout after 1
- * second, automatically canceling the exit use with a default message.
+ * _onExitUse_ is called when a character tries to use an exit.
+ * {@link Room.listenExit} must have been called earlier to start listening to
+ * exit use, usually in the [onActivate](#onactivate) function. The script
+ * should call either {@link ExitAction.cancel} or {@link ExitAction.useExit} to
+ * determine what should happen. If neither method is called, the action will
+ * timeout after 1 second, automatically canceling the exit use with a default
+ * message.
+ *
+ * ### Parameters
+ *
+ * * `addr` _(string)_: Address of this script instance receiving the event.
+ * * `cmdAction` _({@link ExitAction})_: Exit action object.
+ *
+ * ### Examples
  *
  * ```ts
  * // Prevent anyone from using an exit
  * export function onExitUse(
- *     addr: string,           // Address of this script instance receiving the event.
- *     exitAction: ExitAction, // Exit action object.
+ *     addr: string,
+ *     exitAction: ExitAction,
  * ): void {
  *     exitAction.cancel("The door seems to be locked.");
  * }
@@ -145,12 +185,19 @@
  *
  * ## onCommand
  *
- * _onCommand_ is called when a character uses a custom command. It requires
- * that {@link Room.addCommand} has been called earlier to register the command,
- * usually in the [onActivate](#onactivate) function. The script may send a
- * response to the caller using either {@link CmdAction.info},
+ * _onCommand_ is called when a character uses a custom command.
+ * {@link Room.addCommand} must have been called earlier to register the
+ * command, usually in the [onActivate](#onactivate) function. The script may
+ * send a response to the caller using either {@link CmdAction.info},
  * {@link CmdAction.error}, or {@link CmdAction.useExit}, but it is not
  * required. The response must be sent within 1 second from the call.
+ *
+ * ### Parameters
+ *
+ * * `addr` _(string)_: Address of this script instance receiving the action.
+ * * `cmdAction` _({@link CmdAction})_: Command action object.
+ *
+ * ### Examples
  *
  * ```ts
  * // Adding a ping command on activation
@@ -164,6 +211,64 @@
  *     cmdAction: CmdAction, // Command action object.
  * ): void {
  *     cmdAction.info("Pong!");
+ * }
+ * ```
+ *
+ * ## onRequest
+ *
+ * _onRequest_ is called when another script sends a request to this script,
+ * using {@link Script.request}. {@link Script.listen} must have been called
+ * earlier to start listening to requests, usually in the
+ * [onActivate](#onactivate) function.
+ *
+ * ### Parameters
+ *
+ * * `addr` _(string)_: Address of this script instance receiving the request.
+ * * `request` _({@link Request})_: Request object.
+ *
+ * ### Examples
+ *
+ * ```ts
+ * // Receive a request from another script and send a response.
+ * export function onRequest(
+ *     addr: string,
+ *     request: Request,
+ * ): void {
+ *     if (request.topic == "getValue") {
+ *         // Parse any data passed as arguments.
+ *         const key = request.parseData<string>()
+ *         const value = Store.getString(key)
+ *         // Send a response to the request
+ *         request.reply(value)
+ *     }
+ * }
+ * ```
+ *
+ * ## onResponse
+ *
+ * _onResponse_ is called when another script sends a response to a request by
+ * calling {@link Request.reply}.
+ *
+ * ### Parameters
+ *
+ * * `addr` _(string)_: Address of the script instance receiving the response.
+ * * `response` _({@link Response})_: Response object.
+ *
+ * ### Examples
+ *
+ * ```ts
+ * // Receive a response to an request
+ * export function onResponse(
+ *     addr: string,
+ *     response: Response,
+ * ): void {
+ *     response obn
+ *         // Parse any data passed as arguments.
+ *         const key = request.ParseData<string>()
+ *         const value = Store.getString(key);
+ *         // Send a response to the request
+ *         request.reply(value)
+ *     }
  * }
  * ```
  *
@@ -281,6 +386,66 @@ declare class CmdAction {
 	 * @param exitId Exit ID.
 	 */
 	useExit(exitId: ID): void;
+}
+/**
+ * Request is a request sent from another script.
+ */
+declare class Request {
+	/** Action ID */
+	actionId: i32;
+	/** Request topic */
+	topic: string;
+	/** Request data encoded as JSON. */
+	data: string;
+	/**
+	 * Parses the data into a value of type T.
+	 */
+	parseData<T>(): T;
+	/**
+	 * Responds to the request with a reply containing JSON encoded result.
+	 * @param result Reply data encoded as JSON.
+	 */
+	reply(result?: string | null): void;
+	/**
+	 * Responds to the request with an error message.
+	 * @param msg Error message.
+	 */
+	error(msg: string): void;
+}
+/**
+ * Response is a response to a request sent by the script.
+ */
+declare class Response {
+	/** Request ID */
+	requestId: ID;
+	/** Request topic */
+	topic: string;
+	/** Request data encoded as JSON. */
+	data: string;
+	/** Request context. */
+	ctx: ArrayBuffer | null;
+	/** Result encoded as JSON. */
+	result: string;
+	/** Error string or null on no error. */
+	error: string | null;
+	/**
+	 * Returns true if it is an error response by checking that the error
+	 * property is not a null value.
+	 */
+	isError(): boolean;
+	/**
+	 * Parses the data into a value of type T.
+	 */
+	parseData<T>(): T;
+	/**
+	 * Parses the result into a value of type T.
+	 */
+	parseResult<T>(): T;
+	/**
+	 * Parses the context included when creating the request, into a value of
+	 * type T.
+	 */
+	parseContext<T>(): T;
 }
 /**
  * BaseIterator is an iterator over items with an ID.
@@ -950,12 +1115,14 @@ declare namespace Script {
 		rp: RPState;
 	}
 	/**
-	 * Starts listening for posted messages from any of the given `addr`
-	 * addresses. If an address is a non-instance room, it will also listen to
-	 * posted messages from any instance of that room.
+	 * Starts listening for posted messages and requests, sent with
+	 * {@link Script.post} and {@link Script.request}, from any of the given
+	 * `addr` addresses. If an address is a non-instance room, it will also
+	 * listen to posted messages from any instance of that room.
 	 *
-	 * If no `addr` is provided, the script will listen to posts from _any_
-	 * source, including scripts and bots controlled by other players.
+	 * If no `addr` is provided, the script will listen to posts and requests
+	 * from _any_ source, including scripts and bots controlled by other
+	 * players.
 	 *
 	 * Posts from the current script does not require listening. A script can
 	 * always post to itself.
@@ -983,7 +1150,9 @@ declare namespace Script {
 	 */
 	function unlisten(addrs?: string[] | null): void;
 	/**
-	 * Posts a message to another script with the address `addr`.
+	 * Posts a message to another script with the address `addr`. The receiving
+	 * script will get the message through the [onMessage](#onmessage) entry
+	 * point.
 	 *
 	 * To get the address of a room script, use the `roomscript` command. For
 	 * more info, type:
@@ -1008,6 +1177,25 @@ declare namespace Script {
 	 * @returns True if the post was successfully canceled, otherwise false.
 	 */
 	function cancelPost(scheduleId: ID | null): boolean;
+	/**
+	 * Sends a request to another script with the address `addr`. The receiving
+	 * script will get the request through the [onRequest](#onrequest) entry
+	 * point. Once replied, the requesting script will get the response together
+	 * with provided context through the [onResponse](#onresponse) entry point
+	 *
+	 * To get the address of a room script, use the `roomscript` command. For
+	 * more info, type:
+	 * ```
+	 * help roomscript
+	 * ```
+	 *
+	 * @param addr - Address of target script. If addr is "#", it will be a post to the current script instance.
+	 * @param topic - Message topic. May be any kind of string.
+	 * @param data - Additional data to be sent with the request. Must be valid JSON.
+	 * @param ctx - Context data returned to the caller as part of the response. Type must be serializable to JSON.
+	 * @returns Request {@link ID} or null if the receiving script was not listening.
+	 */
+	function request<T>(addr: string, topic: string, data: string | null, ctx: T): ID | null;
 	/**
 	 * Gets info on an existing character.
 	 *

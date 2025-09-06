@@ -608,10 +608,16 @@ export default class DocsConverter {
 	 * @return {string} Converted markdown.
 	 */
 	_convertToNamedHeaders(text, level = 0, idPrefix, headerCallback) {
+		let parentIds = [];
 		return text.replace(/^(#+)\s*(.*)/gm, (match, hashes, title) => {
 			title = title.trim();
 			const l = level + hashes.length;
-			const id = this._stringToId(title, idPrefix);
+			parentIds = parentIds.slice(0, l);
+			let id = this._stringToId(title, idPrefix);
+			id = l > 3 && parentIds[l - 1]
+				? parentIds[l - 1] + '-' + id
+				: id;
+			parentIds[l] = id;
 			headerCallback?.(title, hashes.length, id);
 			return `<h${l} id="${id}">${escapeHtml(title)}</h${l}>`;
 		});
