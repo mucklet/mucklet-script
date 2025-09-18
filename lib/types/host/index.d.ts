@@ -328,35 +328,6 @@ declare const enum ExitIcon {
 	Out = 12
 }
 /**
- * ExitAction is an action representing an intercepted use of an exit.
- *
- * It is passed to [onExitUse](#onexituse) entry point when a character tries to
- * use an exit that is being listen to with {@link Room.listenExit}.
- */
-declare class ExitAction {
-	/** Action ID */
-	actionId: i32;
-	/** Character ID */
-	charId: ID;
-	/** Exit ID */
-	exitId: ID;
-	/**
-	 * Makes the character use an exit. If exitId is null, the character is sent
-	 * through the exit that they originally tried to use.
-	 *
-	 * The exit may be hidden or inactive.
-	 * @param exitId Exit ID or null for the originally used exit.
-	 */
-	useExit(exitId?: ID | null): void;
-	/**
-	 * Cancels a character's attempt to use an exit and shows them an info
-	 * message instead. If msg is null, the default exit timeout message will be
-	 * shown.
-	 * @param msg Info message to show, or default message if null.
-	 */
-	cancel(msg?: string | null): void;
-}
-/**
  * CmdAction is a command action triggered by a character.
  */
 declare class CmdAction {
@@ -388,6 +359,35 @@ declare class CmdAction {
 	useExit(exitId: ID): void;
 }
 /**
+ * ExitAction is an action representing an intercepted use of an exit.
+ *
+ * It is passed to [onExitUse](#onexituse) entry point when a character tries to
+ * use an exit that is being listen to with {@link Room.listenExit}.
+ */
+declare class ExitAction {
+	/** Action ID */
+	actionId: i32;
+	/** Character ID */
+	charId: ID;
+	/** Exit ID */
+	exitId: ID;
+	/**
+	 * Makes the character use an exit. If exitId is null, the character is sent
+	 * through the exit that they originally tried to use.
+	 *
+	 * The exit may be hidden or inactive.
+	 * @param exitId Exit ID or null for the originally used exit.
+	 */
+	useExit(exitId?: ID | null): void;
+	/**
+	 * Cancels a character's attempt to use an exit and shows them an info
+	 * message instead. If msg is null, the default exit timeout message will be
+	 * shown.
+	 * @param msg Info message to show, or default message if null.
+	 */
+	cancel(msg?: string | null): void;
+}
+/**
  * Request is a request sent from another script.
  */
 declare class Request {
@@ -397,6 +397,8 @@ declare class Request {
 	topic: string;
 	/** Request data encoded as JSON. */
 	data: string;
+	/** Request sender address. */
+	sender: string;
 	/**
 	 * Parses the data into a value of type T.
 	 */
@@ -416,16 +418,8 @@ declare class Request {
  * Response is a response to a request sent by the script.
  */
 declare class Response {
-	/** Request ID */
-	requestId: ID;
-	/** Request topic */
-	topic: string;
-	/** Request data encoded as JSON. */
-	data: string;
-	/** Request context. */
-	ctx: ArrayBuffer | null;
 	/** Result encoded as JSON. */
-	result: string;
+	result: string | null;
 	/** Error string or null on no error. */
 	error: string | null;
 	/**
@@ -434,18 +428,9 @@ declare class Response {
 	 */
 	isError(): boolean;
 	/**
-	 * Parses the data into a value of type T.
-	 */
-	parseData<T>(): T;
-	/**
 	 * Parses the result into a value of type T.
 	 */
 	parseResult<T>(): T;
-	/**
-	 * Parses the context included when creating the request, into a value of
-	 * type T.
-	 */
-	parseContext<T>(): T;
 }
 /**
  * BaseIterator is an iterator over items with an ID.
@@ -1192,10 +1177,9 @@ declare namespace Script {
 	 * @param addr - Address of target script. If addr is "#", it will be a post to the current script instance.
 	 * @param topic - Message topic. May be any kind of string.
 	 * @param data - Additional data to be sent with the request. Must be valid JSON.
-	 * @param ctx - Context data returned to the caller as part of the response. Type must be serializable to JSON.
-	 * @returns Request {@link ID} or null if the receiving script was not listening.
+	 * @returns Response to the request.
 	 */
-	function request<T>(addr: string, topic: string, data: string | null, ctx: T): ID | null;
+	function request(addr: string, topic: string, data?: string | null): Response;
 	/**
 	 * Gets info on an existing character.
 	 *

@@ -1,3 +1,4 @@
+
 // @ts-nocheck
 export declare namespace Room {
 
@@ -79,7 +80,7 @@ export declare namespace Script {
 	export function getChar(charId: string): string | null
 
 	@external("env", "script.request")
-	export function request(addr: string, topic: string, data: string | null, ctx: ArrayBuffer | null): string | null
+	export function request<T>(addr: string, topic: string, data: string | null): T
 }
 
 export declare namespace Store {
@@ -140,9 +141,8 @@ export declare namespace CmdAction {
 
 export declare namespace RequestAction {
 	@external("env", "requestAction.reply")
-	export function reply(actionId: i32, data: string | null): void
+	export function reply(actionId: i32, result: string | null): void
 
 	@external("env", "requestAction.error")
 	export function error(actionId: i32, msg: string): void
 }
-

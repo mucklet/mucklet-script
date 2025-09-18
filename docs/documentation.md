@@ -322,9 +322,7 @@ export function onResponse(
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method error](#method-request-error)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Response](#class-response)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method isError](#method-response-iserror)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method parseData](#method-response-parsedata)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method parseResult](#method-response-parseresult)  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method parseContext](#method-response-parsecontext)  
 [Namespaces](#namespaces)  
 &nbsp;&nbsp;&nbsp;&nbsp;[Event namespace](#namespace-event)  
 &nbsp;&nbsp;&nbsp;&nbsp;[Field namespace](#namespace-field)  
@@ -894,6 +892,7 @@ Request is a request sent from another script.
 * `actionId` <i>(i32)</i>: Action ID
 * `topic` <i>(string)</i>: Request topic
 * `data` <i>(string)</i>: Request data encoded as JSON.
+* `sender` <i>(string)</i>: Request sender address.
 
 
 ---
@@ -949,11 +948,7 @@ Response is a response to a request sent by the script.
 
 <h4 id="class-response-properties">class Response properties</h4>
 
-* `requestId` <i>([ID](#type-id))</i>: Request ID
-* `topic` <i>(string)</i>: Request topic
-* `data` <i>(string)</i>: Request data encoded as JSON.
-* `ctx` <i>(ArrayBuffer | null)</i>: Request context.
-* `result` <i>(string)</i>: Result encoded as JSON.
+* `result` <i>(string | null)</i>: Result encoded as JSON.
 * `error` <i>(string | null)</i>: Error string or null on no error.
 
 
@@ -975,21 +970,6 @@ property is not a null value.
 
 ---
 
-<h3 id="method-response-parsedata">method Response.parseData</h3>
-
-```ts
-parseData<T>(): T
-```
-
-Parses the data into a value of type T.
-
-<h4>Returns</h4>
-
-* <i>(T)</i>
-
-
----
-
 <h3 id="method-response-parseresult">method Response.parseResult</h3>
 
 ```ts
@@ -997,22 +977,6 @@ parseResult<T>(): T
 ```
 
 Parses the result into a value of type T.
-
-<h4>Returns</h4>
-
-* <i>(T)</i>
-
-
----
-
-<h3 id="method-response-parsecontext">method Response.parseContext</h3>
-
-```ts
-parseContext<T>(): T
-```
-
-Parses the context included when creating the request, into a value of
-type T.
 
 <h4>Returns</h4>
 
@@ -2327,6 +2291,10 @@ toString(): string
 new JSON.Obj()
 ```
 
+
+<h4 id="class-json-obj-properties">class JSON.Obj properties</h4>
+
+* `storage` <i>(Map&lt;string, [JSON.Value](#class-json-value)&gt;)</i>
 
 
 ---
@@ -3643,7 +3611,7 @@ help roomscript
 <h3 id="function-script-request">function Script.request</h3>
 
 ```ts
-Script.request<T>(addr: string, topic: string, data: string | null, ctx: T): ID | null
+Script.request(addr: string, topic: string, data: string | null = null): Response
 ```
 
 Sends a request to another script with the address `addr`. The receiving
@@ -3662,11 +3630,10 @@ help roomscript
 * `addr` <i>(string)</i>: Address of target script. If addr is "#", it will be a post to the current script instance.
 * `topic` <i>(string)</i>: Message topic. May be any kind of string.
 * `data` <i>(string | null)</i>: Additional data to be sent with the request. Must be valid JSON.
-* `ctx` <i>(T)</i>: Context data returned to the caller as part of the response. Type must be serializable to JSON.
 
 <h4>Returns</h4>
 
-* <i>([ID](#type-id) | null)</i>: Request [ID](#type-id) or null if the receiving script was not listening.
+* <i>([Response](#class-response))</i>: Response to the request.
 
 
 ---

@@ -355,43 +355,6 @@ function keyToBuffer<T>(key: T): ArrayBuffer {
 }
 
 /**
- * ExitAction is an action representing an intercepted use of an exit.
- *
- * It is passed to [onExitUse](#onexituse) entry point when a character tries to
- * use an exit that is being listen to with {@link Room.listenExit}.
- */
-@json
-export class ExitAction {
-	/** Action ID */
-	actionId: i32 = 0;
-	/** Character ID */
-	charId: ID = "";
-	/** Exit ID */
-	exitId: ID = "";
-
-	/**
-	 * Makes the character use an exit. If exitId is null, the character is sent
-	 * through the exit that they originally tried to use.
-	 *
-	 * The exit may be hidden or inactive.
-	 * @param exitId Exit ID or null for the originally used exit.
-	 */
-	useExit(exitId: ID | null = null): void {
-		exitaction_binding.useExit(this.actionId, exitId);
-	}
-
-	/**
-	 * Cancels a character's attempt to use an exit and shows them an info
-	 * message instead. If msg is null, the default exit timeout message will be
-	 * shown.
-	 * @param msg Info message to show, or default message if null.
-	 */
-	cancel(msg: string | null = null): void {
-		exitaction_binding.cancel(this.actionId, msg);
-	}
-}
-
-/**
  * CmdAction is a command action triggered by a character.
  */
 @json
@@ -434,6 +397,43 @@ export class CmdAction {
 }
 
 /**
+ * ExitAction is an action representing an intercepted use of an exit.
+ *
+ * It is passed to [onExitUse](#onexituse) entry point when a character tries to
+ * use an exit that is being listen to with {@link Room.listenExit}.
+ */
+@json
+export class ExitAction {
+	/** Action ID */
+	actionId: i32 = 0;
+	/** Character ID */
+	charId: ID = "";
+	/** Exit ID */
+	exitId: ID = "";
+
+	/**
+	 * Makes the character use an exit. If exitId is null, the character is sent
+	 * through the exit that they originally tried to use.
+	 *
+	 * The exit may be hidden or inactive.
+	 * @param exitId Exit ID or null for the originally used exit.
+	 */
+	useExit(exitId: ID | null = null): void {
+		exitaction_binding.useExit(this.actionId, exitId);
+	}
+
+	/**
+	 * Cancels a character's attempt to use an exit and shows them an info
+	 * message instead. If msg is null, the default exit timeout message will be
+	 * shown.
+	 * @param msg Info message to show, or default message if null.
+	 */
+	cancel(msg: string | null = null): void {
+		exitaction_binding.cancel(this.actionId, msg);
+	}
+}
+
+/**
  * Request is a request sent from another script.
  */
 @json
@@ -444,6 +444,8 @@ export class Request {
 	topic: string = "";
 	/** Request data encoded as JSON. */
 	data: string = "";
+	/** Request sender address. */
+	sender: string = "";
 
 	/**
 	 * Parses the data into a value of type T.
@@ -472,18 +474,9 @@ export class Request {
 /**
  * Response is a response to a request sent by the script.
  */
-@json
 export class Response {
-	/** Request ID */
-	requestId: ID = "";
-	/** Request topic */
-	topic: string = "";
-	/** Request data encoded as JSON. */
-	data: string = "";
-	/** Request context. */
-	ctx: ArrayBuffer | null = null;
 	/** Result encoded as JSON. */
-	result: string = "";
+	result: string | null = null;
 	/** Error string or null on no error. */
 	error: string | null = null;
 
@@ -496,25 +489,13 @@ export class Response {
 	}
 
 	/**
-	 * Parses the data into a value of type T.
-	 */
-	parseData<T>(): T {
-		return JSON.parse<T>(this.data);
-	}
-
-	/**
 	 * Parses the result into a value of type T.
 	 */
 	parseResult<T>(): T {
-		return JSON.parse<T>(this.result);
-	}
-
-	/**
-	 * Parses the context included when creating the request, into a value of
-	 * type T.
-	 */
-	parseContext<T>(): T {
-		return JSON.parse<T>(this.data);
+		if (this.result == null) {
+			abort("no result to parse")
+		}
+		return JSON.parse<T>(this.result!);
 	}
 }
 
@@ -1652,14 +1633,10 @@ export namespace Script {
 	 * @param addr - Address of target script. If addr is "#", it will be a post to the current script instance.
 	 * @param topic - Message topic. May be any kind of string.
 	 * @param data - Additional data to be sent with the request. Must be valid JSON.
-	 * @param ctx - Context data returned to the caller as part of the response. Type must be serializable to JSON.
-	 * @returns Request {@link ID} or null if the receiving script was not listening.
+	 * @returns Response to the request.
 	 */
-	export function request<T>(addr: string, topic: string, data: string | null, ctx: T): ID | null {
-		if (ctx == null) {
-			return script_binding.request(addr, topic, data, null);
-		}
-		return script_binding.request(addr, topic, data, String.UTF8.encode(JSON.stringify(ctx)));
+	export function request(addr: string, topic: string, data: string | null = null): Response {
+		return script_binding.request<Response>(addr, topic, data);
 	}
 
 	/**
