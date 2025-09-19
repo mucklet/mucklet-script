@@ -57,7 +57,7 @@ export function onRoomEvent(addr: string, ev: string): void {
 	}
 }
 
-// onCommand is called when a characters uses a script command.
+// onCommand is called when a character uses a script command.
 export function onCommand(addr: string, cmdAction: CmdAction): void {
 	// Get the current active state of the intercom.
 	const active = isActive()

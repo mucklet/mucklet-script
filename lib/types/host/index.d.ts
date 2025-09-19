@@ -24,8 +24,10 @@
  * [intercom_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_inside.ts) | An intercom script allowing communication with another room running the [intercom_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_outside.ts) script.
  * [intercom_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_outside.ts) | An intercom script allowing communication with another room running the [intercom_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_inside.ts) script.
  * [lock_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_inside.ts) | A script that locks a door preventing others from using an exit in the room running the [lock_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_outside.ts) script.
- * [lock_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_outside.ts) | A script that prevents characters from using an exit locked by the script running the [lock_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_inside.ts) script.
+ * [lock_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_outside.ts) | A script that prevents characters from using an exit locked by the [lock_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_inside.ts) script.
  * [secret_exit.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/secret_exit.ts) | A script that reveals a secret passage when the password "tapeworm" is spoken.
+ * [vip_list.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/vip_list.ts) | A script that manages a list of VIP characters, requested by another room running the [vip_guard.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/vip_guard.ts) script.
+ * [vip_guard.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/vip_guard.ts) | A script that prevents characters from using an exit unless they are listed as VIP character by the [vip_list.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/vip_list.ts) script.
  *
  * # Entry points
  *
@@ -341,12 +343,12 @@ declare class CmdAction {
 	data: string;
 	/**
 	 * Responds to the command action with an info message.
-	 * @param msg Info message.
+	 * @param msg Info message. It may be formatted with info formatting and span multiple paragraphs.
 	 */
 	info(msg: string): void;
 	/**
 	 * Responds to the command action with an error message.
-	 * @param msg Error message.
+	 * @param msg Error message. It may be formatted and span multiple paragraphs.
 	 */
 	error(msg: string): void;
 	/**
