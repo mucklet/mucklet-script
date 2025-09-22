@@ -343,6 +343,12 @@ export const enum ExitIcon {
 	In = 11,
 	Out = 12,
 }
+/** Command flag. */
+export const enum CommandFlag {
+	None = 0,
+	Restricted = 1,
+	Unlisted = 2,
+}
 
 // @ts-expect-error
 @inline
@@ -1002,6 +1008,9 @@ export interface CommandField {
  */
 export class Command {
 	private fieldDefs: Map<string, string> = new Map<string, string>();
+	public priority: u32 = 0;
+	public flags: u32 = 0;
+
 	/**
 	 * Creates a new instance of the {@link Command} class.
 	 */
@@ -1024,6 +1033,37 @@ export class Command {
 			(opts != null ? `,"opts":` + opts : "") +
 		"}");
 		this.fieldDefs.set(key, fieldDef);
+		return this;
+	}
+
+	/**
+	 * Sets command priority.
+	 * @param priority Priority for sort order (descending) and when two or more
+	 * commands match the same input. Higher priority is selected first.
+	 * @returns This instance, allowing method chaining.
+	 */
+	setPriority(priority: u32): Command {
+		this.priority = priority;
+		return this;
+	}
+
+	/**
+	 * Sets the command as restricted, only accessible to character able to edit
+	 * the room.
+	 * @returns This instance, allowing method chaining.
+	 */
+	setRestricted(): Command {
+		this.flags |= CommandFlag.Restricted;
+		return this;
+	}
+
+	/**
+	 * Sets the command as unlisted, not showing up in the interface. It can
+	 * still be used, and will be listed using `list commands`.
+	 * @returns This instance, allowing method chaining.
+	 */
+	setUnlisted(): Command {
+		this.flags |= CommandFlag.Unlisted;
 		return this;
 	}
 
@@ -1463,11 +1503,13 @@ export namespace Room {
 	 *
 	 * @param keyword - Keyword for the command.
 	 * @param cmd - Command to add.
-	 * @param priority - Priority for sort order (descending) and when two or
-	 * more commands match the same input. Higher priority is selected first.
+	 * @param priority - Deprecated: Use Command.setPriority instead.
 	 */
 	export function addCommand(keyword: string, cmd: Command, priority: u32 = 0): void {
-		return room_binding.addCommand(keyword, cmd.json(), priority);
+		if (cmd.priority != 0) {
+			priority = cmd.priority;
+		}
+		return room_binding.addCommand(keyword, cmd.json(), priority, cmd.flags);
 	}
 
 	/**

@@ -298,6 +298,7 @@ export function onResponse(
 &nbsp;&nbsp;&nbsp;&nbsp;[type Timestamp](#type-timestamp)  
 [Enums](#enums)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum CharState](#enum-charstate)  
+&nbsp;&nbsp;&nbsp;&nbsp;[enum CommandFlag](#enum-commandflag)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum ExitIcon](#enum-exiticon)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum ExitNav](#enum-exitnav)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum IdleLevel](#enum-idlelevel)  
@@ -314,6 +315,9 @@ export function onResponse(
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method useExit](#method-cmdaction-useexit)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Command](#class-command)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method field](#method-command-field)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setPriority](#method-command-setpriority)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setRestricted](#method-command-setrestricted)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setUnlisted](#method-command-setunlisted)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method json](#method-command-json)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class ExitAction](#class-exitaction)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method useExit](#method-exitaction-useexit)  
@@ -586,6 +590,20 @@ States that a character may have.
 
 ---
 
+<h3 id="enum-commandflag">enum CommandFlag</h3>
+
+```ts
+const enum CommandFlag {
+    None       = 0,
+    Restricted = 1,
+    Unlisted   = 2,
+}
+```
+
+Command flag.
+
+---
+
 <h3 id="enum-exiticon">enum ExitIcon</h3>
 
 ```ts
@@ -793,6 +811,8 @@ Creates a new instance of the [Command](#class-command) class.
 
 <h4 id="class-command-properties">class Command properties</h4>
 
+* `priority` <i>(u32)</i>
+* `flags` <i>(u32)</i>
 * `pattern` <i>(string)</i>
 * `desc` <i>(string)</i>
 
@@ -811,6 +831,58 @@ Sets the definition for a command field.
 
 * `key` <i>(string)</i>: Field <key> as found in command pattern.
 * `def` <i>([CommandField](#interface-commandfield))</i>: Field definition.
+
+<h4>Returns</h4>
+
+* <i>([Command](#class-command))</i>: This instance, allowing method chaining.
+
+
+---
+
+<h3 id="method-command-setpriority">method Command.setPriority</h3>
+
+```ts
+setPriority(priority: u32): Command
+```
+
+Sets command priority.
+
+<h4>Parameters</h4>
+
+* `priority` <i>(u32)</i>: Priority for sort order (descending) and when two or more
+commands match the same input. Higher priority is selected first.
+
+<h4>Returns</h4>
+
+* <i>([Command](#class-command))</i>: This instance, allowing method chaining.
+
+
+---
+
+<h3 id="method-command-setrestricted">method Command.setRestricted</h3>
+
+```ts
+setRestricted(): Command
+```
+
+Sets the command as restricted, only accessible to character able to edit
+the room.
+
+<h4>Returns</h4>
+
+* <i>([Command](#class-command))</i>: This instance, allowing method chaining.
+
+
+---
+
+<h3 id="method-command-setunlisted">method Command.setUnlisted</h3>
+
+```ts
+setUnlisted(): Command
+```
+
+Sets the command as unlisted, not showing up in the interface. It can
+still be used, and will be listed using `list commands`.
 
 <h4>Returns</h4>
 
@@ -2612,8 +2684,7 @@ See also: [Writing scripts - Custom commands](https://github.com/mucklet/mucklet
 
 * `keyword` <i>(string)</i>: Keyword for the command.
 * `cmd` <i>([Command](#class-command))</i>: Command to add.
-* `priority` <i>(u32)</i>: Priority for sort order (descending) and when two or
-more commands match the same input. Higher priority is selected first.
+* `priority` <i>(u32)</i>: Deprecated: Use Command.setPriority instead.
 
 
 ---

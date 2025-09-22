@@ -36,8 +36,8 @@ function updateOutside(): void {
 export function onActivate(): void {
 	// Add the "turn on intercom" and "turn off intercom" commands.
 	// Priority (20 and 10) is used to sort "on" before "off".
-	Room.addCommand("on", new Command("turn on intercom", onHelp), 20)
-	Room.addCommand("off", new Command("turn off intercom", offHelp), 10)
+	Room.addCommand("on", new Command("turn on intercom", onHelp).setPriority(20))
+	Room.addCommand("off", new Command("turn off intercom", offHelp).setPriority(10))
 	// Start listening to messages from the outside room script.
 	Script.listen([outside])
 	// Update the outside room with the current intercom status.
