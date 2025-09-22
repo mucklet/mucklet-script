@@ -24,16 +24,21 @@ export function onActivate(): void {
 	Room.addCommand(
 		"add",
 		new Command("add vip <Character>", "Add a character to the VIP list.")
-			.field("Character", new Field.Char("Character to add.")),
+			.field("Character", new Field.Char("Character to add."))
+			.setRestricted() // Only let room owner edit list
+			.setPriority(30),
 	)
 	Room.addCommand(
 		"remove",
 		new Command("remove vip <Character>", "Remove a character from the VIP list.")
-			.field("Character", new Field.Char("Character to remove.")),
+			.field("Character", new Field.Char("Character to remove."))
+			.setRestricted() // Only let room owner edit list
+			.setPriority(20),
 	)
 	Room.addCommand(
 		"list",
-		new Command("list vip", "List all VIP characters."),
+		new Command("list vip", "List all VIP characters.")
+			.setPriority(10),
 	)
 	// Listen for script requests.
 	Script.listen()
@@ -120,7 +125,7 @@ export function onCommand(addr: string, cmdAction: CmdAction): void {
 // onRequest is called when another script sends a request to this script.
 export function onRequest(addr: string, request: Request): void {
 	if (request.topic == "isVip") {
-		// Parse the data passed as arguments. It should be the charId.
+		// Parse the data passed as arguments. It should be the character ID.
 		const charId = request.parseData<string>()
 		// If the charId exists in the store, the character is a VIP.
 		const isVip = Store.getString(charId) != null
