@@ -12,7 +12,6 @@
 &nbsp;&nbsp;&nbsp;&nbsp;[onExitUse](#onexituse)  
 &nbsp;&nbsp;&nbsp;&nbsp;[onCommand](#oncommand)  
 &nbsp;&nbsp;&nbsp;&nbsp;[onRequest](#onrequest)  
-&nbsp;&nbsp;&nbsp;&nbsp;[onResponse](#onresponse)  
 [API references](#api-references)
 
 Mucklet scripts are written in AssemblyScript, a strictly typed
@@ -107,8 +106,8 @@ export function onRoomEvent(
 <h3 id="onmessage">onMessage</h3>
 
 _onMessage_ is called when another script sends a message to this script,
-using [Script.post](#function-script-post). [Script.listen](#function-script-listen) must have been called
-earlier to start listening to messages, usually in the
+using [Script.post](#function-script-post) or [Script.broadcast](#function-script-broadcast). [Script.listen](#function-script-listen)
+must have been called earlier to start listening to messages, usually in the
 [onActivate](#onactivate) function.
 
 <h4 id="onmessage-parameters">Parameters</h4>
@@ -256,34 +255,6 @@ export function onRequest(
         // Parse any data passed as arguments.
         const key = request.parseData<string>()
         const value = Store.getString(key)
-        // Send a response to the request
-        request.reply(value)
-    }
-}
-```
-
-<h3 id="onresponse">onResponse</h3>
-
-_onResponse_ is called when another script sends a response to a request by
-calling [Request.reply](#method-request-reply).
-
-<h4 id="onresponse-parameters">Parameters</h4>
-
-* `addr` _(string)_: Address of the script instance receiving the response.
-* `response` _([Response](#class-response))_: Response object.
-
-<h4 id="onresponse-examples">Examples</h4>
-
-```ts
-// Receive a response to an request
-export function onResponse(
-    addr: string,
-    response: Response,
-): void {
-    response obn
-        // Parse any data passed as arguments.
-        const key = request.ParseData<string>()
-        const value = Store.getString(key);
         // Send a response to the request
         request.reply(value)
     }

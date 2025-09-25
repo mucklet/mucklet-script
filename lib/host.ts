@@ -91,8 +91,8 @@
  * ## onMessage
  *
  * _onMessage_ is called when another script sends a message to this script,
- * using {@link Script.post}. {@link Script.listen} must have been called
- * earlier to start listening to messages, usually in the
+ * using {@link Script.post} or {@link Script.broadcast}. {@link Script.listen}
+ * must have been called earlier to start listening to messages, usually in the
  * [onActivate](#onactivate) function.
  *
  * ### Parameters
@@ -240,34 +240,6 @@
  *         // Parse any data passed as arguments.
  *         const key = request.parseData<string>()
  *         const value = Store.getString(key)
- *         // Send a response to the request
- *         request.reply(value)
- *     }
- * }
- * ```
- *
- * ## onResponse
- *
- * _onResponse_ is called when another script sends a response to a request by
- * calling {@link Request.reply}.
- *
- * ### Parameters
- *
- * * `addr` _(string)_: Address of the script instance receiving the response.
- * * `response` _({@link Response})_: Response object.
- *
- * ### Examples
- *
- * ```ts
- * // Receive a response to an request
- * export function onResponse(
- *     addr: string,
- *     response: Response,
- * ): void {
- *     response obn
- *         // Parse any data passed as arguments.
- *         const key = request.ParseData<string>()
- *         const value = Store.getString(key);
  *         // Send a response to the request
  *         request.reply(value)
  *     }
