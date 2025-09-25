@@ -1585,14 +1585,15 @@ export namespace Script {
 	}
 
 	/**
-	 * Starts listening for posted messages and requests, sent with
-	 * {@link Script.post} and {@link Script.request}, from any of the given
-	 * `addr` addresses. If an address is a non-instance room, it will also
-	 * listen to posted messages from any instance of that room.
+	 * Starts listening for messages and requests, sent with
+	 * {@link Script.post}, {@link Script.broadcast}, and
+	 * {@link Script.request}, from any of the given `addr` addresses. If an
+	 * address is a non-instance room, it will also listen to posted messages
+	 * from any instance of that room.
 	 *
 	 * If no `addr` is provided, the script will listen to posts and requests
 	 * from _any_ source, including scripts and bots controlled by other
-	 * players.
+	 * players, and also listen for broadcasts by scripts in the same room.
 	 *
 	 * Posts from the current script does not require listening. A script can
 	 * always post to itself.
@@ -1665,8 +1666,15 @@ export namespace Script {
 	/**
 	 * Sends a request to another script with the address `addr`. The receiving
 	 * script will get the request through the [onRequest](#onrequest) entry
-	 * point. Once replied, the requesting script will get the response together
-	 * with provided context through the [onResponse](#onresponse) entry point
+	 * point. The requesting script will wait and block until a response is
+	 * received, or a timeout occurs.
+	 *
+	 * Errors will be returned as part of the response. The script should call
+	 * {@link Response.isError} to check if an error was returned. In case of
+	 * errors, calling {@link Response.parseResult} will cause the script to
+	 * abort. Requests to self, or circular requests (A -> B -> A) will always
+	 * return with an error.
+	 *
 	 *
 	 * To get the address of a room script, use the `roomscript` command. For
 	 * more info, type:
@@ -1681,6 +1689,20 @@ export namespace Script {
 	 */
 	export function request(addr: string, topic: string, data: string | null = null): Response {
 		return script_binding.request<Response>(addr, topic, data);
+	}
+
+	/**
+	 * Broadcasts a message to all scripts listening to this script. Other room
+	 * scripts in the same room listening to any message will also receive the
+	 * message. The receiving script will get the message through the
+	 * [onMessage](#onmessage) entry point.
+	 *
+	 * To get other scripts to listen for broadcast, see {@link Script.listen}.
+	 * @param topic - Message topic. May be any kind of string.
+	 * @param data - Additional data. Must be valid JSON.
+	 */
+	export function broadcast(topic: string, data: string | null = null): void {
+		script_binding.broadcast(topic, data);
 	}
 
 	/**

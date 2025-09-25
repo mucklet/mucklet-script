@@ -509,6 +509,7 @@ export function onResponse(
 <h3 id="namespace-script">Script namespace</h3>
   
 [Script functions](#script-functions)  
+&nbsp;&nbsp;&nbsp;&nbsp;[function Script.broadcast](#function-script-broadcast)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Script.cancelPost](#function-script-cancelpost)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Script.getChar](#function-script-getchar)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Script.listen](#function-script-listen)  
@@ -3575,6 +3576,27 @@ Detailed room information.
 
 <h2 id="script-functions">Script functions</h2>
 
+<h3 id="function-script-broadcast">function Script.broadcast</h3>
+
+```ts
+Script.broadcast(topic: string, data: string | null = null): void
+```
+
+Broadcasts a message to all scripts listening to this script. Other room
+scripts in the same room listening to any message will also receive the
+message. The receiving script will get the message through the
+[onMessage](#onmessage) entry point.
+
+To get other scripts to listen for broadcast, see [Script.listen](#function-script-listen).
+
+<h4>Parameters</h4>
+
+* `topic` <i>(string)</i>: Message topic. May be any kind of string.
+* `data` <i>(string | null)</i>: Additional data. Must be valid JSON.
+
+
+---
+
 <h3 id="function-script-cancelpost">function Script.cancelPost</h3>
 
 ```ts
@@ -3626,14 +3648,15 @@ To get character description or image info use Room.getChar instead.
 Script.listen(addrs: Array<string> | null = null): void
 ```
 
-Starts listening for posted messages and requests, sent with
-[Script.post](#function-script-post) and [Script.request](#function-script-request), from any of the given
-`addr` addresses. If an address is a non-instance room, it will also
-listen to posted messages from any instance of that room.
+Starts listening for messages and requests, sent with
+[Script.post](#function-script-post), [Script.broadcast](#function-script-broadcast), and
+[Script.request](#function-script-request), from any of the given `addr` addresses. If an
+address is a non-instance room, it will also listen to posted messages
+from any instance of that room.
 
 If no `addr` is provided, the script will listen to posts and requests
 from _any_ source, including scripts and bots controlled by other
-players.
+players, and also listen for broadcasts by scripts in the same room.
 
 Posts from the current script does not require listening. A script can
 always post to itself.
@@ -3689,8 +3712,15 @@ Script.request(addr: string, topic: string, data: string | null = null): Respons
 
 Sends a request to another script with the address `addr`. The receiving
 script will get the request through the [onRequest](#onrequest) entry
-point. Once replied, the requesting script will get the response together
-with provided context through the [onResponse](#onresponse) entry point
+point. The requesting script will wait and block until a response is
+received, or a timeout occurs.
+
+Errors will be returned as part of the response. The script should call
+[Response.isError](#method-response-iserror) to check if an error was returned. In case of
+errors, calling [Response.parseResult](#method-response-parseresult) will cause the script to
+abort. Requests to self, or circular requests (A -> B -> A) will always
+return with an error.
+
 
 To get the address of a room script, use the `roomscript` command. For
 more info, type:
