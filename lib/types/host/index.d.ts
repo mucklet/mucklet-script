@@ -91,8 +91,8 @@
  * ## onMessage
  *
  * _onMessage_ is called when another script sends a message to this script,
- * using {@link Script.post}. {@link Script.listen} must have been called
- * earlier to start listening to messages, usually in the
+ * using {@link Script.post} or {@link Script.broadcast}. {@link Script.listen}
+ * must have been called earlier to start listening to messages, usually in the
  * [onActivate](#onactivate) function.
  *
  * ### Parameters
@@ -240,34 +240,6 @@
  *         // Parse any data passed as arguments.
  *         const key = request.parseData<string>()
  *         const value = Store.getString(key)
- *         // Send a response to the request
- *         request.reply(value)
- *     }
- * }
- * ```
- *
- * ## onResponse
- *
- * _onResponse_ is called when another script sends a response to a request by
- * calling {@link Request.reply}.
- *
- * ### Parameters
- *
- * * `addr` _(string)_: Address of the script instance receiving the response.
- * * `response` _({@link Response})_: Response object.
- *
- * ### Examples
- *
- * ```ts
- * // Receive a response to an request
- * export function onResponse(
- *     addr: string,
- *     response: Response,
- * ): void {
- *     response obn
- *         // Parse any data passed as arguments.
- *         const key = request.ParseData<string>()
- *         const value = Store.getString(key);
  *         // Send a response to the request
  *         request.reply(value)
  *     }
@@ -1128,14 +1100,15 @@ declare namespace Script {
 		rp: RPState;
 	}
 	/**
-	 * Starts listening for posted messages and requests, sent with
-	 * {@link Script.post} and {@link Script.request}, from any of the given
-	 * `addr` addresses. If an address is a non-instance room, it will also
-	 * listen to posted messages from any instance of that room.
+	 * Starts listening for messages and requests, sent with
+	 * {@link Script.post}, {@link Script.broadcast}, and
+	 * {@link Script.request}, from any of the given `addr` addresses. If an
+	 * address is a non-instance room, it will also listen to posted messages
+	 * from any instance of that room.
 	 *
 	 * If no `addr` is provided, the script will listen to posts and requests
 	 * from _any_ source, including scripts and bots controlled by other
-	 * players.
+	 * players, and also listen for broadcasts by scripts in the same room.
 	 *
 	 * Posts from the current script does not require listening. A script can
 	 * always post to itself.
@@ -1193,8 +1166,15 @@ declare namespace Script {
 	/**
 	 * Sends a request to another script with the address `addr`. The receiving
 	 * script will get the request through the [onRequest](#onrequest) entry
-	 * point. Once replied, the requesting script will get the response together
-	 * with provided context through the [onResponse](#onresponse) entry point
+	 * point. The requesting script will wait and block until a response is
+	 * received, or a timeout occurs.
+	 *
+	 * Errors will be returned as part of the response. The script should call
+	 * {@link Response.isError} to check if an error was returned. In case of
+	 * errors, calling {@link Response.parseResult} will cause the script to
+	 * abort. Requests to self, or circular requests (A -> B -> A) will always
+	 * return with an error.
+	 *
 	 *
 	 * To get the address of a room script, use the `roomscript` command. For
 	 * more info, type:
@@ -1208,6 +1188,17 @@ declare namespace Script {
 	 * @returns Response to the request.
 	 */
 	function request(addr: string, topic: string, data?: string | null): Response;
+	/**
+	 * Broadcasts a message to all scripts listening to this script. Other room
+	 * scripts in the same room listening to any message will also receive the
+	 * message. The receiving script will get the message through the
+	 * [onMessage](#onmessage) entry point.
+	 *
+	 * To get other scripts to listen for broadcast, see {@link Script.listen}.
+	 * @param topic - Message topic. May be any kind of string.
+	 * @param data - Additional data. Must be valid JSON.
+	 */
+	function broadcast(topic: string, data?: string | null): void;
 	/**
 	 * Gets info on an existing character.
 	 *

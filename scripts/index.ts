@@ -3,12 +3,12 @@
 
 /**
  * onActivate is called each time a script is activated or updated. It is
- * primarily used to call `Room.listen` or `Script.listen`, to have the script
- * listening for events or messages.
+ * primarily used to call `Script.listen`, `Room.listen`, or `Room.addCommand`,
+ * to have the script listening for events, messages, or commands.
  *
- * When a script is updated, previous listeners (e.g. `Room.listen` or
- * `Script.listen`) or scheduled posts (`Script.post` with delay), will be
- * removed, and `onActivate()` will be called again on the new script version.
+ * When a script is updated, previous listeners, (e.g. `Room.listen`), commands
+ * (`Room.addCommand`), or scheduled posts (`Script.post` with delay), will be
+ * removed, and `onActivate` will be called again on the new script version.
  *
  * Not required. Can be remove if not used.
  */
@@ -19,8 +19,8 @@ export function onActivate(): void {
 
 /**
  * onRoomEvent is called when an event occurs in the room, such as a 'say',
- * 'arrive', or 'sleep'. It requires that `Room.listen()` has been called
- * earlier, usually in the `onActivate()` function.
+ * 'arrive', or 'sleep'. `Room.listen` must have been called earlier to start
+ * listening to room events, usually in the `onActivate()` function.
  *
  * Not required. Can be remove if not used.
  *
@@ -47,11 +47,22 @@ export function onRoomEvent(
 }
 
 /**
- * onMessage is called when another script sends a message to this script, using
- * `Script.post()`. It requires that `Script.listen()` has been called earlier,
- * usually in the `onActivate()` function.
+ * onMessage is called when another script sends a message to this script,
+ * using `Script.post` or `Script.broadcast`. `Script.listen`
+ * must have been called earlier to start listening to messages, usually in the
+ * `onActivate()` function.
  *
  * Not required. Can be remove if not used.
+ *
+ * @example
+ * Receive a message from another script to change room profile:
+ * ```
+ * export function onMessage(addr: string, topic: string, data: string | null, sender: string): void {
+ *     if (topic == "changeProfile") {
+ *         Room.setProfile(JSON.parse<string>(data))
+ *     }
+ * }
+ * ```
  *
  * @param addr - Address of this script instance receiving the message.
  * @param topic - Topic of the message. Determined by the sender.
@@ -165,4 +176,35 @@ export function onCommand(
 	cmdAction: CmdAction,
 ): void {
 	// Handle the command
+}
+
+/**
+ * onRequest is called when another script sends a request to this script, using
+ * `Script.request`. `Script.listen` must have been called earlier to start
+ * listening to requests, usually in the `onActivate()` function.
+ *
+ * Not required. Can be remove if not used.
+ *
+ * @example
+ * Receive a request from another script and send a response:
+ * ```
+ * export function onRequest(addr: string, request: Request): void {
+ *     if (request.topic == "getValue") {
+ *         // Parse any data passed as arguments.
+ *         const key = request.parseData<string>()
+ *         const value = Store.getString(key)
+ *         // Send a response to the request
+ *         request.reply(value)
+ *     }
+ * }
+ * ```
+ *
+ * @param addr - Address of this script instance receiving the request.
+ * @param request - Request object.
+ */
+export function onRequest(
+	addr: string,
+	request: Request,
+): void {
+	// Handle the request
 }

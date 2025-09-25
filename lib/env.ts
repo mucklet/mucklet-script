@@ -81,6 +81,9 @@ export declare namespace Script {
 
 	@external("env", "script.request")
 	export function request<T>(addr: string, topic: string, data: string | null): T
+
+	@external("env", "script.broadcast")
+	export function broadcast(topic: string, data: string | null): void
 }
 
 export declare namespace Store {
