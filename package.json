@@ -35,7 +35,7 @@
     "tsconfig.json"
   ],
   "dependencies": {
-    "assemblyscript": "^0.28.2",
+    "assemblyscript": "^0.28.8",
     "isomorphic-ws": "^5.0.0",
     "json-as": "1.1.21",
     "resclient": "^2.5.0",
