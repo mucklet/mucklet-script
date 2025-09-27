@@ -1,3 +1,4 @@
+
 // @ts-nocheck
 export declare namespace Room {
 
@@ -53,10 +54,13 @@ export declare namespace Room {
 	export function unlistenExit(exitId: string | null): boolean
 
 	@external("env", "room.addCommand")
-	export function addCommand(key: string, cmd: string, priority: u32): void
+	export function addCommand(key: string, cmd: string, priority: u32, flags: u32): void
 
 	@external("env", "room.removeCommand")
 	export function removeCommand(key: string): boolean
+
+	@external("env", "room.profileIterator")
+	export function profileIterator(): i32
 }
 
 export declare namespace Script {
@@ -74,6 +78,12 @@ export declare namespace Script {
 
 	@external("env", "script.getChar")
 	export function getChar(charId: string): string | null
+
+	@external("env", "script.request")
+	export function request<T>(addr: string, topic: string, data: string | null): T
+
+	@external("env", "script.broadcast")
+	export function broadcast(topic: string, data: string | null): void
 }
 
 export declare namespace Store {
@@ -130,4 +140,12 @@ export declare namespace CmdAction {
 
 	@external("env", "cmdAction.useExit")
 	export function useExit(actionId: i32, exitId: string): void
+}
+
+export declare namespace RequestAction {
+	@external("env", "requestAction.reply")
+	export function reply(actionId: i32, result: string | null): void
+
+	@external("env", "requestAction.error")
+	export function error(actionId: i32, msg: string): void
 }

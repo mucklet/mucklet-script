@@ -11,6 +11,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;[onCharEvent](#oncharevent)  
 &nbsp;&nbsp;&nbsp;&nbsp;[onExitUse](#onexituse)  
 &nbsp;&nbsp;&nbsp;&nbsp;[onCommand](#oncommand)  
+&nbsp;&nbsp;&nbsp;&nbsp;[onRequest](#onrequest)  
 [API references](#api-references)
 
 Mucklet scripts are written in AssemblyScript, a strictly typed
@@ -38,8 +39,10 @@ Script file | Description
 [intercom_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_inside.ts) | An intercom script allowing communication with another room running the [intercom_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_outside.ts) script.
 [intercom_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_outside.ts) | An intercom script allowing communication with another room running the [intercom_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_inside.ts) script.
 [lock_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_inside.ts) | A script that locks a door preventing others from using an exit in the room running the [lock_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_outside.ts) script.
-[lock_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_outside.ts) | A script that prevents characters from using an exit locked by the script running the [lock_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_inside.ts) script.
+[lock_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_outside.ts) | A script that prevents characters from using an exit locked by the [lock_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_inside.ts) script.
 [secret_exit.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/secret_exit.ts) | A script that reveals a secret passage when the password "tapeworm" is spoken.
+[vip_list.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/vip_list.ts) | A script that manages a list of VIP characters, requested by another room running the [vip_guard.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/vip_guard.ts) script.
+[vip_guard.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/vip_guard.ts) | A script that prevents characters from using an exit unless they are listed as VIP character by the [vip_list.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/vip_list.ts) script.
 
 <h2 id="entry-points">Entry points</h2>
 
@@ -62,6 +65,8 @@ commands ([Room.addCommand](#function-room-addcommand)), or scheduled posts ([Sc
 with delay), will be removed, and [onActivate](#onactivate) will be called
 again on the new script version.
 
+<h4 id="onactivate-examples">Examples</h4>
+
 ```ts
 // Send a describe to the room and log a message to the console on activation.
 export function onActivate(): void {
@@ -73,14 +78,22 @@ export function onActivate(): void {
 <h3 id="onroomevent">onRoomEvent</h3>
 
 _onRoomEvent_ is called when an event occurs in the room, such as a _say_,
-_arrive_, or _sleep_. It requires that [Room.listen](#function-room-listen) has been called
-earlier, usually in the [onActivate](#onactivate) function.
+_arrive_, or _sleep_. [Room.listen](#function-room-listen) must have been called earlier to
+start listening to room events, usually in the [onActivate](#onactivate)
+function.
+
+<h4 id="onroomevent-parameters">Parameters</h4>
+
+* `addr` _(string)_: Address of this script instance receiving the event.
+* `ev` _(string)_: Event encoded as a json string.
+
+<h4 id="onroomevent-examples">Examples</h4>
 
 ```ts
 // Check the event type and decode the event.
 export function onRoomEvent(
-    addr: string, // Address of this script instance receiving the event.
-    ev: string,   // Event encoded as a json string.
+    addr: string,
+    ev: string,
 ): void {
     const eventType = Event.getType(ev);
     if (eventType == 'say') {
@@ -93,16 +106,27 @@ export function onRoomEvent(
 <h3 id="onmessage">onMessage</h3>
 
 _onMessage_ is called when another script sends a message to this script,
-using [Script.post](#function-script-post). It requires that [Script.listen](#function-script-listen) has been
-called earlier, usually in the [onActivate](#onactivate) function.
+using [Script.post](#function-script-post) or [Script.broadcast](#function-script-broadcast). [Script.listen](#function-script-listen)
+must have been called earlier to start listening to messages, usually in the
+[onActivate](#onactivate) function.
+
+<h4 id="onmessage-parameters">Parameters</h4>
+
+* `addr` _(string)_: Address of this script instance receiving the message.
+* `topic` _(string)_: Topic of the message. Determined by the sender.
+* `data` _(string | null)_: JSON encoded data of the message or null.
+  Determined by the sender.
+* `sender` _(string)_: Address of the sending script instance.
+
+<h4 id="onmessage-examples">Examples</h4>
 
 ```ts
 // Receive a message from another script to change room profile
 export function onMessage(
-    addr: string,        // Address of this script instance receiving the message.
-    topic: string,       // Topic of the message. Determined by the sender.
-    data: string | null, // JSON encoded data of the message or null. Determined by the sender.
-    sender: string,      // Address of the sending script instance.
+    addr: string,
+    topic: string,
+    data: string | null,
+    sender: string,
 ): void {
     if (topic == "changeProfile") {
         Room.setProfile(JSON.parse<string>(data))
@@ -113,17 +137,28 @@ export function onMessage(
 <h3 id="oncharevent">onCharEvent</h3>
 
 _onCharEvent_ is called when a character enters a room, leaves a room, or
-changes any of its properties while inside the room. It requires that
-[Room.listenCharEvent](#function-room-listencharevent) has been called earlier, usually in the
-[onActivate](#onactivate) function.
+changes any of its properties while inside the room.
+[Room.listenCharEvent](#function-room-listencharevent) must have been called earlier to start listening
+to character events, usually in the [onActivate](#onactivate) function.
+
+<h4 id="oncharevent-parameters">Parameters</h4>
+
+* `addr` _(string)_: Address of this script instance receiving the event.
+* `charId` _(string)_: ID of character.
+* `after` _(string | null)_: Character state after the event encoded as a
+  json string, or null if the character left the room.
+* `before` _(string | null)_: Character state before the event encoded as a
+  json string, or null if the character entered the room.
+
+<h4 id="oncharevent-examples">Examples</h4>
 
 ```ts
 // Output to log when a character arrives or leaves
 export function onCharEvent(
-    addr: string,          // Address of this script instance receiving the event.
-    charId: string,        // ID of character.
-    after: string | null,  // Character state after the event encoded as a json string, or null if the character left the room.
-    before: string | null, // Character state before the event encoded as a json string, or null if the character entered the room.
+    addr: string,
+    charId: string,
+    after: string | null,
+    before: string | null,
 ): void {
     if (after == null && before != null) {
         // If after is null, the character left
@@ -140,18 +175,26 @@ export function onCharEvent(
 
 <h3 id="onexituse">onExitUse</h3>
 
-_onExitUse_ is called when a character tries to use an exit. It requires that
-[Room.listenExit](#function-room-listenexit) has been called earlier, usually in the
-[onActivate](#onactivate) function. The script should call either
-[ExitAction.cancel](#method-exitaction-cancel) or [ExitAction.useExit](#method-exitaction-useexit) to determine what
-should happen. If neither method is called, the action will timeout after 1
-second, automatically canceling the exit use with a default message.
+_onExitUse_ is called when a character tries to use an exit.
+[Room.listenExit](#function-room-listenexit) must have been called earlier to start listening to
+exit use, usually in the [onActivate](#onactivate) function. The script
+should call either [ExitAction.cancel](#method-exitaction-cancel) or [ExitAction.useExit](#method-exitaction-useexit) to
+determine what should happen. If neither method is called, the action will
+timeout after 1 second, automatically canceling the exit use with a default
+message.
+
+<h4 id="onexituse-parameters">Parameters</h4>
+
+* `addr` _(string)_: Address of this script instance receiving the event.
+* `cmdAction` _([ExitAction](#class-exitaction))_: Exit action object.
+
+<h4 id="onexituse-examples">Examples</h4>
 
 ```ts
 // Prevent anyone from using an exit
 export function onExitUse(
-    addr: string,           // Address of this script instance receiving the event.
-    exitAction: ExitAction, // Exit action object.
+    addr: string,
+    exitAction: ExitAction,
 ): void {
     exitAction.cancel("The door seems to be locked.");
 }
@@ -159,12 +202,19 @@ export function onExitUse(
 
 <h3 id="oncommand">onCommand</h3>
 
-_onCommand_ is called when a character uses a custom command. It requires
-that [Room.addCommand](#function-room-addcommand) has been called earlier to register the command,
-usually in the [onActivate](#onactivate) function. The script may send a
-response to the caller using either [CmdAction.info](#method-cmdaction-info),
+_onCommand_ is called when a character uses a custom command.
+[Room.addCommand](#function-room-addcommand) must have been called earlier to register the
+command, usually in the [onActivate](#onactivate) function. The script may
+send a response to the caller using either [CmdAction.info](#method-cmdaction-info),
 [CmdAction.error](#method-cmdaction-error), or [CmdAction.useExit](#method-cmdaction-useexit), but it is not
 required. The response must be sent within 1 second from the call.
+
+<h4 id="oncommand-parameters">Parameters</h4>
+
+* `addr` _(string)_: Address of this script instance receiving the action.
+* `cmdAction` _([CmdAction](#class-cmdaction))_: Command action object.
+
+<h4 id="oncommand-examples">Examples</h4>
 
 ```ts
 // Adding a ping command on activation
@@ -181,6 +231,36 @@ export function onCommand(
 }
 ```
 
+<h3 id="onrequest">onRequest</h3>
+
+_onRequest_ is called when another script sends a request to this script,
+using [Script.request](#function-script-request). [Script.listen](#function-script-listen) must have been called
+earlier to start listening to requests, usually in the
+[onActivate](#onactivate) function.
+
+<h4 id="onrequest-parameters">Parameters</h4>
+
+* `addr` _(string)_: Address of this script instance receiving the request.
+* `request` _([Request](#class-request))_: Request object.
+
+<h4 id="onrequest-examples">Examples</h4>
+
+```ts
+// Receive a request from another script and send a response.
+export function onRequest(
+    addr: string,
+    request: Request,
+): void {
+    if (request.topic == "getValue") {
+        // Parse any data passed as arguments.
+        const key = request.parseData<string>()
+        const value = Store.getString(key)
+        // Send a response to the request
+        request.reply(value)
+    }
+}
+```
+
 <h1 id="api-references">API references</h1>
 
 [Type aliases](#type-aliases)  
@@ -189,6 +269,7 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;[type Timestamp](#type-timestamp)  
 [Enums](#enums)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum CharState](#enum-charstate)  
+&nbsp;&nbsp;&nbsp;&nbsp;[enum CommandFlag](#enum-commandflag)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum ExitIcon](#enum-exiticon)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum ExitNav](#enum-exitnav)  
 &nbsp;&nbsp;&nbsp;&nbsp;[enum IdleLevel](#enum-idlelevel)  
@@ -205,10 +286,20 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method useExit](#method-cmdaction-useexit)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Command](#class-command)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method field](#method-command-field)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setPriority](#method-command-setpriority)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setRestricted](#method-command-setrestricted)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method setUnlisted](#method-command-setunlisted)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method json](#method-command-json)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class ExitAction](#class-exitaction)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method useExit](#method-exitaction-useexit)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method cancel](#method-exitaction-cancel)  
+&nbsp;&nbsp;&nbsp;&nbsp;[class Request](#class-request)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method parseData](#method-request-parsedata)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method reply](#method-request-reply)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method error](#method-request-error)  
+&nbsp;&nbsp;&nbsp;&nbsp;[class Response](#class-response)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method isError](#method-response-iserror)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method parseResult](#method-response-parseresult)  
 [Namespaces](#namespaces)  
 &nbsp;&nbsp;&nbsp;&nbsp;[Event namespace](#namespace-event)  
 &nbsp;&nbsp;&nbsp;&nbsp;[Field namespace](#namespace-field)  
@@ -349,6 +440,7 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;[function Room.listenCharEvent](#function-room-listencharevent)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Room.listenExit](#function-room-listenexit)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Room.privateDescribe](#function-room-privatedescribe)  
+&nbsp;&nbsp;&nbsp;&nbsp;[function Room.profileIterator](#function-room-profileiterator)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Room.removeCommand](#function-room-removecommand)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Room.setExit](#function-room-setexit)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Room.setRoom](#function-room-setroom)  
@@ -375,15 +467,25 @@ export function onCommand(
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method close](#method-room-exititerator-close)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getExit](#method-room-exititerator-getexit)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.MoveMsgs](#class-room-movemsgs)  
+&nbsp;&nbsp;&nbsp;&nbsp;[class Room.Profile](#class-room-profile)  
+&nbsp;&nbsp;&nbsp;&nbsp;[class Room.ProfileIterator](#class-room-profileiterator)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method next](#method-room-profileiterator-next)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method rewind](#method-room-profileiterator-rewind)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getID](#method-room-profileiterator-getid)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method isValid](#method-room-profileiterator-isvalid)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method close](#method-room-profileiterator-close)  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[method getProfile](#method-room-profileiterator-getprofile)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Room.RoomDetails](#class-room-roomdetails)  
 
 <h3 id="namespace-script">Script namespace</h3>
   
 [Script functions](#script-functions)  
+&nbsp;&nbsp;&nbsp;&nbsp;[function Script.broadcast](#function-script-broadcast)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Script.cancelPost](#function-script-cancelpost)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Script.getChar](#function-script-getchar)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Script.listen](#function-script-listen)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Script.post](#function-script-post)  
+&nbsp;&nbsp;&nbsp;&nbsp;[function Script.request](#function-script-request)  
 &nbsp;&nbsp;&nbsp;&nbsp;[function Script.unlisten](#function-script-unlisten)  
 [Script classes](#script-classes)  
 &nbsp;&nbsp;&nbsp;&nbsp;[class Script.Char](#class-script-char)  
@@ -457,6 +559,20 @@ const enum CharState {
 ```
 
 States that a character may have.
+
+---
+
+<h3 id="enum-commandflag">enum CommandFlag</h3>
+
+```ts
+const enum CommandFlag {
+    None       = 0,
+    Restricted = 1,
+    Unlisted   = 2,
+}
+```
+
+Command flag.
 
 ---
 
@@ -608,7 +724,7 @@ Responds to the command action with an info message.
 
 <h4>Parameters</h4>
 
-* `msg` <i>(string)</i>: Info message.
+* `msg` <i>(string)</i>: Info message. It may be formatted with info formatting and span multiple paragraphs.
 
 
 ---
@@ -623,7 +739,7 @@ Responds to the command action with an error message.
 
 <h4>Parameters</h4>
 
-* `msg` <i>(string)</i>: Error message.
+* `msg` <i>(string)</i>: Error message. It may be formatted and span multiple paragraphs.
 
 
 ---
@@ -667,6 +783,8 @@ Creates a new instance of the [Command](#class-command) class.
 
 <h4 id="class-command-properties">class Command properties</h4>
 
+* `priority` <i>(u32)</i>
+* `flags` <i>(u32)</i>
 * `pattern` <i>(string)</i>
 * `desc` <i>(string)</i>
 
@@ -685,6 +803,58 @@ Sets the definition for a command field.
 
 * `key` <i>(string)</i>: Field <key> as found in command pattern.
 * `def` <i>([CommandField](#interface-commandfield))</i>: Field definition.
+
+<h4>Returns</h4>
+
+* <i>([Command](#class-command))</i>: This instance, allowing method chaining.
+
+
+---
+
+<h3 id="method-command-setpriority">method Command.setPriority</h3>
+
+```ts
+setPriority(priority: u32): Command
+```
+
+Sets command priority.
+
+<h4>Parameters</h4>
+
+* `priority` <i>(u32)</i>: Priority for sort order (descending) and when two or more
+commands match the same input. Higher priority is selected first.
+
+<h4>Returns</h4>
+
+* <i>([Command](#class-command))</i>: This instance, allowing method chaining.
+
+
+---
+
+<h3 id="method-command-setrestricted">method Command.setRestricted</h3>
+
+```ts
+setRestricted(): Command
+```
+
+Sets the command as restricted, only accessible to character able to edit
+the room.
+
+<h4>Returns</h4>
+
+* <i>([Command](#class-command))</i>: This instance, allowing method chaining.
+
+
+---
+
+<h3 id="method-command-setunlisted">method Command.setUnlisted</h3>
+
+```ts
+setUnlisted(): Command
+```
+
+Sets the command as unlisted, not showing up in the interface. It can
+still be used, and will be listed using `list commands`.
 
 <h4>Returns</h4>
 
@@ -755,6 +925,108 @@ shown.
 <h4>Parameters</h4>
 
 * `msg` <i>(string | null)</i>: Info message to show, or default message if null.
+
+
+---
+
+<h3 id="class-request">class Request</h3>
+
+Request is a request sent from another script.
+
+<h4 id="class-request-properties">class Request properties</h4>
+
+* `actionId` <i>(i32)</i>: Action ID
+* `topic` <i>(string)</i>: Request topic
+* `data` <i>(string)</i>: Request data encoded as JSON.
+* `sender` <i>(string)</i>: Request sender address.
+
+
+---
+
+<h3 id="method-request-parsedata">method Request.parseData</h3>
+
+```ts
+parseData<T>(): T
+```
+
+Parses the data into a value of type T.
+
+<h4>Returns</h4>
+
+* <i>(T)</i>
+
+
+---
+
+<h3 id="method-request-reply">method Request.reply</h3>
+
+```ts
+reply(result: string | null = null): void
+```
+
+Responds to the request with a reply containing JSON encoded result.
+
+<h4>Parameters</h4>
+
+* `result` <i>(string | null)</i>: Reply data encoded as JSON.
+
+
+---
+
+<h3 id="method-request-error">method Request.error</h3>
+
+```ts
+error(msg: string): void
+```
+
+Responds to the request with an error message.
+
+<h4>Parameters</h4>
+
+* `msg` <i>(string)</i>: Error message.
+
+
+---
+
+<h3 id="class-response">class Response</h3>
+
+Response is a response to a request sent by the script.
+
+<h4 id="class-response-properties">class Response properties</h4>
+
+* `result` <i>(string | null)</i>: Result encoded as JSON.
+* `error` <i>(string | null)</i>: Error string or null on no error.
+
+
+---
+
+<h3 id="method-response-iserror">method Response.isError</h3>
+
+```ts
+isError(): boolean
+```
+
+Returns true if it is an error response by checking that the error
+property is not a null value.
+
+<h4>Returns</h4>
+
+* <i>(boolean)</i>
+
+
+---
+
+<h3 id="method-response-parseresult">method Response.parseResult</h3>
+
+```ts
+parseResult<T>(): T
+```
+
+Parses the result into a value of type T.
+
+<h4>Returns</h4>
+
+* <i>(T)</i>
 
 
 <h2 id="namespaces">Namespaces</h2>
@@ -2066,6 +2338,10 @@ new JSON.Obj()
 ```
 
 
+<h4 id="class-json-obj-properties">class JSON.Obj properties</h4>
+
+* `storage` <i>(Map&lt;string, [JSON.Value](#class-json-value)&gt;)</i>
+
 
 ---
 
@@ -2380,8 +2656,7 @@ See also: [Writing scripts - Custom commands](https://github.com/mucklet/mucklet
 
 * `keyword` <i>(string)</i>: Keyword for the command.
 * `cmd` <i>([Command](#class-command))</i>: Command to add.
-* `priority` <i>(u32)</i>: Priority for sort order (descending) and when two or
-more commands match the same input. Higher priority is selected first.
+* `priority` <i>(u32)</i>: Deprecated: Use Command.setPriority instead.
 
 
 ---
@@ -2631,6 +2906,21 @@ targeted characters.
 
 ---
 
+<h3 id="function-room-profileiterator">function Room.profileIterator</h3>
+
+```ts
+Room.profileIterator(): ProfileIterator
+```
+
+Gets an iterator for the profiles for the room. Order is undefined.
+
+<h4>Returns</h4>
+
+* <i>([Room.ProfileIterator](#class-room-profileiterator))</i>
+
+
+---
+
 <h3 id="function-room-removecommand">function Room.removeCommand</h3>
 
 ```ts
@@ -2840,7 +3130,7 @@ Room character.
 
 <h4 id="class-room-char-properties">class Room.Char properties</h4>
 
-* `id` <i>(string)</i>: Character ID.
+* `id` <i>([ID](#type-id))</i>: Character ID.
 * `name` <i>(string)</i>: Character name.
 * `surname` <i>(string)</i>: Character surname.
 * `avatar` <i>([ID](#type-id))</i>: Character avatar.
@@ -2969,7 +3259,7 @@ Room exit.
 
 <h4 id="class-room-exit-properties">class Room.Exit properties</h4>
 
-* `id` <i>(string)</i>: Exit ID.
+* `id` <i>([ID](#type-id))</i>: Exit ID.
 * `keys` <i>(Array&lt;string&gt;)</i>: Exit keys.
 * `name` <i>(string)</i>: Exit name.
 * `icon` <i>([ExitIcon](#enum-exiticon))</i>: Exit icon.
@@ -3107,6 +3397,129 @@ Move messages used when entering or leaving a room.
 
 ---
 
+<h3 id="class-room-profile">class Room.Profile</h3>
+
+Room profile.
+
+<h4 id="class-room-profile-properties">class Room.Profile properties</h4>
+
+* `id` <i>([ID](#type-id))</i>: Profile ID.
+* `name` <i>(string)</i>: Profile name.
+* `key` <i>(string)</i>: Profile key.
+* `desc` <i>(string)</i>: Profile desc.
+* `image` <i>([ID](#type-id))</i>: Profile image.
+
+
+---
+
+<h3 id="class-room-profileiterator">class Room.ProfileIterator</h3>
+
+
+
+```ts
+new Room.ProfileIterator(iterator: i32)
+```
+
+Constructor of the Iterator instance.
+
+<h4>Parameters</h4>
+
+* `iterator` <i>(i32)</i>
+
+
+<h4 id="class-room-profileiterator-properties">class Room.ProfileIterator properties</h4>
+
+* `iterator` <i>(i32)</i>
+
+
+---
+
+<h3 id="method-room-profileiterator-next">method Room.ProfileIterator.next</h3>
+
+```ts
+next(): void
+```
+
+Advances the iterator by one. Always check isValid() after a next()
+to ensure have not reached the end of the iterator.
+
+
+---
+
+<h3 id="method-room-profileiterator-rewind">method Room.ProfileIterator.rewind</h3>
+
+```ts
+rewind(): void
+```
+
+Rewinds the iterator cursor all the way back to first position, which
+would be the smallest key, or greatest key if inReverse() was called.
+
+Any iterator prefix passed to withPrefix() will be used on rewind.
+The iterator is rewound by default.
+
+
+---
+
+<h3 id="method-room-profileiterator-getid">method Room.ProfileIterator.getID</h3>
+
+```ts
+getID(): ID
+```
+
+Returns the key string of the current key-value pair. It will abort
+if the cursor has reached the end of the iterator.
+
+<h4>Returns</h4>
+
+* <i>([ID](#type-id))</i>
+
+
+---
+
+<h3 id="method-room-profileiterator-isvalid">method Room.ProfileIterator.isValid</h3>
+
+```ts
+isValid(): boolean
+```
+
+Returns false when the cursor is at the end of the iterator.
+
+<h4>Returns</h4>
+
+* <i>(boolean)</i>
+
+
+---
+
+<h3 id="method-room-profileiterator-close">method Room.ProfileIterator.close</h3>
+
+```ts
+close(): void
+```
+
+Closes the iterator. Any further calls to the iterator will cause an
+error. May be called multiple times.
+
+
+---
+
+<h3 id="method-room-profileiterator-getprofile">method Room.ProfileIterator.getProfile</h3>
+
+```ts
+getProfile(): Profile
+```
+
+Returns the current profile. It will abort if the cursor has reached the
+end of the iterator.
+
+<h4>Returns</h4>
+
+* <i>([Room.Profile](#class-room-profile))</i>
+
+
+---
+
 <h3 id="class-room-roomdetails">class Room.RoomDetails</h3>
 
 Detailed room information.
@@ -3133,6 +3546,27 @@ Detailed room information.
 ---
 
 <h2 id="script-functions">Script functions</h2>
+
+<h3 id="function-script-broadcast">function Script.broadcast</h3>
+
+```ts
+Script.broadcast(topic: string, data: string | null = null): void
+```
+
+Broadcasts a message to all scripts listening to this script. Other room
+scripts in the same room listening to any message will also receive the
+message. The receiving script will get the message through the
+[onMessage](#onmessage) entry point.
+
+To get other scripts to listen for broadcast, see [Script.listen](#function-script-listen).
+
+<h4>Parameters</h4>
+
+* `topic` <i>(string)</i>: Message topic. May be any kind of string.
+* `data` <i>(string | null)</i>: Additional data. Must be valid JSON.
+
+
+---
 
 <h3 id="function-script-cancelpost">function Script.cancelPost</h3>
 
@@ -3185,12 +3619,15 @@ To get character description or image info use Room.getChar instead.
 Script.listen(addrs: Array<string> | null = null): void
 ```
 
-Starts listening for posted messages from any of the given `addr`
-addresses. If an address is a non-instance room, it will also listen to
-posted messages from any instance of that room.
+Starts listening for messages and requests, sent with
+[Script.post](#function-script-post), [Script.broadcast](#function-script-broadcast), and
+[Script.request](#function-script-request), from any of the given `addr` addresses. If an
+address is a non-instance room, it will also listen to posted messages
+from any instance of that room.
 
-If no `addr` is provided, the script will listen to posts from _any_
-source, including scripts and bots controlled by other players.
+If no `addr` is provided, the script will listen to posts and requests
+from _any_ source, including scripts and bots controlled by other
+players, and also listen for broadcasts by scripts in the same room.
 
 Posts from the current script does not require listening. A script can
 always post to itself.
@@ -3214,7 +3651,9 @@ help roomscript
 Script.post(addr: string, topic: string, data: string | null = null, delay: i64 = 0): ID | null
 ```
 
-Posts a message to another script with the address `addr`.
+Posts a message to another script with the address `addr`. The receiving
+script will get the message through the [onMessage](#onmessage) entry
+point.
 
 To get the address of a room script, use the `roomscript` command. For
 more info, type:
@@ -3232,6 +3671,43 @@ help roomscript
 <h4>Returns</h4>
 
 * <i>([ID](#type-id) | null)</i>: Schedule [ID](#type-id) or null if the message was posted without delay of if the receiving script was not listening.
+
+
+---
+
+<h3 id="function-script-request">function Script.request</h3>
+
+```ts
+Script.request(addr: string, topic: string, data: string | null = null): Response
+```
+
+Sends a request to another script with the address `addr`. The receiving
+script will get the request through the [onRequest](#onrequest) entry
+point. The requesting script will wait and block until a response is
+received, or a timeout occurs.
+
+Errors will be returned as part of the response. The script should call
+[Response.isError](#method-response-iserror) to check if an error was returned. In case of
+errors, calling [Response.parseResult](#method-response-parseresult) will cause the script to
+abort. Requests to self, or circular requests (A -> B -> A) will always
+return with an error.
+
+
+To get the address of a room script, use the `roomscript` command. For
+more info, type:
+```
+help roomscript
+```
+
+<h4>Parameters</h4>
+
+* `addr` <i>(string)</i>: Address of target script. If addr is "#", it will be a post to the current script instance.
+* `topic` <i>(string)</i>: Message topic. May be any kind of string.
+* `data` <i>(string | null)</i>: Additional data to be sent with the request. Must be valid JSON.
+
+<h4>Returns</h4>
+
+* <i>([Response](#class-response))</i>: Response to the request.
 
 
 ---

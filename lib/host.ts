@@ -24,8 +24,10 @@
  * [intercom_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_inside.ts) | An intercom script allowing communication with another room running the [intercom_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_outside.ts) script.
  * [intercom_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_outside.ts) | An intercom script allowing communication with another room running the [intercom_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/intercom_inside.ts) script.
  * [lock_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_inside.ts) | A script that locks a door preventing others from using an exit in the room running the [lock_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_outside.ts) script.
- * [lock_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_outside.ts) | A script that prevents characters from using an exit locked by the script running the [lock_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_inside.ts) script.
+ * [lock_outside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_outside.ts) | A script that prevents characters from using an exit locked by the [lock_inside.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/lock_inside.ts) script.
  * [secret_exit.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/secret_exit.ts) | A script that reveals a secret passage when the password "tapeworm" is spoken.
+ * [vip_list.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/vip_list.ts) | A script that manages a list of VIP characters, requested by another room running the [vip_guard.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/vip_guard.ts) script.
+ * [vip_guard.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/vip_guard.ts) | A script that prevents characters from using an exit unless they are listed as VIP character by the [vip_list.ts](https://github.com/mucklet/mucklet-script/blob/master/examples/vip_list.ts) script.
  *
  * # Entry points
  *
@@ -48,6 +50,8 @@
  * with delay), will be removed, and [onActivate](#onactivate) will be called
  * again on the new script version.
  *
+ * ### Examples
+ *
  * ```ts
  * // Send a describe to the room and log a message to the console on activation.
  * export function onActivate(): void {
@@ -59,14 +63,22 @@
  * ## onRoomEvent
  *
  * _onRoomEvent_ is called when an event occurs in the room, such as a _say_,
- * _arrive_, or _sleep_. It requires that {@link Room.listen} has been called
- * earlier, usually in the [onActivate](#onactivate) function.
+ * _arrive_, or _sleep_. {@link Room.listen} must have been called earlier to
+ * start listening to room events, usually in the [onActivate](#onactivate)
+ * function.
+ *
+ * ### Parameters
+ *
+ * * `addr` _(string)_: Address of this script instance receiving the event.
+ * * `ev` _(string)_: Event encoded as a json string.
+ *
+ * ### Examples
  *
  * ```ts
  * // Check the event type and decode the event.
  * export function onRoomEvent(
- *     addr: string, // Address of this script instance receiving the event.
- *     ev: string,   // Event encoded as a json string.
+ *     addr: string,
+ *     ev: string,
  * ): void {
  *     const eventType = Event.getType(ev);
  *     if (eventType == 'say') {
@@ -79,16 +91,27 @@
  * ## onMessage
  *
  * _onMessage_ is called when another script sends a message to this script,
- * using {@link Script.post}. It requires that {@link Script.listen} has been
- * called earlier, usually in the [onActivate](#onactivate) function.
+ * using {@link Script.post} or {@link Script.broadcast}. {@link Script.listen}
+ * must have been called earlier to start listening to messages, usually in the
+ * [onActivate](#onactivate) function.
+ *
+ * ### Parameters
+ *
+ * * `addr` _(string)_: Address of this script instance receiving the message.
+ * * `topic` _(string)_: Topic of the message. Determined by the sender.
+ * * `data` _(string | null)_: JSON encoded data of the message or null.
+ *   Determined by the sender.
+ * * `sender` _(string)_: Address of the sending script instance.
+ *
+ * ### Examples
  *
  * ```ts
  * // Receive a message from another script to change room profile
  * export function onMessage(
- *     addr: string,        // Address of this script instance receiving the message.
- *     topic: string,       // Topic of the message. Determined by the sender.
- *     data: string | null, // JSON encoded data of the message or null. Determined by the sender.
- *     sender: string,      // Address of the sending script instance.
+ *     addr: string,
+ *     topic: string,
+ *     data: string | null,
+ *     sender: string,
  * ): void {
  *     if (topic == "changeProfile") {
  *         Room.setProfile(JSON.parse<string>(data))
@@ -99,17 +122,28 @@
  * ## onCharEvent
  *
  * _onCharEvent_ is called when a character enters a room, leaves a room, or
- * changes any of its properties while inside the room. It requires that
- * {@link Room.listenCharEvent} has been called earlier, usually in the
- * [onActivate](#onactivate) function.
+ * changes any of its properties while inside the room.
+ * {@link Room.listenCharEvent} must have been called earlier to start listening
+ * to character events, usually in the [onActivate](#onactivate) function.
+ *
+ * ### Parameters
+ *
+ * * `addr` _(string)_: Address of this script instance receiving the event.
+ * * `charId` _(string)_: ID of character.
+ * * `after` _(string | null)_: Character state after the event encoded as a
+ *   json string, or null if the character left the room.
+ * * `before` _(string | null)_: Character state before the event encoded as a
+ *   json string, or null if the character entered the room.
+ *
+ * ### Examples
  *
  * ```ts
  * // Output to log when a character arrives or leaves
  * export function onCharEvent(
- *     addr: string,          // Address of this script instance receiving the event.
- *     charId: string,        // ID of character.
- *     after: string | null,  // Character state after the event encoded as a json string, or null if the character left the room.
- *     before: string | null, // Character state before the event encoded as a json string, or null if the character entered the room.
+ *     addr: string,
+ *     charId: string,
+ *     after: string | null,
+ *     before: string | null,
  * ): void {
  *     if (after == null && before != null) {
  *         // If after is null, the character left
@@ -126,18 +160,26 @@
  *
  * ## onExitUse
  *
- * _onExitUse_ is called when a character tries to use an exit. It requires that
- * {@link Room.listenExit} has been called earlier, usually in the
- * [onActivate](#onactivate) function. The script should call either
- * {@link ExitAction.cancel} or {@link ExitAction.useExit} to determine what
- * should happen. If neither method is called, the action will timeout after 1
- * second, automatically canceling the exit use with a default message.
+ * _onExitUse_ is called when a character tries to use an exit.
+ * {@link Room.listenExit} must have been called earlier to start listening to
+ * exit use, usually in the [onActivate](#onactivate) function. The script
+ * should call either {@link ExitAction.cancel} or {@link ExitAction.useExit} to
+ * determine what should happen. If neither method is called, the action will
+ * timeout after 1 second, automatically canceling the exit use with a default
+ * message.
+ *
+ * ### Parameters
+ *
+ * * `addr` _(string)_: Address of this script instance receiving the event.
+ * * `cmdAction` _({@link ExitAction})_: Exit action object.
+ *
+ * ### Examples
  *
  * ```ts
  * // Prevent anyone from using an exit
  * export function onExitUse(
- *     addr: string,           // Address of this script instance receiving the event.
- *     exitAction: ExitAction, // Exit action object.
+ *     addr: string,
+ *     exitAction: ExitAction,
  * ): void {
  *     exitAction.cancel("The door seems to be locked.");
  * }
@@ -145,12 +187,19 @@
  *
  * ## onCommand
  *
- * _onCommand_ is called when a character uses a custom command. It requires
- * that {@link Room.addCommand} has been called earlier to register the command,
- * usually in the [onActivate](#onactivate) function. The script may send a
- * response to the caller using either {@link CmdAction.info},
+ * _onCommand_ is called when a character uses a custom command.
+ * {@link Room.addCommand} must have been called earlier to register the
+ * command, usually in the [onActivate](#onactivate) function. The script may
+ * send a response to the caller using either {@link CmdAction.info},
  * {@link CmdAction.error}, or {@link CmdAction.useExit}, but it is not
  * required. The response must be sent within 1 second from the call.
+ *
+ * ### Parameters
+ *
+ * * `addr` _(string)_: Address of this script instance receiving the action.
+ * * `cmdAction` _({@link CmdAction})_: Command action object.
+ *
+ * ### Examples
  *
  * ```ts
  * // Adding a ping command on activation
@@ -167,6 +216,36 @@
  * }
  * ```
  *
+ * ## onRequest
+ *
+ * _onRequest_ is called when another script sends a request to this script,
+ * using {@link Script.request}. {@link Script.listen} must have been called
+ * earlier to start listening to requests, usually in the
+ * [onActivate](#onactivate) function.
+ *
+ * ### Parameters
+ *
+ * * `addr` _(string)_: Address of this script instance receiving the request.
+ * * `request` _({@link Request})_: Request object.
+ *
+ * ### Examples
+ *
+ * ```ts
+ * // Receive a request from another script and send a response.
+ * export function onRequest(
+ *     addr: string,
+ *     request: Request,
+ * ): void {
+ *     if (request.topic == "getValue") {
+ *         // Parse any data passed as arguments.
+ *         const key = request.parseData<string>()
+ *         const value = Store.getString(key)
+ *         // Send a response to the request
+ *         request.reply(value)
+ *     }
+ * }
+ * ```
+ *
  * @packageDocumentation
  */
 
@@ -178,6 +257,7 @@ import {
 	Iterator as iterator_binding,
 	ExitAction as exitaction_binding,
 	CmdAction as cmdaction_binding,
+	RequestAction as requestaction_binding,
 } from "./env";
 import { JSON } from 'json-as'
 export { JSON };
@@ -235,6 +315,12 @@ export const enum ExitIcon {
 	In = 11,
 	Out = 12,
 }
+/** Command flag. */
+export const enum CommandFlag {
+	None = 0,
+	Restricted = 1,
+	Unlisted = 2,
+}
 
 // @ts-expect-error
 @inline
@@ -249,11 +335,54 @@ function keyToBuffer<T>(key: T): ArrayBuffer {
 }
 
 /**
+ * CmdAction is a command action triggered by a character.
+ */
+@json
+export class CmdAction {
+	/** Action ID */
+	actionId: i32 = 0;
+	/** Character performing the action */
+	char: Event.Char = new Event.Char();
+	/** Command keyword */
+	keyword: string = "";
+	/** Command data in JSON format. */
+	data: string = "";
+
+	/**
+	 * Responds to the command action with an info message.
+	 * @param msg Info message. It may be formatted with info formatting and span multiple paragraphs.
+	 */
+	info(msg: string): void {
+		cmdaction_binding.info(this.actionId, msg);
+	}
+
+	/**
+	 * Responds to the command action with an error message.
+	 * @param msg Error message. It may be formatted and span multiple paragraphs.
+	 */
+	error(msg: string): void {
+		cmdaction_binding.error(this.actionId, msg);
+	}
+
+	/**
+	 * Responds to the command action by making the character use an exit.
+	 *
+	 * The exit may be hidden or inactive. May not be used in combination with
+	 * info or error.
+	 * @param exitId Exit ID.
+	 */
+	useExit(exitId: ID): void {
+		cmdaction_binding.useExit(this.actionId, exitId);
+	}
+}
+
+/**
  * ExitAction is an action representing an intercepted use of an exit.
  *
  * It is passed to [onExitUse](#onexituse) entry point when a character tries to
  * use an exit that is being listen to with {@link Room.listenExit}.
  */
+@json
 export class ExitAction {
 	/** Action ID */
 	actionId: i32 = 0;
@@ -285,43 +414,68 @@ export class ExitAction {
 }
 
 /**
- * CmdAction is a command action triggered by a character.
+ * Request is a request sent from another script.
  */
-export class CmdAction {
+@json
+export class Request {
 	/** Action ID */
 	actionId: i32 = 0;
-	/** Character performing the action */
-	char: Event.Char = new Event.Char();
-	/** Command keyword */
-	keyword: string = "";
-	/** Command data in JSON format. */
+	/** Request topic */
+	topic: string = "";
+	/** Request data encoded as JSON. */
 	data: string = "";
+	/** Request sender address. */
+	sender: string = "";
 
 	/**
-	 * Responds to the command action with an info message.
-	 * @param msg Info message.
+	 * Parses the data into a value of type T.
 	 */
-	info(msg: string): void {
-		cmdaction_binding.info(this.actionId, msg);
+	parseData<T>(): T {
+		return JSON.parse<T>(this.data);
 	}
 
 	/**
-	 * Responds to the command action with an error message.
+	 * Responds to the request with a reply containing JSON encoded result.
+	 * @param result Reply data encoded as JSON.
+	 */
+	reply(result: string | null = null): void {
+		requestaction_binding.reply(this.actionId, result);
+	}
+
+	/**
+	 * Responds to the request with an error message.
 	 * @param msg Error message.
 	 */
 	error(msg: string): void {
-		cmdaction_binding.error(this.actionId, msg);
+		requestaction_binding.error(this.actionId, msg);
+	}
+}
+
+/**
+ * Response is a response to a request sent by the script.
+ */
+export class Response {
+	/** Result encoded as JSON. */
+	result: string | null = null;
+	/** Error string or null on no error. */
+	error: string | null = null;
+
+	/**
+	 * Returns true if it is an error response by checking that the error
+	 * property is not a null value.
+	 */
+	isError(): boolean {
+		return this.error != null;
 	}
 
 	/**
-	 * Responds to the command action by making the character use an exit.
-	 *
-	 * The exit may be hidden or inactive. May not be used in combination with
-	 * info or error.
-	 * @param exitId Exit ID.
+	 * Parses the result into a value of type T.
 	 */
-	useExit(exitId: ID): void {
-		cmdaction_binding.useExit(this.actionId, exitId);
+	parseResult<T>(): T {
+		if (this.result == null) {
+			abort("no result to parse")
+		}
+		return JSON.parse<T>(this.result!);
 	}
 }
 
@@ -826,6 +980,9 @@ export interface CommandField {
  */
 export class Command {
 	private fieldDefs: Map<string, string> = new Map<string, string>();
+	public priority: u32 = 0;
+	public flags: u32 = 0;
+
 	/**
 	 * Creates a new instance of the {@link Command} class.
 	 */
@@ -848,6 +1005,37 @@ export class Command {
 			(opts != null ? `,"opts":` + opts : "") +
 		"}");
 		this.fieldDefs.set(key, fieldDef);
+		return this;
+	}
+
+	/**
+	 * Sets command priority.
+	 * @param priority Priority for sort order (descending) and when two or more
+	 * commands match the same input. Higher priority is selected first.
+	 * @returns This instance, allowing method chaining.
+	 */
+	setPriority(priority: u32): Command {
+		this.priority = priority;
+		return this;
+	}
+
+	/**
+	 * Sets the command as restricted, only accessible to character able to edit
+	 * the room.
+	 * @returns This instance, allowing method chaining.
+	 */
+	setRestricted(): Command {
+		this.flags |= CommandFlag.Restricted;
+		return this;
+	}
+
+	/**
+	 * Sets the command as unlisted, not showing up in the interface. It can
+	 * still be used, and will be listed using `list commands`.
+	 * @returns This instance, allowing method chaining.
+	 */
+	setUnlisted(): Command {
+		this.flags |= CommandFlag.Unlisted;
 		return this;
 	}
 
@@ -932,7 +1120,7 @@ export namespace Room {
 	@json
 	export class Char {
 		/** Character ID. */
-		id: string = "";
+		id: ID = "";
 		/** Character name. */
 		name: string = "";
 		/** Character surname. */
@@ -961,7 +1149,7 @@ export namespace Room {
 	@json
 	export class Exit {
 		/** Exit ID. */
-		id: string = "";
+		id: ID = "";
 		/** Exit keys. */
 		keys: string[] = [];
 		/** Exit name. */
@@ -986,6 +1174,23 @@ export namespace Room {
 		inactive: boolean = false;
 		/** Is transparent flag. */
 		transparent: boolean = false;
+	}
+
+	/**
+	 * Room profile.
+	 */
+	@json
+	export class Profile {
+		/** Profile ID. */
+		id: ID = "";
+		/** Profile name. */
+		name: string = "";
+		/** Profile key. */
+		key: string = "";
+		/** Profile desc. */
+		desc: string = "";
+		/** Profile image. */
+		image: ID = "";
 	}
 
 	/**
@@ -1170,6 +1375,13 @@ export namespace Room {
 	}
 
 	/**
+	 * Gets an iterator for the profiles for the room. Order is undefined.
+	 */
+	export function profileIterator(): ProfileIterator {
+		return new ProfileIterator(room_binding.profileIterator());
+	}
+
+	/**
 	 * Gets a character in the room by ID.
 	 * @param charId - Character ID.
 	 * @returns {@link Char} object or null if the character is not found in the room.
@@ -1263,11 +1475,13 @@ export namespace Room {
 	 *
 	 * @param keyword - Keyword for the command.
 	 * @param cmd - Command to add.
-	 * @param priority - Priority for sort order (descending) and when two or
-	 * more commands match the same input. Higher priority is selected first.
+	 * @param priority - Deprecated: Use Command.setPriority instead.
 	 */
 	export function addCommand(keyword: string, cmd: Command, priority: u32 = 0): void {
-		return room_binding.addCommand(keyword, cmd.json(), priority);
+		if (cmd.priority != 0) {
+			priority = cmd.priority;
+		}
+		return room_binding.addCommand(keyword, cmd.json(), priority, cmd.flags);
 	}
 
 	/**
@@ -1297,6 +1511,17 @@ export namespace Room {
 		getExit(): Exit {
 			// @ts-expect-error
 			return JSON.parse<Exit>(String.UTF8.decode(iterator_binding.value(super.iterator)));
+		}
+	}
+
+	export class ProfileIterator extends BaseIterator {
+		/**
+		 * Returns the current profile. It will abort if the cursor has reached the
+		 * end of the iterator.
+		 */
+		getProfile(): Profile {
+			// @ts-expect-error
+			return JSON.parse<Profile>(String.UTF8.decode(iterator_binding.value(super.iterator)));
 		}
 	}
 }
@@ -1332,12 +1557,15 @@ export namespace Script {
 	}
 
 	/**
-	 * Starts listening for posted messages from any of the given `addr`
-	 * addresses. If an address is a non-instance room, it will also listen to
-	 * posted messages from any instance of that room.
+	 * Starts listening for messages and requests, sent with
+	 * {@link Script.post}, {@link Script.broadcast}, and
+	 * {@link Script.request}, from any of the given `addr` addresses. If an
+	 * address is a non-instance room, it will also listen to posted messages
+	 * from any instance of that room.
 	 *
-	 * If no `addr` is provided, the script will listen to posts from _any_
-	 * source, including scripts and bots controlled by other players.
+	 * If no `addr` is provided, the script will listen to posts and requests
+	 * from _any_ source, including scripts and bots controlled by other
+	 * players, and also listen for broadcasts by scripts in the same room.
 	 *
 	 * Posts from the current script does not require listening. A script can
 	 * always post to itself.
@@ -1371,7 +1599,9 @@ export namespace Script {
 	}
 
 	/**
-	 * Posts a message to another script with the address `addr`.
+	 * Posts a message to another script with the address `addr`. The receiving
+	 * script will get the message through the [onMessage](#onmessage) entry
+	 * point.
 	 *
 	 * To get the address of a room script, use the `roomscript` command. For
 	 * more info, type:
@@ -1403,6 +1633,48 @@ export namespace Script {
 			return false;
 		}
 		return script_binding.cancelPost(scheduleId);
+	}
+
+	/**
+	 * Sends a request to another script with the address `addr`. The receiving
+	 * script will get the request through the [onRequest](#onrequest) entry
+	 * point. The requesting script will wait and block until a response is
+	 * received, or a timeout occurs.
+	 *
+	 * Errors will be returned as part of the response. The script should call
+	 * {@link Response.isError} to check if an error was returned. In case of
+	 * errors, calling {@link Response.parseResult} will cause the script to
+	 * abort. Requests to self, or circular requests (A -> B -> A) will always
+	 * return with an error.
+	 *
+	 *
+	 * To get the address of a room script, use the `roomscript` command. For
+	 * more info, type:
+	 * ```
+	 * help roomscript
+	 * ```
+	 *
+	 * @param addr - Address of target script. If addr is "#", it will be a post to the current script instance.
+	 * @param topic - Message topic. May be any kind of string.
+	 * @param data - Additional data to be sent with the request. Must be valid JSON.
+	 * @returns Response to the request.
+	 */
+	export function request(addr: string, topic: string, data: string | null = null): Response {
+		return script_binding.request<Response>(addr, topic, data);
+	}
+
+	/**
+	 * Broadcasts a message to all scripts listening to this script. Other room
+	 * scripts in the same room listening to any message will also receive the
+	 * message. The receiving script will get the message through the
+	 * [onMessage](#onmessage) entry point.
+	 *
+	 * To get other scripts to listen for broadcast, see {@link Script.listen}.
+	 * @param topic - Message topic. May be any kind of string.
+	 * @param data - Additional data. Must be valid JSON.
+	 */
+	export function broadcast(topic: string, data: string | null = null): void {
+		script_binding.broadcast(topic, data);
 	}
 
 	/**
