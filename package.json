@@ -1,6 +1,6 @@
 {
   "name": "mucklet-script",
-  "version": "1.66.4",
+  "version": "1.68.0",
   "scripts": {
     "test": "node tests",
     "test:dev": "node --test",
