@@ -9,7 +9,27 @@ export const isResError = resclient.isResError;
 
 class ApiClient extends ResClient {
 	constructor(apiUrl, token) {
-		super(() => new WebSocket(apiUrl));
+		let debugLog = [];
+		super(() => new WebSocket(apiUrl), {
+			debug: (type, msg, ctx) => {
+				// Debug logging for a specific type of error. If encountered,
+				// we output all stored logs. To prevent large binaries, we
+				// replace them with a char count.
+				debugLog.push(msg.replace(/"binary":"([^"]*)"/g, (m, a, b) => `"binary":"CHARS(${a.length})"`));
+				if (type == 'addIndirectError') {
+					console.log("\n--------- LOG DUMP START ----------\n");
+					for (let d of debugLog) {
+						console.log(d);
+					}
+					console.log("\n---------- LOG DUMP END -----------\n");
+					console.log("You've encountered a tricky to replicate bug!");
+					console.log("To help me resolve it, copy the logs above (from LOG DUMP START to LOG DUMP END).\nThen go to GitHub and create an issue with the logs at:\n");
+					console.log("https://github.com/mucklet/mucklet-script/issues");
+					console.log("\nThanks for the helping me solve this!")
+					console.log("/Accipiter")
+				}
+			},
+		});
 
 		this.authErr = null;
 
