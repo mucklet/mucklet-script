@@ -15,7 +15,7 @@ class ApiClient extends ResClient {
 				// Debug logging for a specific type of error. If encountered,
 				// we output all stored logs. To prevent large binaries, we
 				// replace them with a char count.
-				debugLog.push(msg.replace(/"binary":"([^"]*)"/g, (m, a, b) => `"binary":"CHARS(${a.length})"`));
+				debugLog.push(Date.now() + " " + msg.replace(/"binary":"([^"]*)"/g, (m, a, b) => `"binary":"CHARS(${a.length})"`));
 				if (type == 'addIndirectError') {
 					console.log("\n--------- LOG DUMP START ----------\n");
 					for (let d of debugLog) {
